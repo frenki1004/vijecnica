@@ -142,6 +142,16 @@ GOVERNING = {
                        "nema: proračun i rebalans prošli su sa 17 glasova, a polugodišnji izvještaj gradonačelnice nije "
                        "prošao. Tko je od ostalih glasovao za, iz zbrojeva se ne vidi (Rijeka ne objavljuje poimenično "
                        "glasovanje)."},
+    "osijek": {"label": "HDZ-HSLS-HNS-NL Đapić-NL Mišetić", "mayor": "Ivan Radić",
+               "parties": ["HDZ, HSLS, HNS, NL ANTE ĐAPIĆA, NL Tomislava Mišetića"],
+               "note": "Gradonačelnik Ivan Radić (HDZ), izabran 2025. u prvom krugu, i lista HDZ-HSLS-HNS-NL Ante Đapića-NL "
+                       "Tomislava Mišetića (20 od 29 vijećnika prema popisu vijećnika na osijek.hr). Osijek ne objavljuje "
+                       "poimenično glasovanje."},
+    "sibenik": {"label": "HDZ i partneri", "mayor": "Željko Burić",
+                "parties": ["HDZ", "HDZ-HDS-DP", "HDS"],
+                "note": "Gradonačelnik Željko Burić (HDZ) i vijećnici HDZ-a i partnera (11 od 21 prema popisu vijećnika na "
+                        "sibenik.hr); sporne točke redovito prolaze s 11-12 glasova za. Šibenik ne objavljuje poimenično "
+                        "glasovanje."},
 }
 SHORT = {"Možemo! - politička platforma": "Možemo!", "Socijaldemokratska partija Hrvatske": "SDP",
          "Hrvatska demokratska zajednica": "HDZ", "Domovinski pokret": "DP",
@@ -1200,6 +1210,20 @@ async def page(req: Request):
 async def demo_page(req: Request):
     """'Kako agent odgovara': recorded demo conversations (demo/record.py → demo/demo.json)."""
     return FileResponse(WEB / "demo.html", headers={"Cache-Control": "no-cache"})
+
+
+@mcp.custom_route("/feed", methods=["GET"])
+async def feed_page(req: Request):
+    """Social feed for young readers: one carousel post per contested item (posts/ → data/posts/posts.json)."""
+    return FileResponse(WEB / "feed.html", headers={"Cache-Control": "no-cache"})
+
+
+@mcp.custom_route("/api/posts", methods=["GET"])
+async def api_posts(req: Request):
+    f = ROOT / "data" / "posts" / "posts.json"
+    if not f.exists():
+        return JSONResponse({"error": "no posts yet: run posts/assemble.py"}, status_code=404)
+    return Response(f.read_bytes(), media_type="application/json", headers={"Cache-Control": "no-cache"})
 
 
 @mcp.custom_route("/api/demo", methods=["GET"])

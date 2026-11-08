@@ -1,6 +1,6 @@
 """Build data/vijecnica.db from every city's JSON (recordings, transcripts, session documents).
 
-Cities: zagreb (data/videos.json, data/transcripts, data/docs); brod, krk and rijeka (data/<city>/recordings.json,
+Cities: zagreb (data/videos.json, data/transcripts, data/docs); brod, krk, rijeka, osijek, sibenik (data/<city>/recordings.json,
 data/<city>/transcripts, data/<city>/docs; Rijeka's recordings are YouTube, the others MP3). Rebuilt from scratch each run (a few seconds); the JSON
 files are the source of truth.
 """
@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sqlite3
+import sys
 from pathlib import Path
 
 from align import align
@@ -27,7 +28,17 @@ CITIES = {
     "krk": {"name": "Krk", "body": "Gradsko vijeće Grada Krka", "dir": DATA / "krk", "site": "https://www.grad-krk.hr"},
     "rijeka": {"name": "Rijeka", "body": "Gradsko vijeće Grada Rijeke", "dir": DATA / "rijeka",
                "site": "https://www.rijeka.hr"},
+    "osijek": {"name": "Osijek", "body": "Gradsko vijeće Grada Osijeka", "dir": DATA / "osijek",
+               "site": "https://www.osijek.hr"},
+    "sibenik": {"name": "Šibenik", "body": "Gradsko vijeće Grada Šibenika", "dir": DATA / "sibenik",
+                "site": "https://www.sibenik.hr"},
 }
+sys.path.insert(0, str(ROOT / "collect"))
+from netcom import UNITS as NETCOM  # noqa: E402  13 eSjednice portals, one generic collector
+
+CITIES.update({k: {"name": u["name"], "dir": DATA / k, "site": f"https://{u['host']}",
+                   "body": f"{u['body']} {'Grada' if u['body'].startswith('Grad') else 'Općine'} {u['gen']}"}
+               for k, u in NETCOM.items()})
 AUDIO_VOTES = ("brod", "krk")  # chair reads vote totals aloud; brod_audio.py finds them in the transcript
 
 SCHEMA = """

@@ -3,155 +3,155 @@
  "session": 9,
  "partial": false,
  "method": "Transkript i zapisnik normalizirani su (mala slova, bez dijakritika i interpunkcije). Transkript je izrezan u odlomke od 120 riječi; svaki se smješta u zapisnik po zajedničkim nizovima od 4 riječi i poravnava (difflib). Odlomci kojima zapisnik prenosi ≥ 50 % riječi ocjenjuju se Levenshteinovom udaljenošću na razini riječi: WER = (zamjene + umetanja + brisanja) / riječi zapisnika; slaganje = 1 − WER. Zapisnik je uređen (gramatika, izostavljene poštapalice), pa je ovo gornja granica stvarne pogreške ASR-a. Odlomke koje zapisnik ne prenosi (predsjedatelj, stanke) mjera ne vidi. Dodatno: CER = ista udaljenost po slovima bez razmaka (\"na zalost\" = \"nazalost\").",
- "transcript_minutes": 95.2,
+ "transcript_minutes": 95.0,
  "asr": {
-  "windows_total": 99,
-  "windows_matched": 86,
-  "aligned_ref_words": 10984,
-  "aligned_hyp_words": 10213,
-  "edits": 3551,
-  "wer": 0.323,
-  "median_window_wer": 0.303,
-  "cer_no_spaces": 0.214,
-  "windows_wer_below_0_25": 34,
-  "unmatched_words": 1560
+  "windows_total": 95,
+  "windows_matched": 88,
+  "aligned_ref_words": 11817,
+  "aligned_hyp_words": 10447,
+  "edits": 3646,
+  "wer": 0.309,
+  "median_window_wer": 0.218,
+  "cer_no_spaces": 0.247,
+  "windows_wer_below_0_25": 48,
+  "unmatched_words": 840
  },
  "passages": [
   {
-   "t": 320,
-   "wer": 0.19,
-   "transcript": "su upozorili iz strucne sluzbe da u nasem poslovniku o radu ne stoji bas tako kako smo mi to dosad imali praksu vec da kaze da pitanje postavljeno u pisanom obliku imace prednost u okviru jednog aktualnog sata znaci pitanje",
-   "minutes": "su me iz strucne sluzbe upozorili da u nasem poslovniku o radu ne stoji bas tako kako smo mi to do sada imali praksu vec da kaze da pitanje postavljeno u pisanom obliku imat ce prednost u okviru jednog aktualnog"
+   "t": 105,
+   "wer": 0.739,
+   "transcript": "gradskog vijeca uz poziv na sjednicu zaprimili ste i zapisnik o radu 7 sjednice gradskog vijeca koju smo odrzali 23 travnja i zapisnik o radu 8 izvanredne sjednice koju smo odrzali 14 svibnja ima li kakvih primjedbi na dostavljene zapisnike",
+   "minutes": "gradskog vijeca odrzane 23 travnja 2026 godine predsjednik gradskog vijeca upoznao je vijecnike da su uz poziv na sjednicu dobili zapisnik o radu 7 sjednice gradskog vijeca odrzane 23 travnja 2026 godine te upitao vijecnike imaju li primjedbi na zapisnik"
   },
   {
-   "t": 1240,
-   "wer": 0.354,
-   "transcript": "toga smo odradili nazalost postoji nesto sto se zove fond i sto se zove ministrasa zasto okolisa cekamo njihove konkretne poteze jer ona je projekt koji je puno obecavao nazalost je propao u samost artu raspisivanja na sastanku gdje je",
-   "minutes": "toga smo odradili na zalost postoji nesto sto se zove fond i sto se zove ministarstvo zastite okolisa i cekamo njihove konkretne poteze jer onaj projekt koji je puno obecavao na zalost je propao u samom startu raspisivanja na sastanku"
+   "t": 1228,
+   "wer": 0.149,
+   "transcript": "tice prvog pitanja znaci grad poduzima i radi sve ono sto je u njegovoj ingerenciji i dosta toga smo odradili nazalost postoji nesto sto se zove fond i sto se zove ministarstvo zastite okolisa cekamo njihove konkretne poteze jer onaj",
+   "minutes": "tice prvog pitanja grad poduzima i radi sve ono sto je u njegovoj ingerenciji i dosta toga smo odradili na zalost postoji nesto sto se zove fond i sto se zove ministarstvo zastite okolisa i cekamo njihove konkretne poteze jer"
   },
   {
-   "t": 2179,
-   "wer": 0.567,
-   "transcript": "veliku obvezu da od te djece naprave pravi sportace na tome imaju sve uvijete mogu i ne mozemo reci da o materskom sportu da je novac broj jedan ako nema novca nema nicega jer prije 15 godina nismo imali gdje",
-   "minutes": "veliku obvezu da od te djece naprave prave sportase prema tome imaju sve uvjete i mogu a ne mozemo reci da je u amaterskom sportu novac broj jedan i ako nema novca nema nicega jer prije 15 godina nismo imali"
+   "t": 2177,
+   "wer": 0.315,
+   "transcript": "mogu i ne mozemo reci da u amaterskom sportu da je novac broj jedan ako nema novca nema nicega jer prije 15 godina nismo imali gdje trenirati pa smo imali sportasa znaci negdje netko nesto kisao zahvaljujem i idemo na",
+   "minutes": "mogu a ne mozemo reci da je u amaterskom sportu novac broj jedan i ako nema novca nema nicega jer prije 15 godina nismo imali gdje trenirati pa smo imali sportase znaci negdje netko nesto kiksa vijecnik tomislav delic hdz"
   },
   {
-   "t": 3232,
-   "wer": 0.179,
-   "transcript": "se ne podudaraju s isplacenim iznosima navedenim u open city aplikaciji na sluzbenoj internet stranici grada slavonskog broda pa ja imam pitanja za gradonacelnika i procelnicu knezevic pa vas molim da mi ovaj put odgovorite na ono sve sto vas",
-   "minutes": "se ne podudaraju s isplacenim iznosima navedenim u opencity aplikaciji na sluzbenoj internet stranici grada slavonskog broda pa imam pitanja za gradonacelnika i procelnicu knezevic te vas molim da mi ovaj put odgovorite na ono sve sto vas pitam prvo"
+   "t": 3154,
+   "wer": 0.043,
+   "transcript": "za 12 godina i 2 mjeseca na poziciji gradonacelnika zajedno su utrosili 85 55 milijuna eura drugim rijecima drugim rijecima aktualni gradonacelnik je samo tijekom prosle godine utrosio 9 5 milijuna eura vise nego sto su prethodna tri gradonacelnika potrosila",
+   "minutes": "za 12 godina i 2 mjeseca na poziciji gradonacelnika zajedno utrosili 85 55 milijuna eura drugim rijecima aktualni gradonacelnik je samo tijekom prosle godine utrosio 9 5 milijuna eura vise nego sto su prethodna tri gradonacelnika potrosila zajedno ovo je"
   },
   {
-   "t": 4226,
-   "wer": 0.399,
-   "transcript": "priliku postaviti nesto sto sam istrazio ili samo traja reci da li smo protiv suzdazenih zahvala ako zelim nadopuniti nesto po prosle tocke nema problema bez obzira ako smo izglesali ako smatrate da ostalo nesto nedoreceno pa da pitao sam",
-   "minutes": "priliku postaviti nesto sto sam istrazio ili samo treba reci jesmo li protiv suzdrzani ili za jer prosli put predsjednik gradskog vijeca naznacio je ako zelite nadopuniti nesto po prosloj tocki nema problema bez obzira ako smo izglasali ako smatrate"
+   "t": 4100,
+   "wer": 0.218,
+   "transcript": "se tice samoizgradnje prometnice odustalo su od zupanjske panonske karasicke livade 1 itd a radjene su neke druge ulice isto tako vidimo da je u planu predvidjeno za cijeli posao ukljucujuci osim izgradnje i odrzavanja i izgradnje nogostupa i javne",
+   "minutes": "se tice same izgradnje prometnice odustalo se od zupanjske panonske karasicke livade i i tako dalje a radjene su neke druge ulice isto tako vidimo da je u planu predvidjeno za cijeli posao ukljucujuci osim izgradnje i odrzavanja i izgradnje"
   }
  ],
  "speakers": {
   "windows_with_gold": 62,
-  "windows_with_prediction": 65,
-  "correct": 45,
-  "recall": 0.726,
-  "precision": 0.692,
+  "windows_with_prediction": 74,
+  "correct": 15,
+  "recall": 0.242,
+  "precision": 0.203,
   "sample": [
    {
-    "t": 320,
+    "t": 105,
+    "gold": "Anto Ravlić",
+    "pred": null
+   },
+   {
+    "t": 314,
     "gold": null,
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 367,
-    "gold": "Slavica Lemaić",
-    "pred": null
+    "t": 376,
+    "gold": null,
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 415,
+    "t": 407,
     "gold": "Slavica Lemaić",
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
     "t": 465,
     "gold": "Slavica Lemaić",
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 518,
+    "t": 514,
     "gold": "Slavica Lemaić",
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 570,
+    "t": 578,
     "gold": null,
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 620,
+    "t": 627,
     "gold": null,
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 685,
+    "t": 694,
     "gold": null,
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 755,
+    "t": 775,
     "gold": null,
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 816,
+    "t": 817,
     "gold": "Slavica Lemaić",
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 856,
+    "t": 875,
     "gold": "Slavica Lemaić",
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 898,
+    "t": 926,
     "gold": "Slavica Lemaić",
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 954,
-    "gold": "Slavica Lemaić",
-    "pred": null
-   },
-   {
-    "t": 1006,
+    "t": 979,
     "gold": null,
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 1056,
+    "t": 1036,
     "gold": null,
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 1118,
+    "t": 1089,
     "gold": "Slavica Lemaić",
-    "pred": null
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 1179,
+    "t": 1164,
     "gold": "Hrvoje Špicer",
     "pred": "Hrvoje Špicer"
    },
    {
-    "t": 1240,
+    "t": 1228,
     "gold": "Hrvoje Špicer",
     "pred": "Hrvoje Špicer"
    },
    {
-    "t": 1294,
+    "t": 1277,
     "gold": "Hrvoje Špicer",
     "pred": "Hrvoje Špicer"
    },
    {
-    "t": 1366,
+    "t": 1356,
     "gold": "Hrvoje Špicer",
     "pred": "Hrvoje Špicer"
    },
@@ -161,99 +161,99 @@
     "pred": "Pero Veočić"
    },
    {
-    "t": 1470,
+    "t": 1458,
     "gold": "Pero Veočić",
     "pred": "Pero Veočić"
    },
    {
-    "t": 1520,
+    "t": 1501,
     "gold": "Pero Veočić",
     "pred": "Pero Veočić"
    },
    {
-    "t": 1572,
+    "t": 1566,
     "gold": "Pero Veočić",
     "pred": "Pero Veočić"
    },
    {
-    "t": 1620,
+    "t": 1609,
     "gold": null,
     "pred": "Pero Veočić"
    },
    {
-    "t": 1666,
+    "t": 1651,
     "gold": "Pero Veočić",
     "pred": "Pero Veočić"
    },
    {
-    "t": 1715,
+    "t": 1701,
     "gold": "Pero Veočić",
     "pred": "Pero Veočić"
    },
    {
-    "t": 1764,
+    "t": 1743,
     "gold": "Pero Veočić",
     "pred": "Pero Veočić"
    },
    {
-    "t": 1809,
-    "gold": "Pero Veočić",
-    "pred": "Pero Veočić"
-   },
-   {
-    "t": 1864,
+    "t": 1832,
     "gold": null,
-    "pred": "Pero Veočić"
+    "pred": "Mirko Duspara"
    },
    {
-    "t": 1925,
+    "t": 1879,
     "gold": null,
-    "pred": "Pero Veočić"
+    "pred": "Mirko Duspara"
    },
    {
-    "t": 2014,
+    "t": 1928,
     "gold": null,
-    "pred": "Pero Veočić"
+    "pred": "Mirko Duspara"
    },
    {
-    "t": 2060,
+    "t": 2004,
     "gold": null,
-    "pred": "Pero Veočić"
+    "pred": "Mirko Duspara"
    },
    {
-    "t": 2130,
+    "t": 2051,
+    "gold": null,
+    "pred": "Mirko Duspara"
+   },
+   {
+    "t": 2117,
     "gold": "Pero Veočić",
-    "pred": "Pero Veočić"
+    "pred": "Mirko Duspara"
    },
    {
-    "t": 2179,
+    "t": 2177,
     "gold": "Pero Veočić",
-    "pred": "Pero Veočić"
+    "pred": "Mirko Duspara"
    },
    {
-    "t": 2241,
+    "t": 2249,
     "gold": "Tomislav Delić",
     "pred": "Tomislav Delić"
    },
    {
-    "t": 2288,
+    "t": 2296,
     "gold": "Tomislav Delić",
     "pred": "Tomislav Delić"
    },
    {
-    "t": 2345,
+    "t": 2376,
     "gold": "Toni Tunjić",
-    "pred": "Toni Tunjić"
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 2407,
+    "t": 2406,
     "gold": "Toni Tunjić",
-    "pred": "Toni Tunjić"
+    "pred": "Tomislav Delić"
    },
    {
-    "t": 2467,
+    "t": 2472,
     "gold": "Toni Tunjić",
-    "pred": "Toni Tunjić"
+    "pred": "Mirko Duspara"
    }
   ]
  },
@@ -261,70 +261,14 @@
   "items_with_minutes_vote": 12,
   "items_with_spoken_vote": 11,
   "compared": 11,
-  "exact": 8,
-  "exact_pct": 72.7,
-  "with_number": 8,
-  "exact_of_numbered": "8/8",
-  "without_number": [
-   6,
-   12,
-   13
-  ],
+  "exact": 11,
+  "exact_pct": 100.0,
+  "with_number": 11,
+  "exact_of_numbered": "11/11",
+  "without_number": [],
   "missing_in_recording": [
-   11
+   5
   ],
-  "mismatches": [
-   {
-    "item": 6,
-    "spoken": [
-     [
-      null,
-      0,
-      0
-     ]
-    ],
-    "minutes": [
-     [
-      17,
-      0,
-      0
-     ]
-    ]
-   },
-   {
-    "item": 12,
-    "spoken": [
-     [
-      null,
-      0,
-      0
-     ]
-    ],
-    "minutes": [
-     [
-      17,
-      0,
-      0
-     ]
-    ]
-   },
-   {
-    "item": 13,
-    "spoken": [
-     [
-      null,
-      0,
-      0
-     ]
-    ],
-    "minutes": [
-     [
-      17,
-      0,
-      0
-     ]
-    ]
-   }
-  ]
+  "mismatches": []
  }
 }

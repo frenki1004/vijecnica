@@ -1,3 +1,4 @@
+# Running on the Apple-silicon Mac itself (no ssh)? Use asr/transcribe_mlx_local.py.
 """Transcription queue (runs on the G710): download session audio here, transcribe on the Mac mini.
 
 For each video in data/videos.json without data/transcripts/<id>.json (newest session first,

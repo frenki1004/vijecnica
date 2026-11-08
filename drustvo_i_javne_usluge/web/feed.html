@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vijećnica feed</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600;6..72,700&family=Public+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: phone-width column of carousel posts (4:5 slides, Instagram size). Slide type is sized in
+   container units (cqw), so a slide renders identically at 1080x1350 for export. */
+:root{
+  --bg:#f4f6fa; --panel:#ffffff; --fg:#14213a; --muted:#5b667a; --line:#d9dfe9; --soft:#eaf0fa;
+  --accent:#1d4f9c; --za:#1f8a5b; --protiv:#c23a3a; --suzdrzan:#b07a12;
+  --cover:#14213a; --cover-fg:#f4f6fa;
+  --display:"Newsreader",Georgia,serif; --body:"Public Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1320; --panel:#151d2d; --fg:#e4e9f2; --muted:#98a3b8; --line:#26314a; --soft:#1a2740;
+  --accent:#7fa8ec; --za:#4cc58c; --protiv:#ef7272; --suzdrzan:#e2ad48; --cover:#1c2a45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1320; --panel:#151d2d; --fg:#e4e9f2; --muted:#98a3b8; --line:#26314a; --soft:#1a2740;
+  --accent:#7fa8ec; --za:#4cc58c; --protiv:#ef7272; --suzdrzan:#e2ad48; --cover:#1c2a45; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:520px;margin:0 auto}
+header{padding-block:24px 8px}
+h1{font:700 32px/1.05 var(--display);margin:0}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin:6px 0 0}
+.filters{position:sticky;top:0;z-index:2;background:var(--bg);padding-block:10px;display:flex;gap:6px;overflow-x:auto;
+  scrollbar-width:none;border-bottom:1px solid var(--line);margin-bottom:16px}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:none;font:600 14px var(--body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);
+  background:var(--panel);color:var(--fg);cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.sep{flex:none;width:1px;background:var(--line);margin-inline:4px}
+.empty{color:var(--muted);text-align:center;padding:48px 0}
+
+article{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:22px;overflow:hidden}
+.top{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:grid;place-items:center;flex:none}
+.avatar svg{width:18px;height:18px}
+.who{font-weight:700;font-size:14px;line-height:1.2}
+.who small{display:block;font-weight:400;color:var(--muted)}
+.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.slides::-webkit-scrollbar{display:none}
+.slide{flex:none;width:100%;aspect-ratio:4/5;scroll-snap-align:start;container-type:inline-size;position:relative;
+  padding:7cqw;display:flex;flex-direction:column;gap:3.5cqw;background:var(--soft);color:var(--fg);overflow:hidden}
+.slide.cover{background:var(--cover);color:var(--cover-fg)}
+.slide.cover::before{content:"";position:absolute;inset:0 0 auto;height:2.2cqw;background:var(--t)}
+.meta{font:700 3.6cqw/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase;opacity:.8}
+.big{font:700 9.2cqw/1.06 var(--display);margin:0;text-wrap:balance}
+.label{font:800 3.4cqw/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--t)}
+.text{font:400 5cqw/1.4 var(--body);margin:0}
+.text.lg{font-size:5.6cqw}
+.slide > *{flex-shrink:0}
+.grow{flex:1 1 0}
+.brand{font:700 3.6cqw var(--display);opacity:.75}
+.bar{display:flex;height:4.2cqw;border-radius:99px;overflow:hidden;background:rgba(127,127,127,.25)}
+.bar i{display:block}
+.votes{display:flex;gap:5cqw;font:600 3.8cqw var(--body)}
+.votes b{font:800 7.5cqw/1 var(--body);display:block}
+.v-za{color:var(--za)} .v-protiv{color:var(--protiv)} .v-suz{color:var(--suzdrzan)}
+.cover .v-za{color:#4cc58c} .cover .v-protiv{color:#ef7272} .cover .v-suz{color:#e2ad48}
+.verdict{display:inline-block;align-self:flex-start;font:800 3.8cqw var(--body);padding:1.4cqw 3cqw;border-radius:99px;
+  background:var(--cover-fg);color:var(--cover)}
+.side{display:flex;flex-direction:column;gap:1cqw;padding-left:3.5cqw;border-left:1cqw solid var(--c)}
+.side .who2{font:800 3.4cqw var(--body);text-transform:uppercase;letter-spacing:.05em;color:var(--c)}
+.side p{margin:0;font:400 4.4cqw/1.35 var(--body)}
+.bullets{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3cqw}
+.bullets li{font:400 4.6cqw/1.35 var(--body);padding-left:5cqw;position:relative}
+.bullets li::before{content:"✓";position:absolute;left:0;color:var(--za);font-weight:800}
+.clubs{display:flex;flex-direction:column;gap:.8cqw}
+.club{display:grid;grid-template-columns:24cqw 1fr;align-items:center;gap:2cqw;font:600 3.3cqw/1.1 var(--body)}
+.seats{display:flex;flex-wrap:wrap;gap:.6cqw}
+.seats i,.legend i{display:inline-block;width:2.5cqw;height:2.5cqw;border-radius:.5cqw}
+.s-za{background:var(--za)} .s-protiv{background:var(--protiv)} .s-suzdrzan{background:var(--suzdrzan)}
+.s-nije_glasovao{background:transparent;box-shadow:inset 0 0 0 .5cqw var(--muted)} .s-odsutan{background:var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:1.4cqw 3cqw;font:400 3cqw var(--body);color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:1cqw}
+.fine{font:400 3.3cqw/1.4 var(--body);color:var(--muted)}
+.count{position:absolute;top:4cqw;right:4cqw;font:600 3.2cqw var(--body);background:rgba(0,0,0,.45);color:#fff;
+  padding:.8cqw 2.4cqw;border-radius:99px}
+.carousel{position:relative}
+.slides{cursor:grab;user-select:none}
+.slides:active{cursor:grabbing}
+.slides:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;
+  background:rgba(255,255,255,.92);color:#14213a;font:700 24px/1 var(--body);cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);display:grid;place-items:center;padding:0 0 3px}
+.nav[hidden]{display:none}
+.nav.prev{left:10px} .nav.next{right:10px}
+.dots{display:flex;justify-content:center;gap:2px;padding:6px 0 0}
+.dots button{width:16px;height:16px;border:0;padding:5px;background:none;cursor:pointer}
+.dots button::after{content:"";display:block;width:6px;height:6px;border-radius:50%;background:var(--line)}
+.dots button.on::after{background:var(--accent)}
+.caption{padding:6px 14px 14px;font-size:15px}
+.caption p{margin:0 0 6px;white-space:pre-line}
+.caption.short p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.more{background:none;border:0;padding:0;color:var(--muted);font:inherit;cursor:pointer}
+.tags a{color:var(--accent);text-decoration:none;font-weight:600;margin-right:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Vijeć<span>nica</span></h1>
+    <p class="sub">Što je tvoje gradsko vijeće odlučilo, objašnjeno u minuti.</p>
+  </header>
+  <nav class="filters" id="filters" aria-label="Filtri"></nav>
+  <main id="feed"><p class="empty">Učitavam…</p></main>
+</div>
+<script>
+const TOPIC_COLOR = {promet:"#e0723a", stanovanje:"#c2569b", komunalno:"#3a9fd6", otpad:"#6aa84f", okolis:"#2e9b6e",
+  proracun:"#e2ad48", "porezi-i-naknade":"#d98c2b", "vrtici-i-skole":"#8e6fd8", mladi:"#e65a7a", sport:"#28a8a0",
+  kultura:"#b06fd0", socijala:"#d0605e", zdravstvo:"#e05555", gospodarstvo:"#5f84d6", "prostorno-uredenje":"#7c9a3a",
+  imenovanja:"#8a93a6", "gradska-uprava":"#7d8cab"};
+const LOGO = '<svg viewBox="0 0 32 32"><path d="M6 13 16 6l10 7zM8 14h3v9H8zm6.5 0h3v9h-3zM21 14h3v9h-3zM6 24h20v3H6z" fill="#fff"/></svg>';
+const SEAT = [["za", "za"], ["protiv", "protiv"], ["suzdrzan", "suzdržan"], ["nije_glasovao", "nije glasovao"], ["odsutan", "odsutan"]];
+const CITY_NAME ={zagreb:"Zagreb", brod:"Slavonski Brod", rijeka:"Rijeka", krk:"Krk", osijek:"Osijek", sibenik:"Šibenik"};
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const plural = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one
+  : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many;
+const fmtDate =d => d ? d.split("-").reverse().map(Number).join(". ") + "." : "";
+let posts = [], filter = {tag: decodeURIComponent(location.hash.slice(1)) ? "#" + decodeURIComponent(location.hash.slice(1)) : ""};
+
+function voteBar(p) {
+  const n = (p.za||0) + (p.protiv||0) + (p.suzdrzano||0) || 1, pct = v => (100 * (v||0) / n) + "%";
+  return `<div class="bar"><i style="width:${pct(p.za)};background:var(--za)"></i><i style="width:${pct(p.protiv)};background:var(--protiv)"></i><i style="width:${pct(p.suzdrzano)};background:var(--suzdrzan)"></i></div>
+    <div class="votes"><span class="v-za"><b>${p.za ?? "–"}</b>za</span><span class="v-protiv"><b>${p.protiv ?? "–"}</b>protiv</span><span class="v-suz"><b>${p.suzdrzano ?? "–"}</b>suzdržano</span></div>`;
+}
+
+function slides(p) {
+  const head = `<div class="meta">${esc(p.hashtags[0])} · ${p.session}. sjednica · ${fmtDate(p.date)}</div>`;
+  const brand = `<div class="brand">Vijećnica</div>`;
+  if (p.kind === "digest") {
+    const out = [`<div class="slide cover">${head}<h2 class="big">${esc(p.headline)}</h2><div class="grow"></div>
+      <div class="text lg">${p.bullets.length} ${plural(p.bullets.length, "odluka", "odluke", "odluka")} bez ijednog glasa protiv →</div>${brand}</div>`];
+    for (let i = 0; i < p.bullets.length; i += 5)
+      out.push(`<div class="slide"><div class="label">Usvojeno jednoglasno</div><ul class="bullets">${
+        p.bullets.slice(i, i + 5).map(b => `<li>${esc(b)}</li>`).join("")}</ul><div class="grow"></div>${brand}</div>`);
+    return out;
+  }
+  const r = p.result || "", passed = /nije|odbij/i.test(r) ? false : /usvoj|prihvać/i.test(r) || p.za > (p.protiv || 0);
+  const out = [`<div class="slide cover">${head}<h2 class="big">${esc(p.headline)}</h2><div class="grow"></div>
+    <span class="verdict">${/nije uvršten/i.test(p.status || "") ? "Nije stavljeno na dnevni red" : passed ? "Usvojeno" : "Nije usvojeno"}</span>${voteBar(p)}${brand}</div>`];
+  out.push(`<div class="slide"><div class="label">Što je odlučeno</div><p class="text lg">${esc(p.summary)}</p>${
+    p.why_it_matters ? `<div class="label">Što to znači za tebe</div><p class="text">${esc(p.why_it_matters)}</p>` : ""}<div class="grow"></div>${brand}</div>`);
+  if (p.debate?.length) {
+    const col = {za: "var(--za)", protiv: "var(--protiv)", suzdrzani: "var(--suzdrzan)", nepoznato: "var(--muted)", predlagatelj: "var(--accent)"};
+    const word = {za: "za", protiv: "protiv", suzdrzani: "suzdržani", nepoznato: "", predlagatelj: ""};
+    out.push(`<div class="slide"><div class="label">Tko je što rekao</div>${p.debate.map(d =>
+      `<div class="side" style="--c:${col[d.side] || "var(--muted)"}"><span class="who2">${esc(d.who)}${d.side in word ? (word[d.side] ? " · " + word[d.side] : "") : " · " + esc(d.side)}</span><p>${esc(d.point)}</p></div>`).join("")}<div class="grow"></div>${brand}</div>`);
+  }
+  if (p.clubs) {
+    const seats = r => SEAT.map(([k]) => `<i class="s-${k}"></i>`.repeat(r[k] || 0)).join("");
+    out.push(`<div class="slide"><div class="label">Kako su glasali klubovi</div>${voteBar(p)}
+      <div class="clubs">${p.clubs.map(r => `<div class="club"><span>${esc(r.party)}</span><span class="seats">${seats(r)}</span></div>`).join("")}</div>
+      <div class="legend">${SEAT.map(([k, t]) => `<span><i class="s-${k}"></i>${t}</span>`).join("")}</div>
+      <div class="grow"></div><p class="fine">Prema službenom poimeničnom glasovanju. „Nije glasovao”: bio na sjednici, ali nije glasovao.</p>${brand}</div>`);
+  }
+  out.push(`<div class="slide"><div class="label">Kako je glasalo vijeće</div>${voteBar(p)}<div class="grow"></div>
+    ${p.totals_note ? `<p class="fine">${esc(p.totals_note)}</p>` : ""}
+    <p class="text">Izlazi na lokalne izbore. Ovo odlučuju ljudi koje biraš.</p>
+    <p class="fine">Sažetak je strojno izrađen iz službenog zapisnika ${p.session}. sjednice (${fmtDate(p.date)}). Službeni dokumenti imaju prednost.</p>${brand}</div>`);
+  return out;
+}
+
+function render() {
+  const list = posts.filter(p => !filter.tag || p.hashtags.includes(filter.tag));
+  const feed = document.getElementById("feed");
+  if (!list.length) { feed.innerHTML = `<p class="empty">Nema objava za ${esc(filter.tag)}.</p>`; return; }
+  feed.innerHTML = list.map((p, k) => {
+    const s = slides(p), t = TOPIC_COLOR[p.topics[0]] || "var(--accent)";
+    return `<article style="--t:${t}">
+      <div class="top"><div class="avatar">${LOGO}</div><div class="who">vijecnica.${esc(p.city)}<small>${esc(p.city_name || CITY_NAME[p.city] || p.city)} · ${fmtDate(p.date)}</small></div></div>
+      <div class="carousel">
+        <div class="slides" tabindex="0" aria-label="Objava, ${s.length} slajdova">${s.map((h, i) =>
+          h.replace(/^(<div class="slide[^"]*">)/, `$1<span class="count">${i + 1}/${s.length}</span>`)).join("")}</div>
+        <button class="nav prev" aria-label="Prethodni slajd" hidden>‹</button>
+        <button class="nav next" aria-label="Sljedeći slajd">›</button>
+      </div>
+      <div class="dots">${s.map((_, i) => `<button class="${i ? "" : "on"}" aria-label="Slajd ${i + 1}"></button>`).join("")}</div>
+      <div class="caption short"><p>${esc(p.caption)}</p><button class="more">više</button>
+        <div class="tags">${p.hashtags.map(h => `<a href="#${encodeURIComponent(h.slice(1))}">${esc(h)}</a>`).join("")}</div></div>
+    </article>`;
+  }).join("");
+  feed.querySelectorAll("article").forEach(carousel);
+  feed.querySelectorAll(".more").forEach(b => b.onclick = () => { b.parentElement.classList.remove("short"); b.remove(); });
+}
+
+// Touch swipes scroll natively; mouse users get arrows, clickable dots, keyboard arrows and drag.
+function carousel(art) {
+  const el = art.querySelector(".slides"), dots = [...art.querySelectorAll(".dots button")];
+  const prev = art.querySelector(".prev"), next = art.querySelector(".next"), last = dots.length - 1;
+  const at = () => Math.round(el.scrollLeft / el.clientWidth);
+  const go = i => el.scrollTo({left: Math.max(0, Math.min(last, i)) * el.clientWidth, behavior: "smooth"});
+  const sync = () => {
+    const i = at();
+    dots.forEach((d, j) => d.classList.toggle("on", i === j));
+    prev.hidden = i === 0;
+    next.hidden = i === last;
+  };
+  el.addEventListener("scroll", sync, {passive: true});
+  prev.onclick = () => go(at() - 1);
+  next.onclick = () => go(at() + 1);
+  dots.forEach((d, j) => d.onclick = () => go(j));
+  el.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); go(at() + (e.key === "ArrowRight" ? 1 : -1)); }
+  });
+  let drag = null;
+  el.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    drag = {x: e.clientX, left: el.scrollLeft, moved: false};
+    el.style.scrollSnapType = "none";
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    if (Math.abs(dx) > 4) drag.moved = true;
+    el.scrollLeft = drag.left - dx;
+  });
+  const end = () => {
+    if (!drag) return;
+    const dx = el.scrollLeft - drag.left, from = Math.round(drag.left / el.clientWidth);
+    drag = null;
+    el.style.scrollSnapType = "";
+    go(Math.abs(dx) > el.clientWidth * 0.15 ? from + Math.sign(dx) : from);
+  };
+  el.addEventListener("pointerup", end);
+  el.addEventListener("pointercancel", end);
+  if (!last) next.hidden = true;
+}
+
+function filters() {
+  const count = {};
+  posts.forEach(p => p.hashtags.forEach(h => count[h] = (count[h] || 0) + 1));
+  const cities = Object.keys(count).filter(h => posts.some(p => p.hashtags[0] === h));
+  const topics = Object.keys(count).filter(h => !cities.includes(h)).sort((a, b) => count[b] - count[a]);
+  const chip = h => `<button class="chip" aria-pressed="${filter.tag === h}" data-tag="${esc(h)}">${esc(h)}</button>`;
+  document.getElementById("filters").innerHTML = `<button class="chip" aria-pressed="${!filter.tag}" data-tag="">Sve</button>`
+    + cities.map(chip).join("") + `<span class="sep"></span>` + topics.map(chip).join("");
+  document.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+    location.hash = b.dataset.tag ? encodeURIComponent(b.dataset.tag.slice(1)) : "";
+  });
+}
+
+window.addEventListener("hashchange", () => {
+  const h = decodeURIComponent(location.hash.slice(1));
+  filter.tag = h ? "#" + h : "";
+  filters(); render(); scrollTo(0, 0);
+});
+
+fetch("api/posts").then(r => r.ok ? r.json() : Promise.reject(r)).then(d => { posts = d; filters(); render(); })
+  .catch(() => document.getElementById("feed").innerHTML = '<p class="empty">Još nema objava (pokreni posts/assemble.py).</p>');
+</script>
+</body>
+</html>

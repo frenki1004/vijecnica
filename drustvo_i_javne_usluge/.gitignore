@@ -7,3 +7,5 @@ __pycache__/
 *.bak*
 config_local.py
 CLAUDE.md
+# converted speech model (asr/convert_hf.py), 1.5 GB
+mlx_models/

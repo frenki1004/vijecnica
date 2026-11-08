@@ -144,14 +144,33 @@ def stem_set(t):
     return {w[:5] for w in re.findall(r"\w+", t.lower()) if len(w) > 3}
 
 
+# words in most agenda titles (stem_set form), useless for telling items apart
+TITLE_STOP = stem_set("prijedlog odluke zaključka izmjenama dopunama izmjeni dopuni grada gradskog vijeća "
+                      "slavonskog broda području godinu")
+
+
+def heading_item(items, by_no, n, heading):
+    """The agenda item a 'TOČKA N.' heading belongs to. Matched on the title that follows the heading,
+    because the minutes number points in the order they were taken: 5th session took agenda item 20
+    (mandate commission) second, so every later heading is one ahead of the agenda. Number as fallback."""
+    def score(it):  # share of the title's words in the same length of heading; ties go to the nearest number
+        title = it["title"][:100]  # a heading may name only sub-item a. of a multi-part title
+        t = stem_set(title) - TITLE_STOP
+        h = stem_set(heading[:max(len(title) + 10, 80)])
+        return len(t & h) / (len(t) or 1), -abs(it["no"] - n)
+    best = max(items, key=score, default=None)
+    return best if best is not None and score(best)[0] >= 0.6 else by_no.get(n)
+
+
 def attach_votes(items, votes, flat):
-    """Minutes sections are headed 'TOČKA N.' in agenda order; a vote belongs to the last heading
+    """Minutes sections are headed 'TOČKA N.' + the item's title; a vote belongs to the last heading
     before it (votes before TOČKA 1 are on the minutes and the agenda itself)."""
-    heads = [(m.start(), int(m.group(1))) for m in re.finditer(r"TOČKA (\d+)\.", flat)]
     by_no = {it["no"]: it for it in items}
+    heads = [(m.start(), heading_item(items, by_no, int(m.group(1)), flat[m.end():m.end() + 400]))
+             for m in re.finditer(r"TOČKA (\d+)\.", flat)]
     for v in votes:
         prev = [h for h in heads if h[0] < v["pos"]]
-        best = by_no.get(prev[-1][1]) if prev else None
+        best = prev[-1][1] if prev else None
         if best is not None:
             best.setdefault("votes", []).append(
                 {k: v[k] for k in ("za", "protiv", "suzdrzano", "present", "unanimous", "result")})
