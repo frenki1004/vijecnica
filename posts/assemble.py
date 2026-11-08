@@ -32,6 +32,25 @@ PARTY_SHORT = {"Možemo! - politička platforma": "Možemo!", "Socijaldemokratsk
                "Dina Dogan - Nezavisna lista": "Lista D. Dogan"}
 
 
+# "Samo bitno": a fixed, published rule on what a decision is about, never on who proposed it or how it went
+# politically. Appointments never count (a director of a nature park is still an appointment); internal
+# administration only counts when a residents' topic also applies. A proposal that failed always counts.
+RESIDENT_TOPICS = {"promet", "stanovanje", "komunalno", "otpad", "okolis", "proracun", "porezi-i-naknade",
+                   "vrtici-i-skole", "mladi", "sport", "kultura", "socijala", "zdravstvo", "prostorno-uredenje"}
+
+
+def relevance(p):
+    """(relevant, reason) for the feed's "Samo bitno" filter."""
+    if p["kind"] != "item":
+        return False, "pregled jednoglasnih odluka"
+    if "nije" in (p.get("result") or "") or "nije uvršten" in (p.get("status") or ""):
+        return True, "prijedlog nije prošao"
+    if "imenovanja" in p["topics"]:
+        return False, "imenovanja"
+    hit = sorted(RESIDENT_TOPICS & set(p["topics"]))
+    return (True, "tema: " + ", ".join(hit)) if hit else (False, "imenovanja ili rad uprave")
+
+
 def clubs(club_votes):
     """Roll call per party as rows for the feed's 'Kako su glasali klubovi' slide, biggest party first."""
     rows = [{"party": PARTY_SHORT.get(p, p), **v} for p, v in (club_votes or {}).items()]
@@ -62,6 +81,8 @@ def main():
                     e["side"] = "predlagatelj"
             out.append({**q, **d, "topics": topics, "city_name": CITY_NAME.get(q["city"], q["city"]),
                         "hashtags": [CITY_TAG.get(q["city"], "#" + q["city"])] + [TOPIC_TAG[t] for t in topics]})
+    for p in out:
+        p["relevant"], p["relevance"] = relevance(p)
     out.sort(key=lambda p: (p.get("date") or "", p["kind"] == "item", p.get("no", 0)), reverse=True)
     (POSTS / "posts.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     print(f"{len(out)} posts -> {POSTS / 'posts.json'}" + (f"; dropped {dropped}" if dropped else ""), file=sys.stderr)

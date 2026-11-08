@@ -19,15 +19,32 @@ EXPORT_CSS = (".count,.nav,.top{display:none!important} .slides{scroll-snap-type
               " article.x{position:fixed;top:0;left:0;width:432px;margin:0;border:0;border-radius:0;z-index:9}")
 
 
+DISCLOSURE = "Sažetak je strojno pripremljen iz službenog zapisnika i pregledan prije objave. Ispravke uz izvor su dobrodošle."
+
+
+def caption(post):
+    return f"{post['caption']}\n\n{DISCLOSURE}\n\n{' '.join(post['hashtags'])}\n"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:8103")
     ap.add_argument("--only", nargs="*")
+    ap.add_argument("--captions-only", action="store_true", help="rewrite caption.txt files, no rendering")
     a = ap.parse_args()
     posts = json.load(urllib.request.urlopen(f"{a.url}/api/posts"))
+    if a.captions_only:
+        for post in posts:
+            if not a.only or post["id"] in a.only:
+                (OUT / post["id"]).mkdir(parents=True, exist_ok=True)
+                (OUT / post["id"] / "caption.txt").write_text(caption(post))
+        print(f"captions -> {OUT}")
+        return
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 560, "height": 1000}, device_scale_factor=SCALE)
+        # every post, in API order: the feed remembers a town and "Samo bitno" per viewer, so reset both
+        page.add_init_script("localStorage.setItem('vij.important', '0'); localStorage.setItem('vij.city', '')")
         page.goto(f"{a.url}/feed")
         page.wait_for_selector("article")
         page.add_style_tag(content=EXPORT_CSS)
@@ -45,7 +62,7 @@ def main():
                 art.locator(".slides").evaluate(f"el => el.scrollLeft = {i} * el.clientWidth")
                 page.screenshot(path=str(d / f"{i + 1}.png"), clip=SLIDE)
             art.evaluate("el => el.classList.remove('x')")
-            (d / "caption.txt").write_text(post["caption"] + "\n\n" + " ".join(post["hashtags"]) + "\n")
+            (d / "caption.txt").write_text(caption(post))
             done += 1
         browser.close()
     print(f"{done} posts -> {OUT}")

@@ -32,6 +32,13 @@ h1 span{color:var(--accent)}
 .filters{position:sticky;top:0;z-index:2;background:var(--bg);padding-block:10px;display:flex;gap:6px;overflow-x:auto;
   scrollbar-width:none;border-bottom:1px solid var(--line);margin-bottom:16px}
 .filters::-webkit-scrollbar{display:none}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-top:6px}
+.pick{display:flex;align-items:center;gap:8px;font:600 14px var(--body);color:var(--muted)}
+.pick select{font:600 15px var(--body);padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);max-width:60vw}
+.toggle{font:600 14px var(--body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
+.toggle[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.toggle[aria-pressed="true"]::before{content:"✓ "}
+.shown{color:var(--muted);font-size:14px}
 .chip{flex:none;font:600 14px var(--body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);
   background:var(--panel);color:var(--fg);cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
@@ -109,7 +116,13 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
     <h1>Vijeć<span>nica</span></h1>
     <p class="sub">Što je tvoje gradsko vijeće odlučilo, objašnjeno u minuti.</p>
   </header>
-  <nav class="filters" id="filters" aria-label="Filtri"></nav>
+  <div class="controls">
+    <label class="pick">Moj grad ili općina
+      <select id="city"><option value="">Svi</option></select></label>
+    <button class="toggle" id="important" aria-pressed="true" title="Samo odluke koje se izravno tiču stanovnika i prijedlozi koji nisu prošli">Samo bitno</button>
+    <span class="shown" id="shown"></span>
+  </div>
+  <nav class="filters" id="filters" aria-label="Teme"></nav>
   <main id="feed"><p class="empty">Učitavam…</p></main>
 </div>
 <script>
@@ -124,7 +137,11 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const plural = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one
   : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many;
 const fmtDate =d => d ? d.split("-").reverse().map(Number).join(". ") + "." : "";
-let posts = [], filter = {tag: decodeURIComponent(location.hash.slice(1)) ? "#" + decodeURIComponent(location.hash.slice(1)) : ""};
+// remembered per viewer: their town and the "Samo bitno" switch (the topic stays in the URL hash)
+const store = {get: k => { try { return localStorage.getItem(k); } catch { return null; } },
+               set: (k, v) => { try { localStorage.setItem(k, v); } catch {} }};
+let posts = [], filter = {tag: decodeURIComponent(location.hash.slice(1)) ? "#" + decodeURIComponent(location.hash.slice(1)) : "",
+                          city: store.get("vij.city") || "", important: store.get("vij.important") !== "0"};
 
 function voteBar(p) {
   const n = (p.za||0) + (p.protiv||0) + (p.suzdrzano||0) || 1, pct = v => (100 * (v||0) / n) + "%";
@@ -169,9 +186,11 @@ function slides(p) {
 }
 
 function render() {
-  const list = posts.filter(p => !filter.tag || p.hashtags.includes(filter.tag));
+  const list = posts.filter(p => (!filter.city || p.city === filter.city) && (!filter.important || p.relevant)
+                                  && (!filter.tag || p.hashtags.includes(filter.tag)));
+  document.getElementById("shown").textContent = `${list.length} od ${posts.length} objava`;
   const feed = document.getElementById("feed");
-  if (!list.length) { feed.innerHTML = `<p class="empty">Nema objava za ${esc(filter.tag)}.</p>`; return; }
+  if (!list.length) { feed.innerHTML = `<p class="empty">Nema objava za ovaj odabir.</p>`; return; }
   feed.innerHTML = list.map((p, k) => {
     const s = slides(p), t = TOPIC_COLOR[p.topics[0]] || "var(--accent)";
     return `<article style="--t:${t}">
@@ -236,16 +255,28 @@ function carousel(art) {
 }
 
 function filters() {
-  const count = {};
-  posts.forEach(p => p.hashtags.forEach(h => count[h] = (count[h] || 0) + 1));
-  const cities = Object.keys(count).filter(h => posts.some(p => p.hashtags[0] === h));
-  const topics = Object.keys(count).filter(h => !cities.includes(h)).sort((a, b) => count[b] - count[a]);
+  const count = {}, cityTag = {};
+  posts.forEach(p => { cityTag[p.hashtags[0]] = p.city; p.hashtags.slice(1).forEach(h => count[h] = (count[h] || 0) + 1); });
+  if (cityTag[filter.tag]) { filter.city = cityTag[filter.tag]; filter.tag = ""; store.set("vij.city", filter.city); }
+  const topics = Object.keys(count).sort((a, b) => count[b] - count[a]);
   const chip = h => `<button class="chip" aria-pressed="${filter.tag === h}" data-tag="${esc(h)}">${esc(h)}</button>`;
-  document.getElementById("filters").innerHTML = `<button class="chip" aria-pressed="${!filter.tag}" data-tag="">Sve</button>`
-    + cities.map(chip).join("") + `<span class="sep"></span>` + topics.map(chip).join("");
+  document.getElementById("filters").innerHTML = `<button class="chip" aria-pressed="${!filter.tag}" data-tag="">Sve teme</button>`
+    + topics.map(chip).join("");
   document.querySelectorAll(".chip").forEach(b => b.onclick = () => {
     location.hash = b.dataset.tag ? encodeURIComponent(b.dataset.tag.slice(1)) : "";
   });
+  const sel = document.getElementById("city");
+  if (sel.options.length === 1) {
+    const names = {}; posts.forEach(p => names[p.city] = p.city_name || p.city);
+    Object.entries(names).sort((a, b) => a[1].localeCompare(b[1], "hr"))
+      .forEach(([c, n]) => sel.add(new Option(`${n} (${posts.filter(p => p.city === c).length})`, c)));
+    sel.onchange = () => { filter.city = sel.value; store.set("vij.city", sel.value); render(); scrollTo(0, 0); };
+    const imp = document.getElementById("important");
+    imp.onclick = () => { filter.important = !filter.important; store.set("vij.important", filter.important ? "1" : "0");
+                          imp.setAttribute("aria-pressed", filter.important); render(); };
+  }
+  sel.value = filter.city;
+  document.getElementById("important").setAttribute("aria-pressed", filter.important);
 }
 
 window.addEventListener("hashchange", () => {

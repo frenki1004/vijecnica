@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import sqlite3
+import sys
 from datetime import datetime
 from datetime import date
 from pathlib import Path
@@ -52,6 +53,9 @@ TABLES = {
                  """SELECT id, session, question_id, asked_by, speaker, deadline, deadline_date, quote, topic
                     FROM promises WHERE city = ? ORDER BY session, id"""),
 }
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "collect"))
+from netcom import UNITS as NETCOM  # noqa: E402
+
 SOURCES = {
     "zagreb": {"title": "Grad Zagreb, Gradska skupština (web.zagreb.hr) i YouTube kanal Gradske skupštine",
                "path": "https://web.zagreb.hr/Sjednice/2025/"},
@@ -61,10 +65,17 @@ SOURCES = {
             "path": "https://www.grad-krk.hr/gradska-uprava/gradsko-vijece"},
     "rijeka": {"title": "Grad Rijeka (rijeka.hr): sjednice s dnevnim redom i aktima, snimke na YouTubeu",
                "path": "https://www.rijeka.hr/gradska-uprava/gradsko-vijece/sjednice-gradskog-vijeca/"},
+    "osijek": {"title": "Grad Osijek (osijek.hr): sjednice, dnevni red, zapisnici i snimke",
+               "path": "https://www.osijek.hr/prijenos-sjednice/"},
+    "sibenik": {"title": "Grad Šibenik (sibenik.hr): sjednice, materijali i zapisnici",
+                "path": "https://www.sibenik.hr/stranice/sjednice-gradskog-vijeca-2025-2029/260.html"},
+    # 13 units on NetCom eSjednice public portals (collect/netcom.py)
+    **{k: {"title": f"{u['name']} (eSjednice, {u['host']}): sjednice, dnevni red, odluke"
+                    + (" i zapisnici" if u["tier"] == "A" else ""), "path": f"https://{u['host']}"}
+       for k, u in NETCOM.items()},
 }
-ATTRIBUTION = ("Izvor: Grad Zagreb (web.zagreb.hr), Grad Slavonski Brod (slavonski-brod.hr), Grad Krk (grad-krk.hr), "
-               "Grad Rijeka (rijeka.hr); "
-               "strojno izvedeni podaci")
+ATTRIBUTION = ("Izvor: službene stranice predstavničkih tijela (" + ", ".join(s["path"] for s in SOURCES.values())
+               + "); strojno izvedeni podaci")
 # Exact source pages per table (URL patterns). Official texts are re-used under the Zakon o pravu na pristup
 # informacijama (ponovna uporaba informacija) and the source's terms; CC BY 4.0 applies only to what this
 # project derives (parsing, columns, transcripts' timing, speaker turns, promises), not to the official text.
@@ -171,7 +182,7 @@ def main():
             print(f"{city}/{name}.csv {len(rows)} rows")
     pkg = {
         "name": "vijecnica-gradska-vijeca-2025-2029",
-        "title": "Vijećnica: sjednice gradskih vijeća (Zagreb, Slavonski Brod), saziv 2025.-2029.",
+        "title": f"Vijećnica: sjednice predstavničkih tijela ({len(SOURCES)} gradova i općina), saziv 2025.-2029.",
         "description": ("Strojno čitljivi podaci o radu predstavničkih tijela: dnevni red, poimenično glasovanje, "
                         "nazočnost, pitanja s fonogramima, strojni transkripti snimki sjednica, prepoznati govornici "
                         "i obećanja izvršne vlasti. Pripremljeno za objavu na data.gov.hr (CKAN)."),
