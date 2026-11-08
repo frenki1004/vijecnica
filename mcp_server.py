@@ -28,9 +28,10 @@ DB = ROOT / "data" / "vijecnica.db"
 mcp = MCPServer(
     "vijecnica",
     instructions=(
-        "City council data for Croatian cities, term 2025-2029. city='zagreb' (Gradska skupština Grada "
-        "Zagreba), 'brod' (Slavonski Brod), 'krk' (Grad Krk) or 'rijeka' (Grad Rijeka), each its Gradsko "
-        "vijeće; call list_cities first if unsure. "
+        "Council data for 19 Croatian cities and municipalities, term 2025-2029: 'zagreb' (Gradska skupština "
+        "Grada Zagreba), 'brod' (Slavonski Brod), 'krk', 'rijeka', 'osijek', 'sibenik' and 13 units on eSjednice "
+        "portals (e.g. 'opatija', 'kastav', 'senj', 'ogulin', 'viskovo', 'punat'), each its Gradsko or Općinsko "
+        "vijeće; call list_cities first for the keys and what each provides. "
         "Data: session agendas, votes (Zagreb: per councillor; elsewhere: totals from minutes or city news), attendance, "
         "councillors' questions with official verbatim answers (Zagreb fonogram), official minutes "
         "(zapisnik; Brod's are near-verbatim), and machine transcripts of the session recordings with "
@@ -40,8 +41,13 @@ mcp = MCPServer(
 )
 
 
+sys.path.insert(0, str(ROOT / "collect"))
+from netcom import UNITS as NETCOM  # noqa: E402  the 13 eSjednice units, same keys as db/build.py
+
+CITY_KEYS = ("zagreb", "brod", "krk", "rijeka", "osijek", "sibenik", *NETCOM)
 CITY_ALIASES = {"slavonski brod": "brod", "slavonski-brod": "brod", "sb": "brod", "grad zagreb": "zagreb", "zg": "zagreb",
-                "grad krk": "krk", "grad rijeka": "rijeka", "ri": "rijeka"}
+                "grad krk": "krk", "grad rijeka": "rijeka", "ri": "rijeka", "šibenik": "sibenik", "grad osijek": "osijek",
+                **{u["name"].lower(): k for k, u in NETCOM.items()}}
 
 
 def _norm_city(v):
@@ -59,12 +65,11 @@ def _norm_status(v):
     return v
 
 
-City = Annotated[Literal["zagreb", "brod", "krk", "rijeka"], BeforeValidator(_norm_city),
-                 Field(description="City: 'zagreb' (Gradska skupština Grada Zagreba), 'brod' (Gradsko vijeće Grada "
-                                   "Slavonskog Broda), 'krk' (Gradsko vijeće Grada Krka) or 'rijeka' (Gradsko vijeće "
-                                   "Grada Rijeke). Case-insensitive; 'Slavonski Brod' also works.")]
-AnyCity = Annotated[Literal["", "zagreb", "brod", "krk", "rijeka"], BeforeValidator(_norm_city),
-                    Field(description="'' = every city, or 'zagreb' / 'brod' / 'krk' / 'rijeka'")]
+City = Annotated[Literal[CITY_KEYS], BeforeValidator(_norm_city),
+                 Field(description="City or municipality key: " + ", ".join(CITY_KEYS) + " (list_cities describes "
+                                   "each). Case-insensitive; names such as 'Slavonski Brod' or 'Novi Vinodolski' work.")]
+AnyCity = Annotated[Literal[("",) + CITY_KEYS], BeforeValidator(_norm_city),
+                    Field(description="'' = every city, or one key: " + ", ".join(CITY_KEYS))]
 Session = Annotated[int, Field(ge=1, description="Session number (sjednica) of the 2025-2029 term; list_sessions "
                                                  "gives the valid numbers")]
 ItemNo = Annotated[int, Field(ge=0, description="Agenda item number (točka dnevnog reda), as in get_session items[].no")]
@@ -425,7 +430,7 @@ def search(query: Annotated[str, Field(description="Croatian words; every word m
     'Jakuševec', 'Tvrđava Brod'. city='' searches every city; 'session' needs a city. Only part of the
     recordings is transcribed (list_cities → coverage), so 'said_in_session' covers those sessions only."""
     if session and not city:
-        raise ToolError("'session' needs 'city' ('zagreb', 'brod', 'krk' or 'rijeka'): session numbers repeat across cities")
+        raise ToolError("'session' needs 'city' (list_cities gives the keys): session numbers repeat across cities")
     m = fts(query)
     cond, extra = "", []
     if city:
@@ -1190,7 +1195,7 @@ def _int(req, key, default=None):
 
 def _city(req):
     c = _norm_city(req.query_params.get("city", "zagreb"))
-    return c if c in GOVERNING else "zagreb"
+    return c if c in CITY_KEYS else "zagreb"
 
 
 def jr(fn, *args, **kw):
@@ -1268,7 +1273,7 @@ async def api_item(req: Request):
 @mcp.custom_route("/api/search", methods=["GET"])
 async def api_search(req: Request):
     city = _norm_city(req.query_params.get("city", ""))
-    city = city if city in GOVERNING else ""
+    city = city if city in CITY_KEYS else ""
     return jr(search, req.query_params.get("q", ""), city, _int(req, "n") if city else None, _int(req, "limit", 20))
 
 
@@ -1327,7 +1332,7 @@ async def api_minutes_eval(req: Request):
 async def api_ask(req: Request):
     """?k=<key> answer card (unknown key -> 404); no k -> the questions of ?city= (all cities if absent)."""
     c = _norm_city(req.query_params.get("city", ""))
-    return jr(example_questions, req.query_params.get("k", ""), c if c in GOVERNING else "")
+    return jr(example_questions, req.query_params.get("k", ""), c if c in CITY_KEYS else "")
 
 
 @mcp.custom_route("/api/promises", methods=["GET"])
