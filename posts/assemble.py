@@ -52,6 +52,9 @@ def main():
             q = {k: v for k, v in q.items() if k not in ("minutes_excerpt", "club_votes")} | {
                 "clubs": clubs(q.get("club_votes"))}
             topics = [t for t in d.get("topics", []) if t in TOPIC_TAG]
+            head, _, last = d.get("caption", "").rpartition("\n")
+            if q.get("source") and last.startswith("Izvor:") and last != q["source"]:  # the queue's source line wins
+                d["caption"] = f"{head}\n{q['source']}"
             if q.get("totals_note") and q.get("protiv") is None:  # shown as "–", so not "(upisano 0)" either
                 q["totals_note"] = re.sub(r"\s*\(upisano 0\)", "", q["totals_note"])
             for e in d.get("debate", []):  # a proposing mayor has no vote in the council

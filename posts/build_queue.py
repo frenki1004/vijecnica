@@ -117,7 +117,10 @@ def club_votes(db, city, it):
 
 def source(city, s):
     d = ". ".join(str(int(x)) for x in reversed(s["date"].split("-"))) + "." if s["date"] else ""
-    return f"Izvor: zapisnik {s['n']}. sjednice {BODY.get(city, 'Gradskog vijeća')}, {d}"
+    body = BODY.get(city, "Gradskog vijeća")
+    if not s["minutes_text"]:  # Krk 7-8, Rijeka 12-13: totals from the city's news item until minutes appear
+        return f"Izvor: gradska vijest o {s['n']}. sjednici {body}, {d} (zapisnik još nije objavljen)"
+    return f"Izvor: zapisnik {s['n']}. sjednice {body}, {d}"
 
 
 def main():
