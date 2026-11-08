@@ -115,8 +115,11 @@ def main():
                     e["side"] = "predlagatelj"
             out.append({**q, **d, "topics": topics, "city_name": CITY_NAME.get(q["city"], q["city"]),
                         "hashtags": [CITY_TAG.get(q["city"], "#" + q["city"])] + [TOPIC_TAG[t] for t in topics]})
+    db = sqlite3.connect(ROOT / "data" / "vijecnica.db")
+    links = {(c, n): m or u for c, n, m, u in db.execute("SELECT city, n, minutes_url, url FROM sessions")}
     for p in out:
         p["relevant"], p["relevance"] = relevance(p)
+        p["source_url"] = links.get((p["city"], p["session"]))  # the minutes, else the session's page
     out.sort(key=lambda p: (p.get("date") or "", p["kind"] == "item", p.get("no", 0)), reverse=True)
     (POSTS / "posts.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     (POSTS / "towns.json").write_text(json.dumps(towns(ROOT / "data" / "vijecnica.db"), ensure_ascii=False, indent=1))

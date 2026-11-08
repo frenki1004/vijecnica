@@ -105,7 +105,7 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
 .fine{font:400 3.3cqw/1.4 var(--body);color:var(--muted)}
 .count{position:absolute;top:4cqw;right:4cqw;font:600 3.2cqw var(--body);background:rgba(0,0,0,.45);color:#fff;
   padding:.8cqw 2.4cqw;border-radius:99px}
-.carousel{position:relative}
+.carousel{position:relative;container-type:inline-size}  /* the slide's own padding is in cqw of the carousel */
 .slides{cursor:grab;user-select:none}
 .slides:active{cursor:grabbing}
 .slides:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
@@ -123,10 +123,61 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
 .caption.short p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .more{background:none;border:0;padding:0;color:var(--muted);font:inherit;cursor:pointer}
 .tags a{color:var(--accent);text-decoration:none;font-weight:600;margin-right:8px}
+.srclink{display:inline-block;margin-top:6px;font:600 13px var(--body);color:var(--muted)}
+/* cover: topic label in the topic's colour; a proposal that did not pass gets its own colour */
+.tchip{align-self:flex-start;font:800 3.1cqw/1 var(--body);letter-spacing:.07em;text-transform:uppercase;
+  padding:1.3cqw 2.6cqw;border-radius:99px;background:var(--t);color:#0d1320}
+.slide.cover.no{background:#3b1320}
+.slide.cover.no .verdict{background:#ef7272;color:#2a0a10}
+/* side panels: town card and "Kako radi"; on a phone only the town card, above the feed */
+.how{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:22px}
+.how h2{font:700 20px/1.2 var(--display);margin:0 0 10px}
+.how ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:s}
+.how li{display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:14px;line-height:1.4;counter-increment:s}
+.how li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--accent);
+  font:800 14px/28px var(--body);text-align:center}
+.how .stat{font:700 26px/1.1 var(--display);margin:14px 0 2px}
+.how .fine2{color:var(--muted);font-size:13px;margin:0}
+.desk{display:none}
+/* start screen: pick your town first */
+#start{position:fixed;inset:0;z-index:10;background:var(--bg);overflow:auto;padding:max(28px,6vh) 16px 40px}
+#start[hidden]{display:none}
+#start .in{max-width:720px;margin:0 auto}
+#start h1{font-size:clamp(40px,7vw,64px)}
+#start .q{font:700 clamp(26px,4.2vw,40px)/1.15 var(--display);margin:22px 0 8px;text-wrap:balance}
+#start .sub{font-size:17px;max-width:560px}
+.towns{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:26px 0 18px}
+.towns button{font:700 17px var(--body);text-align:left;padding:14px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);color:var(--fg);cursor:pointer}
+.towns button small{display:block;font:400 13px var(--body);color:var(--muted);margin-top:2px}
+.towns button:hover,.towns button:focus-visible{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:-1px}
+.all{font:600 15px var(--body);background:none;border:0;color:var(--accent);cursor:pointer;padding:0}
+@media (min-width:1100px){
+  body{padding-bottom:0}
+  .wrap{max-width:1240px;display:grid;grid-template-columns:270px minmax(0,470px) 330px;gap:40px;align-items:start}
+  .left{grid-column:1;grid-row:1;position:sticky;top:0;max-height:100vh;overflow:auto;padding-bottom:24px}
+  main{grid-column:2;grid-row:1;padding-top:28px}
+  .right{grid-column:3;grid-row:1;position:sticky;top:28px;padding-top:28px;max-height:100vh;overflow:auto}
+  .filters{position:static;flex-wrap:wrap;overflow:visible;border:0;margin:12px 0 0}
+  .controls{flex-direction:column;align-items:flex-start}
+  .pick{flex-direction:column;align-items:flex-start}
+  .pick select{max-width:100%;width:250px}
+  .desk{display:block}
+}
 </style>
 </head>
 <body>
+<section id="start" hidden aria-label="Odaberi grad">
+  <div class="in">
+    <h1>Vijeć<span>nica</span></h1>
+    <p class="q">Što je tvoje gradsko ili općinsko vijeće odlučilo?</p>
+    <p class="sub">Odluke s 20 službenih stranica, svaka objašnjena u minuti, s izvorom ispod. Odaberi svoj grad ili općinu.</p>
+    <div class="towns" id="towns"></div>
+    <button class="all" id="all">Pokaži sve gradove i općine →</button>
+  </div>
+</section>
 <div class="wrap">
+  <aside class="left">
   <header>
     <h1>Vijeć<span>nica</span></h1>
     <p class="sub">Što je tvoje gradsko vijeće odlučilo, objašnjeno u minuti.</p>
@@ -138,6 +189,8 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
     <span class="shown" id="shown"></span>
   </div>
   <nav class="filters" id="filters" aria-label="Teme"></nav>
+  </aside>
+  <aside class="right" id="side"></aside>
   <main id="feed"><p class="empty">Učitavam…</p></main>
 </div>
 <script>
@@ -177,8 +230,9 @@ function slides(p) {
     return out;
   }
   const r = p.result || "", passed = /nije|odbij/i.test(r) ? false : /usvoj|prihvać/i.test(r) || p.za > (p.protiv || 0);
-  const out = [`<div class="slide cover">${head}<h2 class="big">${esc(p.headline)}</h2><div class="grow"></div>
-    <span class="verdict">${/nije uvršten/i.test(p.status || "") ? "Nije stavljeno na dnevni red" : passed ? "Usvojeno" : "Nije usvojeno"}</span>${voteBar(p)}${brand}</div>`];
+  const off = /nije uvršten/i.test(p.status || ""), tchip = p.hashtags[1] ? `<span class="tchip">${esc(p.hashtags[1].slice(1))}</span>` : "";
+  const out = [`<div class="slide cover${passed || off ? "" : " no"}">${head}${tchip}<h2 class="big">${esc(p.headline)}</h2><div class="grow"></div>
+    <span class="verdict">${off ? "Nije stavljeno na dnevni red" : passed ? "Usvojeno" : "Nije prošlo"}</span>${voteBar(p)}${brand}</div>`];
   out.push(`<div class="slide"><div class="label">Što je odlučeno</div><p class="text lg">${esc(p.summary)}</p>${
     p.why_it_matters ? `<div class="label">Što to znači za tebe</div><p class="text">${esc(p.why_it_matters)}</p>` : ""}<div class="grow"></div>${brand}</div>`);
   if (p.debate?.length) {
@@ -231,14 +285,34 @@ function townCard(c) {
   </section>`;
 }
 
+function how() {
+  const cities = new Set(posts.map(p => p.city)).size;
+  return `<section class="how desk" aria-label="Kako radi"><h2>Kako radi</h2><ol>
+    <li><span>Skupljamo službene zapisnike, materijale i snimke sjednica s 20 gradskih i općinskih stranica.</span></li>
+    <li><span>Iz zapisnika čitamo dnevni red i glasovanje. Pravila bez urednika određuju što postaje objava.</span></li>
+    <li><span>AI piše sažetak samo iz zapisnika; svaka se brojka automatski provjerava, a izvor stoji ispod objave.</span></li></ol>
+    <p class="stat">${num(posts.length)} objava</p><p class="fine2">iz ${cities} gradova i općina · podaci i kod otvoreni (EUPL-1.2, CC BY 4.0)</p></section>`;
+}
+
+function start() {
+  const box = document.getElementById("start"), names = {}, n = {};
+  posts.forEach(p => { names[p.city] = p.city_name || p.city; n[p.city] = (n[p.city] || 0) + 1; });
+  document.getElementById("towns").innerHTML = Object.entries(names).sort((a, b) => a[1].localeCompare(b[1], "hr"))
+    .map(([c, name]) => `<button data-c="${esc(c)}">${esc(name)}<small>${n[c]} ${plural(n[c], "objava", "objave", "objava")}</small></button>`).join("");
+  const pick = c => { filter.city = c; store.set("vij.city", c); box.hidden = true; filters(); render(); scrollTo(0, 0); };
+  box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => pick(b.dataset.c));
+  document.getElementById("all").onclick = () => pick("");
+  box.hidden = false;
+}
+
 function render() {
   const list = posts.filter(p => (!filter.city || p.city === filter.city) && (!filter.important || p.relevant)
                                   && (!filter.tag || p.hashtags.includes(filter.tag)));
   document.getElementById("shown").textContent = `${list.length} od ${posts.length} objava`;
   const feed = document.getElementById("feed");
-  const card = filter.city ? townCard(filter.city) : "";
-  if (!list.length) { feed.innerHTML = card + `<p class="empty">Nema objava za ovaj odabir.</p>`; return; }
-  feed.innerHTML = card + list.map((p, k) => {
+  document.getElementById("side").innerHTML = (filter.city ? townCard(filter.city) : "") + how();
+  if (!list.length) { feed.innerHTML = `<p class="empty">Nema objava za ovaj odabir.</p>`; return; }
+  feed.innerHTML = list.map((p, k) => {
     const s = slides(p), t = TOPIC_COLOR[p.topics[0]] || "var(--accent)";
     return `<article style="--t:${t}">
       <div class="top"><div class="avatar">${LOGO}</div><div class="who">vijecnica.${esc(p.city)}<small>${esc(p.city_name || CITY_NAME[p.city] || p.city)} · ${fmtDate(p.date)}</small></div></div>
@@ -250,7 +324,8 @@ function render() {
       </div>
       <div class="dots">${s.map((_, i) => `<button class="${i ? "" : "on"}" aria-label="Slajd ${i + 1}"></button>`).join("")}</div>
       <div class="caption short"><p>${esc(p.caption)}</p><button class="more">više</button>
-        <div class="tags">${p.hashtags.map(h => `<a href="#${encodeURIComponent(h.slice(1))}">${esc(h)}</a>`).join("")}</div></div>
+        <div class="tags">${p.hashtags.map(h => `<a href="#${encodeURIComponent(h.slice(1))}">${esc(h)}</a>`).join("")}</div>
+        ${p.source_url ? `<a class="srclink" href="${esc(p.source_url)}" target="_blank" rel="noopener">Službeni izvor: ${p.source_url.endsWith(".pdf") ? "zapisnik" : "stranica sjednice"} ↗</a>` : ""}</div>
     </article>`;
   }).join("");
   feed.querySelectorAll("article").forEach(carousel);
@@ -333,7 +408,9 @@ window.addEventListener("hashchange", () => {
 });
 
 fetch("api/towns").then(r => r.ok ? r.json() : {}).then(d => { towns = d || {}; if (posts.length) render(); }).catch(() => {});
-fetch("api/posts").then(r => r.ok ? r.json() : Promise.reject(r)).then(d => { posts = d; filters(); render(); })
+// first visit (no town chosen yet, no topic link): the start screen asks for the town
+fetch("api/posts").then(r => r.ok ? r.json() : Promise.reject(r)).then(d => { posts = d; filters(); render();
+  if (store.get("vij.city") === null && !location.hash) start(); })
   .catch(() => document.getElementById("feed").innerHTML = '<p class="empty">Još nema objava (pokreni posts/assemble.py).</p>');
 </script>
 </body>
