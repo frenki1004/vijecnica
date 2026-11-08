@@ -1,0 +1,9 @@
+# downloaded audio, collected documents, transcripts and the built DB (2 GB, all re-creatable by the pipeline)
+data/
+logs/
+.venv/
+__pycache__/
+*.pyc
+*.bak*
+config_local.py
+CLAUDE.md

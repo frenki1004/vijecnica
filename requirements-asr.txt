@@ -1,0 +1,12 @@
+# CPU transcription route (asr/transcribe_local.py: faster-whisper + Silero VAD). Install torch from the CPU
+# index to avoid ~1.5 GB of unused CUDA wheels:
+#   .venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.15.0
+#   .venv/bin/pip install -r requirements-asr.txt
+faster-whisper==1.2.1
+ctranslate2==4.8.5
+silero-vad==6.2.3
+onnxruntime==1.31.1
+av==19.0.2
+numpy==2.5.4
+huggingface_hub==2.4.0
+# The Mac route (asr/run_queue.py -> asr/transcribe.py) uses mlx-whisper + mlx on Apple silicon, in its own venv.

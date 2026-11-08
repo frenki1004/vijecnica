@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vijećnica</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600;6..72,700&family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: masthead with search, tab strip (Sjednice / Zastupnici / Pretraga), one column of cards per view */
+:root{
+  --bg:#f4f6fa; --panel:#ffffff; --fg:#14213a; --muted:#5b667a; --line:#d9dfe9; --soft:#eaf0fa;
+  --zg:#1d4f9c; --za:#1f8a5b; --protiv:#c23a3a; --suzdrzan:#b07a12; --odsutan:#9aa3b2; --nije:#6f7fa6;
+  --display:"Newsreader",Georgia,serif; --body:"Public Sans",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1320; --panel:#151d2d; --fg:#e4e9f2; --muted:#98a3b8; --line:#26314a; --soft:#1a2740;
+  --zg:#7fa8ec; --za:#4cc58c; --protiv:#ef7272; --suzdrzan:#e2ad48; --odsutan:#5d6880; --nije:#8d9cc4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1320; --panel:#151d2d; --fg:#e4e9f2; --muted:#98a3b8; --line:#26314a; --soft:#1a2740;
+  --zg:#7fa8ec; --za:#4cc58c; --protiv:#ef7272; --suzdrzan:#e2ad48; --odsutan:#5d6880; --nije:#8d9cc4; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:980px;margin:0 auto}
+header{padding-block:28px 12px;display:flex;flex-direction:column;gap:10px}
+.brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+select{font:600 15px var(--body);padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg)}
+h1{font:700 clamp(30px,5vw,42px)/1.05 var(--display);margin:0;letter-spacing:-.01em}
+h1 span{color:var(--zg)}
+.sub{color:var(--muted);margin:0;max-width:62ch}
+h2{font:700 24px/1.2 var(--display);margin:0;text-wrap:balance}
+h3{font:600 17px/1.3 var(--body);margin:0}
+form.search{display:flex;gap:8px;margin-top:6px}
+input[type=search]{flex:1;min-width:0;font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg)}
+button{font:600 15px var(--body);padding:10px 16px;border-radius:8px;border:1px solid var(--zg);background:var(--zg);color:#fff;cursor:pointer}
+button.ghost{background:transparent;color:var(--zg)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--zg);outline-offset:2px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:0 4px;border-bottom:1px solid var(--line);margin:14px 0 18px}
+nav.tabs a{padding:10px 14px;text-decoration:none;color:var(--muted);font-weight:600;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs a.on{color:var(--fg);border-color:var(--zg)}
+main{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.mono{font-family:var(--mono);font-size:13px}
+a{color:var(--zg)}
+.chip{font:600 12px/1 var(--mono);padding:5px 8px;border-radius:99px;background:var(--soft);color:var(--fg);white-space:nowrap}
+.chip.prihvaćen{color:var(--za)} .chip.odbijen{color:var(--protiv)} .chip.povučen,.chip.vraćen{color:var(--suzdrzan)}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--soft);width:100%}
+.bar i{display:block;height:100%}
+.za{background:var(--za)} .protiv{background:var(--protiv)} .suzdrzan{background:var(--suzdrzan)} .odsutan{background:var(--odsutan)} .nije_glasovao{background:repeating-linear-gradient(135deg,var(--nije) 0 3px,transparent 3px 6px)}
+a.card{color:inherit;text-decoration:none}
+.item{cursor:pointer}
+.snimka{border:1px dashed var(--suzdrzan);border-radius:8px;padding:8px 10px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.snimka .tag{font:600 11px/1 var(--mono);color:var(--suzdrzan);text-transform:uppercase;letter-spacing:.04em}
+.item:hover{border-color:var(--zg)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.party{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;font-size:14px}
+.party .names{grid-column:1/-1;color:var(--muted);font-size:13px;margin-top:-4px}
+.hit{border-left:3px solid var(--zg);padding:4px 0 4px 12px}
+.hit p{margin:0}
+mark,.hit b{background:transparent;color:var(--zg);font-weight:700}
+.sess:hover{border-color:var(--zg)}
+.sess{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;cursor:pointer}
+.sess .n{font:700 28px/1 var(--display);color:var(--zg);text-align:center}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}
+th,td{text-align:left;padding:8px 10px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-top:0;cursor:pointer}
+tr.clk{cursor:pointer} tr.clk:hover td{background:var(--soft)}
+.empty{color:var(--muted);padding:24px;text-align:center}
+.back{align-self:flex-start}
+pre.fon{white-space:pre-wrap;font:14px/1.55 var(--body);margin:0;max-height:420px;overflow:auto;background:var(--soft);padding:12px;border-radius:8px}
+pre.fon mark{background:color-mix(in srgb,var(--suzdrzan) 28%,transparent);color:inherit;font-weight:600;border-radius:3px;padding:0 2px}
+@media (max-width:600px){pre.fon{max-height:none}}
+.meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--muted)}
+.badge{font:600 12px/1.3 var(--body);padding:4px 9px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--fg);text-decoration:none}
+a.badge:hover{border-color:var(--zg)}
+.badge.asr{border-color:var(--suzdrzan)}
+.bl{font:600 11px/1 var(--mono);padding:3px 6px;border-radius:4px;margin-left:4px;vertical-align:1px}
+.bl.vlast{background:color-mix(in srgb,var(--zg) 16%,transparent);color:var(--zg)}
+.bl.oporba{background:color-mix(in srgb,var(--suzdrzan) 18%,transparent);color:var(--fg)}
+.bl.uprava{background:var(--soft);color:var(--muted)}
+.verdict{font:600 17px/1.45 var(--body);margin:0;padding:10px 12px;border-radius:8px;background:var(--soft)}
+details.how{font-size:13px;color:var(--muted)} details.how summary{cursor:pointer}
+.fu{font-size:13px;margin-top:4px} .fu summary{cursor:pointer;color:var(--zg)} .fu ul{margin:4px 0 0;padding-left:18px}
+body.subpage header .sub{display:none}
+body.subpage header{padding-block:14px 6px}
+body.subpage h1{font-size:28px}
+.pass{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;font-size:14px}
+.pass div{background:var(--soft);border-radius:8px;padding:8px 10px}
+.spk{display:flex;flex-wrap:wrap;gap:6px}
+.spk a{text-decoration:none}
+.spk .chip{white-space:normal;line-height:1.35}
+.chip.k{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.deb{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow:auto;background:var(--soft);padding:12px;border-radius:8px}
+.deb .b{display:grid;grid-template-columns:minmax(0,1fr);gap:2px}
+.deb .who{font:600 13px var(--body);color:var(--zg)} .deb .who .muted{font-weight:400}
+.deb p{margin:0;font-size:14px}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.cmp pre{white-space:pre-wrap;font:14px/1.55 var(--body);margin:0;background:var(--soft);padding:12px;border-radius:8px;max-height:560px;overflow:auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel)}
+.kpi b{display:block;font:700 28px/1.1 var(--display);color:var(--zg)}
+.kpi span{font-size:13px;color:var(--muted)}
+.ok{color:var(--za);font-weight:600} .bad{color:var(--protiv);font-weight:600}
+.prom{border-left:3px solid var(--line);padding:4px 0 4px 12px}
+.prom.rok_prošao{border-color:var(--protiv)} .prom.otvoreno{border-color:var(--za)}
+.prom p{margin:2px 0}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{padding:6px 12px;font-size:13px}
+.ask{display:flex;flex-direction:column;gap:12px}
+.ask .qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.ask .qs button{background:var(--soft);color:var(--fg);border:1px solid var(--line);text-align:left;font:600 14px/1.35 var(--body);padding:10px 12px}
+.ask .qs button[aria-pressed="true"]{border-color:var(--zg);box-shadow:inset 3px 0 0 var(--zg)}
+.ask .qs button:hover{border-color:var(--zg)}
+.ans{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.ans .tool{font:600 12px/1.4 var(--mono);color:var(--muted);overflow-wrap:anywhere}
+.ans .head{font:600 17px/1.4 var(--body);margin:0}
+.ans ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.ans li span{display:block;color:var(--muted);font-size:13px}
+.tnote{font-size:13px;color:var(--muted);border-left:3px solid var(--suzdrzan);padding:2px 0 2px 10px}
+.demo-link{margin-left:auto;font-weight:600;text-decoration:none;white-space:nowrap}
+footer{margin-top:32px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><h1>Vijeć<span>nica</span></h1>
+    <label class="small muted" for="city">Grad</label><select id="city" aria-label="Grad"></select>
+    <span class="muted small" id="body">saziv 2025.–2029.</span>
+    <a class="small demo-link" href="demo">Kako agent odgovara →</a></div>
+  <p class="sub">Što je gradsko vijeće odlučilo, tko je kako glasao i što je rečeno na sjednici, s poveznicom na točan trenutak snimke.</p>
+  <div class="meta" id="meta"></div>
+  <form class="search" id="f"><input type="search" id="q" placeholder="npr. tramvaj, stadion Maksimir, Jakuševec, vrtići" aria-label="Pretraga"><button>Traži</button></form>
+</header>
+<nav class="tabs" id="tabs"><a href="#sjednice" data-v="sjednice">Sjednice</a><a href="#zastupnici" data-v="zastupnici">Zastupnici</a><a href="#obecanja" data-v="obecanja">Obećanja</a><a href="#kvaliteta" data-v="kvaliteta">Točnost zapisa</a><a href="#pretraga" data-v="pretraga">Pretraga</a><a href="#zapisnik" data-v="zapisnik">Za službenike</a></nav>
+<main id="main"><div class="empty">Učitavam…</div></main>
+<footer>Izvori: Zagreb: web.zagreb.hr (dnevni red, poimenično glasovanje, nazočnost, pitanja i fonogrami, zapisnici) i YouTube kanal Gradske skupštine. Slavonski Brod: slavonski-brod.hr (dnevni red i materijali, tonski zapisi, pisani zapisnici; glasovi su zbrojevi iz zapisnika). Krk: grad-krk.hr (dnevni red, tonski zapisi, zapisnici, vijesti sa sjednica). Rijeka: rijeka.hr (dnevni red s prijedlozima i donesenim aktima, snimke na YouTubeu). Transkripti snimki su strojni (Whisper, hrvatski model) i mogu sadržavati pogreške; službeni dokumenti imaju prednost.<br>
+Izvor: Grad Zagreb (web.zagreb.hr), Grad Slavonski Brod (slavonski-brod.hr), Grad Krk (grad-krk.hr), Grad Rijeka (rijeka.hr); strojno izvedeni podaci. Izvedeni podaci: <a href="https://creativecommons.org/licenses/by/4.0/deed.hr" rel="license noopener" target="_blank">CC BY 4.0</a>.</footer>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let CITY = "zagreb", CITIES = [];
+const api = (p) => fetch("api/" + p + (p.includes("?") ? "&" : "?") + "city=" + CITY).then(r => r.json());
+const VOTES = [["za","za"],["protiv","protiv"],["suzdrzan","suzdržan"],["nije_glasovao","nije glasovao"],["odsutan","odsutan"]];
+const state = {view: "sjednice"};
+
+function bar(za, protiv, sz, ods, nije) {
+  const t = (za||0)+(protiv||0)+(sz||0)+(ods||0)+(nije||0) || 1;
+  return `<div class="bar" role="img" aria-label="za ${za||0}, protiv ${protiv||0}, suzdržano ${sz||0}${nije ? `, nije glasovalo ${nije}` : ""}${ods ? `, odsutno ${ods}` : ""}">` +
+    [["za",za],["protiv",protiv],["suzdrzan",sz],["nije_glasovao",nije],["odsutan",ods]].map(([c,v]) => v ? `<i class="${c}" style="width:${100*v/t}%"></i>` : "").join("") + `</div>`;
+}
+const legend = `<div class="legend"><span><b class="za"></b>za</span><span><b class="protiv"></b>protiv</span><span><b class="suzdrzan"></b>suzdržano</span><span title="prisutan na sjednici, bez glasa"><b class="nije_glasovao"></b>nije glasovao (prisutan na sjednici)</span><span title="nije bio na sjednici"><b class="odsutan"></b>odsutan (nije bio na sjednici)</span></div>`;
+const BL = {"vlast": ["vlast", "vlast"], "oporba": ["oporba", "oporba"], "nezavisni": ["uprava", "nezavisni"], "gradska uprava": ["uprava", "gradska uprava"]};
+const blTag = b => b && BL[b] ? `<span class="bl ${BL[b][0]}">${BL[b][1]}</span>` : "";
+const ext = h => /^https?:/.test(h) ? ` target="_blank" rel="noopener"` : "";
+const legend3 = `<div class="legend"><span><b class="za"></b>za</span><span><b class="protiv"></b>protiv</span><span><b class="suzdrzan"></b>suzdržano</span></div>`;
+// Croatian plural: plural(5, "točka", "točke", "točaka") -> "5 točaka"
+const plural = (n, one, few, many) => { const a = n % 10, b = n % 100; return `${n} ${a === 1 && b !== 11 ? one : a >= 2 && a <= 4 && (b < 12 || b > 14) ? few : many}`; };
+const today = () => new Date().toISOString().slice(0, 10);
+const daysSince = d => Math.round((new Date(today()) - new Date(d)) / 864e5);
+const fmtDate = d => d ? d.split("-").reverse().join(".") + "." : "";
+const dur = s => s ? `${Math.floor(s/3600)} h ${Math.round(s%3600/60)} min` : "";
+
+function tab(v) {
+  state.view = v;
+  document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.v === v));
+}
+
+const ASKQ = {};
+const SITE = {zagreb: "web.zagreb.hr", brod: "slavonski-brod.hr", krk: "grad-krk.hr", rijeka: "rijeka.hr"};
+const PLACEHOLDER = {zagreb: "npr. tramvaj, stadion Maksimir, Jakuševec, vrtići", brod: "npr. Tvrđava Brod, rebalans, groblja, vodovod",
+                     krk: "npr. pomorsko dobro, groblja, vrtić, turistički vlak", rijeka: "npr. Autotrolej, kiosci, rebalans, Delta"};
+function askPanel() {
+  const qs = ASKQ[CITY] || [];
+  return `<section class="card ask" aria-labelledby="askh"><div><h2 id="askh">Pitaj Vijećnicu</h2>
+    <div class="small muted">Primjeri pitanja (${esc((CITIES.find(c => c.city === CITY) || {}).name || "")}). Odgovor se slaže izravno iz službenih podataka i snimki, bez jezičnog modela.</div></div>
+    <div class="qs">${qs.map(a => `<button type="button" data-k="${a.key}" aria-pressed="false">${esc(a.question)}</button>`).join("")}</div>
+    <div id="ans" aria-live="polite"></div></section>`;
+}
+async function runAsk(k) {
+  document.querySelectorAll(".ask .qs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === k));
+  $("#ans").innerHTML = `<div class="ans muted small">Tražim…</div>`;
+  const r = await fetch("api/ask?k=" + encodeURIComponent(k)).then(x => x.json());
+  if (r.error) { $("#ans").innerHTML = `<div class="ans">${esc(r.error)}</div>`; return; }
+  $("#ans").innerHTML = `<div class="ans">
+    <p class="head">${esc(r.headline)}</p>
+    <ul>${r.rows.map(x => `<li><a href="${esc(x.href)}"${ext(x.href)}>${esc(x.text)}</a>${x.sub ? `<span>${esc(x.sub)}</span>` : ""}</li>`).join("")}</ul>
+    ${r.more ? `<a class="small" href="${esc(r.more.href)}">${esc(r.more.label)} →</a>` : ""}
+    <details class="how"><summary>Kako je ovo izračunato</summary>Isti upit može postaviti AI asistent preko MCP poslužitelja Vijećnice (<a href="demo">primjeri</a>). Korišteni alat: <span class="mono">${esc(r.tool)}</span>.</details></div>`;
+  const a = $("#ans"); if (a.getBoundingClientRect().top > innerHeight * 0.6) a.scrollIntoView({behavior: "smooth", block: "start"});
+}
+document.addEventListener("click", e => { const b = e.target.closest(".ask .qs button"); if (b) runAsk(b.dataset.k); });
+
+async function sessions() {
+  tab("sjednice");
+  const [rows, aq] = await Promise.all([api("sessions"), ASKQ[CITY] ? null : api("ask")]);
+  if (aq) ASKQ[CITY] = aq.questions;
+  $("#main").innerHTML = askPanel() + (rows.length ? rows.map(s => `
+    <a class="card sess" href="#${CITY}/sjednica-${s.session}">
+      <div class="n">${s.session}.</div>
+      <div><h3>sjednica · ${fmtDate(s.date)}</h3>
+        <div class="muted small">${plural(s.items, "točka", "točke", "točaka")}${!s.held ? " · nije još održana" : s.accepted ? `, ${s.accepted} prihvaćeno` : s.minutes_published ? "" : " · zapisnik još nije objavljen"}${s.videos ? ` · snimka ✓ · tekst snimke: ${s.transcribed === 0 ? "ne" : s.transcribed < s.videos ? "djelomično" : "da"}` : s.held ? " · bez snimke" : ""}</div></div>
+      <span class="chip">otvori</span>
+    </a>`).join("") : `<div class="empty">Još nema podataka.</div>`);
+}
+
+async function session(n) {
+  tab("sjednice");
+  const s = await api("session?n=" + n);
+  if (s.error) { $("#main").innerHTML = `<div class="empty">${esc(s.error)}</div>`; return; }
+  $("#main").innerHTML = `
+    <button class="ghost back" onclick="location.hash='sjednice'">← Sve sjednice</button>
+    <div class="card"><h2>${n}. sjednica · ${fmtDate(s.date)}</h2>
+      <div class="muted small">${esc(s.title)}</div>
+      ${!s.held ? `<div class="small"><b>Sjednica nije još održana</b> (zakazana za ${fmtDate(s.date)}).</div>`
+        : s.present_count ? `<div class="row small">Nazočno ${plural(s.present_count, CITY === "zagreb" ? "zastupnik" : "vijećnik", CITY === "zagreb" ? "zastupnika" : "vijećnika", CITY === "zagreb" ? "zastupnika" : "vijećnika")}${s.absent.length ? ` · odsutni: ${esc(s.absent.join(", "))}` : ""}</div>`
+        : !s.minutes_published ? `<div class="small"><b>Zapisnik još nije objavljen</b> (sjednica ${fmtDate(s.date)}, prije ${plural(s.days_without_minutes ?? daysSince(s.date), "dan", "dana", "dana")}), pa nazočnost i službeni rezultati glasovanja još nisu poznati.</div>` : ""}
+      <div class="row small">${s.recordings.map(r => `<a href="${r.url}" target="_blank" rel="noopener">▶ snimka ${r.part} (${dur(r.duration)})${r.transcribed ? " · transkript" : ""}</a>`).join(" · ")}
+        ${s.minutes_url ? ` · <a href="${s.minutes_url}" target="_blank" rel="noopener">Službeni zapisnik (PDF)</a>` : ""}</div>
+      ${s.items.some(i => i.za != null || i.snimka) ? legend3 : ""}
+      ${s.items.some(i => i.snimka) ? `<div class="small muted">Rezultati označeni „iz snimke, neslužbeno” izdvojeni su strojno iz riječi predsjedatelja u snimci sjednice, prije službenog zapisnika. Na stranici točke vrijeme glasovanja vodi na taj trenutak snimke.</div>` : ""}
+    </div>
+    ${s.items.map(i => `
+      <a class="card item" href="#${CITY}/tocka-${n}-${i.no}-${i.sub}">
+        <div class="row"><span class="mono">TOČKA ${i.no}${i.sub > 1 ? "." + i.sub : ""}</span>${i.status ? `<span class="chip ${esc(i.status.split(" ")[0])}">${esc(i.status)}</span>` : ""}
+          ${i.za != null ? `<span class="mono muted">${i.za} za · ${i.protiv ?? "?"} protiv · ${i.suzdrzano ?? "?"} suzdr.${i.totals_note ? ` <abbr title="${esc(i.totals_note.text)}">*</abbr>` : ""}</span>` : ""}</div>
+        <h3>${esc(i.title)}</h3>
+        ${i.za != null ? bar(i.za, i.protiv, i.suzdrzano, 0) : ""}
+        ${i.za == null && i.snimka ? snimkaBox(i.snimka) : ""}
+        ${i.proposer ? `<div class="muted small">Predlagatelj: ${esc(i.proposer)}</div>` : ""}
+      </a>`).join("")}`;
+}
+
+function snimkaBox(sn) {
+  const one = v => `${v.label ? `<b>${esc(v.label)}</b>: ` : ""}${v.unanimous ? "jednoglasno" + (v.za ? ` (${v.za} za)` : "") : `${v.za} za · ${v.protiv} protiv · ${v.suzdrzano} suzdr.`}, ${esc(v.outcome)} · <span class="mono">▶ ${v.at}</span>`;
+  return `<div class="snimka"><span class="tag">iz snimke, neslužbeno</span>
+    ${sn.votes.map(v => `<div>${one(v)}</div>`).join("")}
+    ${sn.za != null && sn.votes.length === 1 ? bar(sn.za, sn.protiv, sn.suzdrzano, 0) : ""}</div>`;
+}
+
+async function item(n, no, sub) {
+  tab("sjednice");
+  const it = await api(`item?n=${n}&no=${no}&sub=${sub}`);
+  const deb = it.debate_starts ? await api(`debate?n=${n}&no=${no}&sub=${sub}`) : null;
+  if (it.error) { $("#main").innerHTML = `<div class="empty">${esc(it.error)}</div>`; return; }
+  const clubs = it.clubs || [];
+  const VW = [["za", "za"], ["protiv", "protiv"], ["suzdrzan", "suzdržano"], ["nije_glasovao", "nije glasovalo"], ["odsutan", "odsutno"]];
+  const recs = (it.session_recordings || []).map(r => `<a href="${r.url}" target="_blank" rel="noopener">▶ snimka ${r.part}</a>`).join(" · ");
+  $("#main").innerHTML = `
+    <button class="ghost back" onclick="location.hash='sjednica-${n}'">← ${n}. sjednica</button>
+    <div class="card">
+      <div class="row"><span class="mono">TOČKA ${no}</span>${it.status ? `<span class="chip ${esc(it.status.split(" ")[0])}">${esc(it.status)}</span>` : it.result ? `<span class="chip">${esc(it.result)}</span>` : ""}</div>
+      ${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ""}
+      <h2>${esc(it.title.length > 220 ? it.title.slice(0, 200).replace(/\s\S*$/, "") + "…" : it.title)}</h2>
+      ${it.full_title && it.full_title.length > it.title.length + 20 ? `<details class="small"><summary>Puni naziv točke</summary><p>${esc(it.full_title)}</p></details>` : ""}
+      ${it.proposer || it.committees ? `<div class="muted small">${it.proposer ? `Predlagatelj: ${esc(it.proposer)}` : ""}${it.proposer && it.committees ? " · " : ""}${it.committees ? `Radna tijela: ${esc(it.committees)}` : ""}</div>` : ""}
+      ${it.za != null ? `<div class="mono">${it.za} za · ${it.protiv ?? "?"} protiv · ${it.suzdrzano ?? "?"} suzdržano${it.totals_note ? "*" : ""}</div>${bar(it.za, it.protiv, it.suzdrzano, 0)}` : ""}
+      ${it.totals_note ? `<div class="tnote">* ${esc(it.totals_note.text)}</div>` : ""}
+      ${it.za == null && it.snimka ? `<div class="snimka"><span class="tag">iz snimke, neslužbeno</span>
+        ${it.snimka.votes.map(v => `<div>${v.label ? `<b>${esc(v.label)}</b>: ` : ""}${v.unanimous ? "jednoglasno" + (v.za ? ` (${v.za} za)` : "") : `${v.za} za · ${v.protiv} protiv · ${v.suzdrzano} suzdržano`}, ${esc(v.outcome)} · <a href="${v.url}" target="_blank" rel="noopener">▶ ${v.at}</a><div class="small muted">„…${esc(v.quote.slice(-140))}”</div></div>`).join("")}
+        <div class="small muted">Strojno iz riječi predsjedatelja u snimci; službeni rezultat bit će u zapisniku.</div></div>` : ""}
+    </div>
+    ${clubs.length ? `<div class="card"><h3>Kako su glasali klubovi</h3>${legend}<div class="grid">${clubs.map(c => `<div class="party"><b>${esc(c.short)}${blTag(c.bloc)}</b><span class="small muted">${c.size}</span>
+          <div style="grid-column:1/-1" class="small">${VW.filter(([k]) => c[k]).map(([k, l]) => `${c[k]} ${l}`).join(" · ")}</div>
+          <div style="grid-column:1/-1">${bar(c.za, c.protiv, c.suzdrzan, c.odsutan, c.nije_glasovao)}</div>
+          <details class="names" style="grid-column:1/-1"><summary>Imena</summary>${VOTES.filter(([k]) => c[k]).map(([k, l]) => `${l}: ${c.members[k].map(esc).join(", ")}`).join(" · ")}</details></div>`).join("")}</div></div>` : ""}
+    <div class="card"><h3>Rasprava na sjednici</h3>
+      ${it.debate_starts ? `<div class="row small"><a href="${it.debate_starts.url}" target="_blank" rel="noopener">▶ Početak točke (${it.debate_starts.at})</a>
+        ${it.vote_called ? `<a href="${it.vote_called.url}" target="_blank" rel="noopener">▶ Glasovanje (${it.vote_called.at})</a>` : ""}
+        ${it.spoken_result ? `<span class="muted">predsjedatelj objavio: ${esc(it.spoken_result)} za</span>` : ""}</div>
+        ${(deb.speakers || []).length ? `<div class="small muted">Govornici (strojno prepoznati iz poziva predsjedatelja):</div>
+          <div class="spk">${deb.speakers.map(t => `<a class="chip" href="${t.url}" target="_blank" rel="noopener" title="${esc(t.kind)}${t.party ? " · " + esc(t.party) : ""}">${esc(t.speaker)}${t.party ? ` (${esc(t.party)})` : ""} · ${esc(KIND[t.kind] || t.kind)} · ${t.at}${blTag(t.bloc)}</a>`).join("")}</div>
+          ${deb.governing ? `<div class="small muted">Vlast: ${esc(deb.governing.label)} i gradonačelnik ${esc(deb.governing.mayor)}; ostali klubovi su oporba.</div>` : ""}`
+          : `<div class="small muted">Nijedan govornik nije prepoznat u snimci ove točke.</div>`}
+        ${CITY === "zagreb" ? `<div class="small"><a href="#nacrt-${n}-${no}-${sub}">Nacrt zapisnika za ovu točku vs službeni zapisnik →</a></div>` : ""}
+        <details${(deb.blocks || []).length <= 6 ? " open" : ""}><summary class="small">Strojni transkript rasprave (${(deb.lines || []).length} odlomaka, ${(deb.blocks || []).length} istupa)</summary>
+        <div class="deb">${(deb.blocks || []).map(b => `<div class="b"><div class="who">${b.speaker ? esc(b.speaker) + (b.party ? ` <span class="muted">(${esc(b.party)})</span>` : "") + blTag(b.bloc) + ` <span class="muted">· ${esc(KIND[b.kind] || b.kind)}</span>` : `<span class="muted">predsjedatelj / neprepoznato</span>`} · <a href="${b.url}" target="_blank" rel="noopener">${b.at}</a></div><p>${esc(b.text)}</p></div>`).join("")}</div></details>`
+      : `<div class="small">Tekst snimke ove točke još nije izrađen. ${recs ? `Snimku sjednice možete pogledati ovdje: ${recs}` : "Za ovu sjednicu nema snimke."}</div>`}</div>
+    <div class="card"><h3>Dokumenti</h3><ul class="small">${(it.attachments || []).map(a => `<li><a href="${a.url}" target="_blank" rel="noopener">${esc(a.name)}</a></li>`).join("")}</ul>
+      ${it.url ? `<a class="small" href="${it.url}" target="_blank" rel="noopener">Točka na ${SITE[CITY] || "stranici grada"}</a>` : ""}</div>`;
+}
+
+async function members() {
+  tab("zastupnici");
+  const rows = await api("members");
+  const noVotes = rows.length && rows.every(m => !(m.za || m.protiv || m.suzdrzan || m.nije_glasovao || m.odsutan));
+  const vc = x => noVotes ? "–" : x;
+  const render = (key, dir) => {
+    const r = [...rows].sort((a, b) => (typeof a[key] === "string" ? a[key].localeCompare(b[key], "hr") : (a[key] - b[key])) * dir);
+    $("#main").innerHTML = `<div class="card"><h2>${CITY === "zagreb" ? "Zastupnici" : "Vijećnici"}</h2><div class="muted small">Klik na stupac sortira, klik na zastupnika otvara profil.${noVotes ? " Poimenično glasovanje ovdje se ne objavljuje (samo zbrojevi po točki), pa su stupci glasova prazni: nepoznato, a ne nula." : ""}</div>
+      <div class="tbl"><table><thead><tr>${[["name","Ime"],["party","Stranka"],["present","Nazočnost"],["za","Za"],["protiv","Protiv"],["suzdrzan","Suzdr."],["nije_glasovao","Nije glas."],["odsutan","Odsutan"],["questions","Pitanja"]]
+        .map(([k, l]) => `<th data-k="${k}">${l}</th>`).join("")}</tr></thead><tbody>
+      ${r.map(m => `<tr class="clk" tabindex="0" data-name="${esc(m.name)}"><td>${esc(m.name)}</td><td class="small muted">${esc(m.party)}</td>
+        <td>${m.present ?? 0}/${m.sessions}</td><td>${vc(m.za)}</td><td>${vc(m.protiv)}</td><td>${vc(m.suzdrzan)}</td><td>${vc(m.nije_glasovao)}</td><td>${vc(m.odsutan)}</td><td>${m.questions}</td></tr>`).join("")}
+      </tbody></table></div></div>`;
+    document.querySelectorAll("th").forEach(th => th.onclick = () => render(th.dataset.k, th.dataset.k === key ? -dir : 1));
+    document.querySelectorAll("tr.clk").forEach(tr => tr.onclick = () => location.hash = "zastupnik-" + encodeURIComponent(tr.dataset.name));
+  };
+  render("party", 1);
+}
+
+async function member(name) {
+  tab("zastupnici");
+  const m = await api("member?name=" + encodeURIComponent(name));
+  const v = m.votes || {};
+  $("#main").innerHTML = `
+    <button class="ghost back" onclick="location.hash='zastupnici'">← Svi zastupnici</button>
+    <div class="card"><h2>${esc(m.name)}</h2><div class="muted">${esc(m.party)}${blTag(m.bloc)}</div>
+      ${m.votes_available === false ? `<div class="row small">Nazočnost: ${esc(m.attendance)}</div><div class="small muted">${esc(m.votes_note || "Poimenično glasovanje nije objavljeno.")}</div></div>` : `
+      <div class="row small">Nazočnost: ${esc(m.attendance)} · glasovi: ${v.za||0} za, ${v.protiv||0} protiv, ${v.suzdrzan||0} suzdržan, ${v.nije_glasovao||0} nije glasovao (prisutan na sjednici), ${v.odsutan||0} odsutan</div>
+      ${bar(v.za, v.protiv, v.suzdrzan, v.odsutan, v.nije_glasovao)}${legend}</div>`}
+    <div class="card"><h3>Glasovi drukčiji od većine svog kluba${m.against_party_majority ? ` (${m.against_party_majority.length})` : ""}</h3>
+      ${m.against_party_majority === null ? `<div class="muted small">Nepoznato (nema poimeničnog glasovanja).</div>` : (m.against_party_majority||[]).map(r => `<div class="small"><a href="#tocka-${r.session}-${r.item_no}-${r.sub}">${r.session}. sjednica, točka ${r.item_no}</a>: ${esc(r.title)} · <b>${esc(r.own_vote)}</b> (klub: ${esc(r.party_majority)})</div>`).join("") || `<div class="muted small">Nijednom.</div>`}</div>
+    <div class="card"><h3>Pitanja u aktualnom satu (${(m.questions||[]).length})</h3>
+      ${(m.questions||[]).map(x => `<div class="small"><b>${x.session}. sjednica:</b> ${esc(x.question)} <span class="muted">· odgovor: ${esc(x.answered_by)}</span></div>`).join("") || `<div class="muted small">Nema.</div>`}</div>`;
+}
+
+async function question(id, pid) {
+  // keep the tab the reader came from (Obećanja, Pretraga, start page); a direct link to a promise -> Obećanja
+  if (pid) tab("obecanja"); else if (!document.querySelector("#tabs a.on")) tab("pretraga");
+  const [x, p] = await Promise.all([api("question?id=" + id), pid ? api("promises") : null]);
+  if (x.error) { $("#main").innerHTML = `<div class="empty">${esc(x.error)}</div>`; return; }
+  const prom = p ? p.promises.find(r => r.id === pid) : null;
+  let fon = esc(x.fonogram || "(nema)");
+  if (prom) {  // mark the promised sentence; whitespace in the fonogram differs from the quote
+    const words = prom.quote.split(/\s+/).filter(Boolean).map(w => esc(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const re = new RegExp(words.join("\\s+"));
+    fon = fon.replace(re, s => `<mark id="hl">${s}</mark>`);
+  }
+  $("#main").innerHTML = `<button class="ghost back" onclick="history.back()">← Natrag</button>
+    ${prom ? `<div class="card"><div class="small muted">Obećanje · ${esc(prom.speaker)}${x.answerer_role ? ` (${esc(x.answerer_role)})` : ""} · ${prom.session}. sjednica, ${fmtDate(prom.said_on)}</div>
+      <p class="verdict">„${esc(prom.quote)}”</p>
+      <div class="small">${prom.deadline ? `Rok: <b>${esc(prom.deadline)}</b>${prom.deadline_date ? ` (≈ ${fmtDate(prom.deadline_date)})` : ""} · ` : ""}${esc(prom.status_label)} · ${esc(prom.followup.label || "")}</div>
+      ${followupBox(prom)}
+      <a class="small" href="#hl" onclick="event.preventDefault();document.getElementById('hl')?.scrollIntoView({block:'center'})">Prikaži u fonogramu ↓</a></div>` : ""}
+    <div class="card"><div class="mono">${x.session}. sjednica · aktualni sat</div><h2>${esc(x.member)}</h2><div class="muted small">${esc(x.party)} · upućeno: ${esc(x.to_whom)} · odgovara: ${esc(x.answerer_role || x.answered_by)}${x.answer_mode ? ` (${esc(x.answer_mode)})` : ""}</div>
+      <p>${esc(x.question)}</p><h3>Fonogram (službeni doslovni zapis)</h3><pre class="fon">${fon}</pre>
+      <a class="small" href="${x.url}" target="_blank" rel="noopener">Na web.zagreb.hr</a></div>`;
+  const hl = document.getElementById("hl");
+  if (hl) setTimeout(() => hl.scrollIntoView({block: "center"}), 50);
+}
+
+function followupBox(p) {
+  const f = p.followup || {};
+  if (f.status !== "spominje_se_kasnije") return "";
+  return `<details class="fu" data-id="${p.id}"><summary>Provjeri ispunjenje: ${plural(f.mentions, "kasnije spominjanje", "kasnija spominjanja", "kasnijih spominjanja")}</summary><div class="small muted">Učitavam…</div></details>`;
+}
+document.addEventListener("toggle", async e => {
+  const d = e.target;
+  if (!d.matches || !d.matches("details.fu") || !d.open || d.dataset.loaded) return;
+  d.dataset.loaded = 1;
+  const r = await api("followup?id=" + d.dataset.id);
+  d.querySelector("div").outerHTML = `<ul>${(r.mentions || []).map(h => `<li><a href="${esc(h.href)}"${ext(h.href)}>${h.session}. sjednica · ${esc(h.kind)}${h.at ? " " + h.at : ""}</a>: ${esc(h.text)}</li>`).join("")}</ul>
+    <div class="small muted">Tema se ponovno spominje (traženi pojmovi: ${esc((r.terms || []).join(", "))}). To nije dokaz da je obećanje ispunjeno: pročitajte poveznice.</div>`;
+}, true);
+
+async function searchView(query) {
+  tab("pretraga");
+  $("#q").value = query;
+  if (!query) { $("#main").innerHTML = `<div class="empty">Upiši pojam u tražilicu.</div>`; return; }
+  $("#main").innerHTML = `<div class="empty">Tražim…</div>`;
+  const r = await api("search?limit=25&q=" + encodeURIComponent(query));
+  const hl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  $("#main").innerHTML = `
+    <div class="card"><h3>Točke dnevnog reda (${r.agenda_items.length})</h3>${r.agenda_items.map(i => `
+      <div class="small"><a href="#tocka-${i.session}-${i.no}-${i.sub}">${i.session}. sjednica, točka ${i.no}</a> · ${esc(i.title)} ${i.status ? `<span class="chip ${esc(i.status.split(" ")[0])}">${esc(i.status)}</span>` : ""}${i.za != null ? ` <span class="muted">${i.za} za · ${i.protiv ?? "?"} protiv · ${i.suzdrzano ?? "?"} suzdr.</span>` : ""}</div>`).join("") || `<div class="muted small">Nema.</div>`}</div>
+    <div class="card"><h3>Rečeno na sjednici (${r.said_in_session.length})</h3>${r.said_in_session.map(h => `
+      <div class="hit"><p>${hl(h.text)}</p><a class="small" href="${h.url}" target="_blank" rel="noopener">▶ ${h.session}. sjednica, ${h.at}</a></div>`).join("") || `<div class="muted small">Nema pogodaka u transkriptima.</div>`}</div>
+    <div class="card"><h3>Pitanja zastupnika (${r.questions.length})</h3>${r.questions.map(x => `
+      <div class="small"><a href="#pitanje-${x.id}">${x.session}. sjednica · ${esc(x.member)}</a>: ${esc(x.question)}</div>`).join("") || `<div class="muted small">Nema.</div>`}</div>`;
+}
+
+const KIND = {"rasprava": "rasprava", "u ime Kluba": "u ime kluba", "replika": "replika", "neslaganje s replikom": "odgovor na repliku",
+  "obrazlaže": "predstavlja prijedlog", "završna riječ": "završna riječ", "povreda Poslovnika": "povreda Poslovnika",
+  "vijećničko pitanje": "vijećničko pitanje"};
+const pc = v => v == null ? "–" : `${v} %`;
+
+async function minutesEval(n) {
+  tab("zapisnik");
+  if (CITY !== "zagreb") { $("#main").innerHTML = `<div class="empty">Usporedba sa službenim zapisnikom zasad postoji samo za Zagreb (Brod: zapisnik 10. sjednice još nije objavljen, a raniji zapisnici nemaju popis govornika).</div>`; return; }
+  $("#main").innerHTML = `<div class="empty">Računam usporedbu…</div>`;
+  const e = await api("minutes_eval?n=" + n), s = e.summary;
+  const rec = e.items.filter(r => r.in_recording);
+  $("#main").innerHTML = `
+    <div class="card"><h2>Nacrt zapisnika vs službeni · ${n}. sjednica</h2>
+      <p class="small muted" style="margin:0">Za svaku točku koja je u transkribiranoj snimci stroj sastavlja odlomak zapisnika u službenom obliku (predlagatelj, tko je sudjelovao u raspravi, glasovanje i odluka) iz dnevnog reda, poimeničnog glasovanja i govornika prepoznatih u snimci, bez jezičnog modela. Zatim ga uspoređujemo sa službenim zapisnikom.</p>
+      <div class="kpis">
+        <div class="kpi"><b>${s.speakers_found}/${s.speakers_in_minutes}</b><span>govornika iz zapisnika pronađeno (${pc(s.speaker_recall_pct)})</span></div>
+        <div class="kpi"><b>${pc(s.speaker_precision_pct)}</b><span>preciznost govornika (nijedan izmišljen)</span></div>
+        <div class="kpi"><b>${s.turns_found}/${s.turns_in_minutes}</b><span>istupa pronađeno (${pc(s.turn_recall_pct)})</span></div>
+        <div class="kpi"><b>${s.order_agreement_mean ?? "–"}</b><span>slaganje redoslijeda (1 = isti)</span></div>
+        <div class="kpi"><b>${pc(s.vote_exact_pct)}</b><span>brojke glasova (${s.items_in_recording} točaka): prepisane iz poimeničnog glasovanja, točne po konstrukciji</span></div>
+        <div class="kpi"><b>${s.decision_type_ok}</b><span>točna vrsta akta (ODLUKU, ZAKLJUČAK…)</span></div>
+      </div>
+      <div class="small muted">Točaka u snimci: ${s.items_in_recording} od ${s.items_with_minutes} (transkribiran je samo dio snimki). Rasprava u ${s.items_with_debate} točaka; točke bez rasprave točno prepoznate: ${s.items_no_debate_correct}. Završna riječ: ${s.closing_word_ok}.</div>
+    </div>
+    <div class="card"><h3>Po točkama</h3><div class="tbl"><table><thead><tr><th>Točka</th><th>Govornika (služb.)</th><th>Pronađeno</th><th>Propušteni</th><th>Redoslijed</th><th>Glasovi</th><th>Ishod</th></tr></thead><tbody>
+      ${rec.map(r => `<tr class="clk" tabindex="0" data-h="nacrt-${n}-${r.no}-${r.sub}"><td><b>${r.no}${r.sub > 1 ? "." + r.sub : ""}</b> <span class="small muted">${esc(r.title.slice(0, 70))}${r.title.length > 70 ? "…" : ""}</span></td>
+        <td>${r.gold_speakers}</td><td>${r.speakers_matched}</td><td class="small">${esc(r.missed.join(", ")) || "–"}</td><td>${r.order_agreement ?? "–"}</td>
+        <td class="${r.vote_exact ? "ok" : "bad"}">${r.vote_exact ? "točno" : "razlika"}</td><td class="${r.outcome_ok ? "ok" : "bad"}">${r.outcome_ok ? "točno" : "razlika"}</td></tr>`).join("")}
+    </tbody></table></div></div>`;
+  document.querySelectorAll("tr.clk").forEach(tr => tr.onclick = () => location.hash = tr.dataset.h);
+}
+
+async function draftView(n, no, sub) {
+  tab("zapisnik");
+  const d = await api(`draft?n=${n}&no=${no}&sub=${sub}`);
+  if (d.error) { $("#main").innerHTML = `<div class="empty">${esc(d.error)}</div>`; return; }
+  const c = d.comparison;
+  $("#main").innerHTML = `
+    <button class="ghost back" onclick="location.hash='zapisnik'">← Nacrt zapisnika: sve točke</button>
+    <div class="card"><div class="mono">${n}. SJEDNICA · TOČKA ${no}${sub > 1 ? "." + sub : ""}</div><h2>${esc(d.title.length > 200 ? d.title.slice(0, 190) + "…" : d.title)}</h2>
+      ${c ? `<div class="row small"><span>Govornici: <b>${c.speakers_matched}/${c.gold_speakers}</b> pronađeno${c.extra.length ? `, višak: ${esc(c.extra.join(", "))}` : ""}</span>
+        <span>· redoslijed: ${c.order_agreement ?? "–"}</span><span>· glasovi: <span class="${c.vote_exact ? "ok" : "bad"}">${c.vote_exact ? "točno" : "razlika"}</span></span>
+        <span>· ishod: <span class="${c.outcome_ok ? "ok" : "bad"}">${c.outcome_ok ? "točno" : "razlika"}</span></span></div>
+        ${c.missed.length ? `<div class="small muted">Propušteni (nisu prozvani imenom u snimci ili ih ASR nije čuo): ${esc(c.missed.join(", "))}</div>` : ""}` : `<div class="small muted">Službeni zapisnik za ovu točku nije pronađen.</div>`}
+      <div class="row small"><a href="#tocka-${n}-${no}-${sub}">Točka i transkript rasprave →</a>${d.spoken_result ? `<span class="muted">· predsjedatelj u snimci: ${esc(d.spoken_result)} za</span>` : ""}</div>
+    </div>
+    <div class="cmp">
+      <div class="card"><h3>Nacrt (stroj)</h3><pre>${esc(d.draft)}</pre><div class="small muted">${esc(d.sources)}</div></div>
+      <div class="card"><h3>Službeni zapisnik</h3><pre>${esc(d.official ? d.official.text.replace(/\n[ \t]+/g, "\n").replace(/\f[^\n]*/g, "") : "(nema)")}</pre></div>
+    </div>`;
+}
+
+async function promisesView(status) {
+  tab("obecanja");
+  if (CITY !== "zagreb") { $("#main").innerHTML = `<div class="empty">Obećanja se izdvajaju iz fonograma aktualnog sata, a njih zasad ima samo Zagreb.</div>`; return; }
+  const all = await api("promises");
+  const today = new Date().toISOString().slice(0, 10);
+  const cnt = k => all.promises.filter(p => p.status === k).length;
+  const rows = status ? all.promises.filter(p => p.status === status) : all.promises;
+  const lbl = {rok_prošao: "rok prošao, ispunjenje neprovjereno", otvoreno: "rok u budućnosti", bez_roka: "bez roka"};
+  const later = all.promises.filter(p => p.followup.status === "spominje_se_kasnije").length;
+  $("#main").innerHTML = `
+    <div class="card"><h2>Obećanja iz aktualnog sata</h2>
+      <p class="small muted" style="margin:0">Rečenice u kojima gradonačelnik, zamjenici ili pročelnici najavljuju što će napraviti, izdvojene pravilima iz službenih fonograma (odgovori na pitanja zastupnika). Rok je pretvoren u približan datum kraja navedenog razdoblja. Strojno izdvojeno: provjerite citat u fonogramu.</p>
+      <p class="small" style="margin:0"><b>Provjeri ispunjenje:</b> za ${later} od ${all.count} obećanja tema se ponovno pojavljuje na kasnijoj sjednici (točka dnevnog reda, novo pitanje ili snimka). Poveznice su ispod svakog obećanja; spominjanje nije dokaz da je obećanje ispunjeno.</p>
+      <div class="filters">${[["", `sva (${all.count})`], ["rok_prošao", `rok prošao, neprovjereno (${cnt("rok_prošao")})`], ["otvoreno", `rok u budućnosti (${cnt("otvoreno")})`], ["bez_roka", `bez roka (${cnt("bez_roka")})`]]
+        .map(([k, l]) => `<button class="${k === (status || "") ? "" : "ghost"}" data-s="${k}">${l}</button>`).join("")}</div></div>
+    <div class="card">${rows.map(p => `<div class="prom ${p.status}">
+        <div class="small"><b>${esc(p.speaker)}</b> · ${p.session}. sjednica, ${fmtDate(p.said_on)} · ${p.deadline ? `rok: <b>${esc(p.deadline)}</b>${p.deadline_date ? ` (≈ ${fmtDate(p.deadline_date)})` : ""}` : "bez roka"} · <span class="${p.status === "rok_prošao" ? "bad" : p.status === "otvoreno" ? "ok" : "muted"}">${lbl[p.status]}</span></div>
+        <p>„${esc(p.quote)}”</p>
+        <div class="small muted">Pitanje (${esc(p.asked_by)}): ${esc(p.topic)} · <a href="#pitanje-${p.question_id}~p${p.id}">citat u fonogramu</a> · ${esc(p.followup.label || "")}</div>
+        ${followupBox(p)}</div>`).join("") || `<div class="empty">Nema.</div>`}</div>`;
+  document.querySelectorAll(".filters button").forEach(b => b.onclick = () => location.hash = "obecanja" + (b.dataset.s ? "-" + b.dataset.s : ""));
+}
+
+async function quality() {
+  tab("kvaliteta");
+  if (CITY !== "brod") { $("#main").innerHTML = `<div class="empty">Točnost strojnog zapisa mjeri se prema gotovo doslovnom zapisniku, a takav zapisnik ima samo Slavonski Brod. Zagrebački zapisnici rasprave ne prenose doslovno.</div>`; return; }
+  const r = await api("asr_eval");
+  if (!r.measured) { $("#main").innerHTML = `<div class="empty">${esc(r.note)}</div>`; return; }
+  const pct = x => (Math.round(x * 1000) / 10).toString().replace(".", ",") + " %";
+  $("#main").innerHTML = `
+    <div class="card"><h2>Koliko je točan strojni zapis snimke</h2>
+      <p class="small muted" style="margin:0">Mjereno na ${r.session}. sjednici Gradskog vijeća Slavonskog Broda (${Math.round(r.transcript_minutes)} min snimke), čiji je službeni zapisnik gotovo doslovan.</p>
+      <div class="kpis">
+        <div class="kpi"><b>${pct(1 - r.wer)}</b><span>riječi se slaže sa zapisnikom (1 − WER, ${esc(r.coverage)}, ${r.words_compared} riječi)</span></div>
+        <div class="kpi"><b>${pct(1 - r.cer_no_spaces)}</b><span>slova se slaže (bez razmaka; „na žalost” = „nažalost”)</span></div>
+        <div class="kpi"><b>${esc(r.votes.exact_of_numbered)}</b><span>glasovanja s izgovorenim brojem točna do glasa</span></div>
+        <div class="kpi"><b>${Math.round(100 * r.speakers.recall)} %</b><span>odlomaka s točno prepoznatim govornikom (preciznost ${Math.round(100 * r.speakers.precision)} %)</span></div>
+      </div>
+      <details class="how" open><summary>Metoda</summary><p>${esc(r.method)}</p><p>Uspoređeno ${esc(r.windows)} odlomaka; medijan WER po odlomku ${String(r.median_window_wer).replace(".", ",")}. Glasovi: ${r.votes_detail.compared} točaka s rezultatom i u snimci i u zapisniku; ${r.votes_detail.without_number.length ? `za točke ${r.votes_detail.without_number.join(", ")} predsjedatelj je rekao samo „jednoglasno”, bez broja` : ""}${r.votes_detail.missing_in_recording.length ? `; točku ${r.votes_detail.missing_in_recording.join(", ")} stroj nije našao u snimci` : ""}.</p></details>
+    </div>
+    <div class="card"><h3>Odlomci jedan uz drugi</h3><div class="small muted">Normalizirano (mala slova, bez dijakritika), prvih 40 riječi odlomka.</div>
+      ${r.passages.map(p => `<div class="pass"><div><b class="small">Strojni zapis · ${hmsJs(p.t)} · WER odlomka (120 riječi) ${String(p.wer).replace(".", ",")}</b><br>${esc(p.transcript)} …</div><div><b class="small">Službeni zapisnik · prve 40 riječi</b><br>${esc(p.minutes)} …</div></div>`).join("")}</div>`;
+}
+const hmsJs = t => `${Math.floor(t / 3600)}:${String(Math.floor(t % 3600 / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
+
+function header() {
+  const c = CITIES.find(c => c.city === CITY);
+  if (!c) return;
+  const g = c.governing, a = c.asr_quality;
+  $("#meta").innerHTML = [
+    g ? `<span class="badge" title="${esc(g.note)}">Vlast: ${esc(g.label)} · ${g.seats}/${g.of}</span>` : "",
+    `<span class="badge" title="Strojni tekst postoji samo za transkribirane snimke">${esc(c.coverage)}</span>`,
+    a ? `<a class="badge asr" href="#${CITY}/kvaliteta" title="${esc(a.method)}">${esc(a.label)}</a>` : ""].join("");
+  $("#tabs a[data-v=obecanja]").hidden = CITY !== "zagreb";
+  $("#tabs a[data-v=kvaliteta]").hidden = !a;
+}
+
+function route() {
+  // hash = "<city>/<view>"; links inside the page use "#<view>" and get the current city prefixed
+  let h = decodeURIComponent(location.hash.slice(1));
+  const cm = h.match(/^([a-z]+)\/(.*)$/);
+  if (cm && CITIES.some(c => c.city === cm[1])) { CITY = cm[1]; h = cm[2]; }
+  else if (CITIES.some(c => c.city === h)) { location.replace("#" + h + "/sjednice"); return; }
+  else if (h) { location.replace("#" + CITY + "/" + h); return; }
+  const c = CITIES.find(c => c.city === CITY);
+  if (c) { $("#city").value = CITY; $("#body").textContent = `${c.body} · saziv 2025.–2029.`; }
+  header();
+  document.body.classList.toggle("subpage", !!h && h !== "sjednice");
+  $("#tabs a[data-v=zastupnici]").textContent = CITY === "zagreb" ? "Zastupnici" : "Vijećnici";
+  $("#q").placeholder = PLACEHOLDER[CITY] || "npr. proračun, vrtići, ceste";
+  let m;
+  if ((m = h.match(/^sjednica-(\d+)$/))) return session(+m[1]);
+  if ((m = h.match(/^tocka-(\d+)-(\d+)-(\d+)$/))) return item(+m[1], +m[2], +m[3]);
+  if (h === "zastupnici") return members();
+  if ((m = h.match(/^zapisnik(?:-(\d+))?$/))) return minutesEval(m[1] ? +m[1] : 14);
+  if ((m = h.match(/^nacrt-(\d+)-(\d+)-(\d+)$/))) return draftView(+m[1], +m[2], +m[3]);
+  if ((m = h.match(/^obecanja(?:-(.+))?$/))) return promisesView(m[1] || "");
+  if ((m = h.match(/^zastupnik-(.+)$/))) return member(m[1]);
+  if ((m = h.match(/^pitanje-(\d+)(?:~p(\d+))?$/))) return question(+m[1], m[2] ? +m[2] : null);
+  if (h === "kvaliteta") return quality();
+  if ((m = h.match(/^trazi-(.*)$/))) return searchView(m[1]);
+  if (h === "pretraga") return searchView($("#q").value);
+  return sessions();
+}
+$("#f").onsubmit = e => { e.preventDefault(); location.hash = "trazi-" + encodeURIComponent($("#q").value.trim()); };
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches(".card[tabindex], tr.clk[tabindex]")) e.target.click(); });
+window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); });
+$("#city").onchange = e => { location.hash = e.target.value + "/sjednice"; };
+fetch("api/cities").then(r => r.json()).then(cs => {
+  CITIES = cs;
+  $("#city").innerHTML = cs.map(c => `<option value="${c.city}">${esc(c.name)}</option>`).join("");
+  route();
+});
+</script>
+</body>
+</html>

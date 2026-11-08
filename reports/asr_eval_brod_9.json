@@ -1,0 +1,330 @@
+{
+ "city": "brod",
+ "session": 9,
+ "partial": false,
+ "method": "Transkript i zapisnik normalizirani su (mala slova, bez dijakritika i interpunkcije). Transkript je izrezan u odlomke od 120 riječi; svaki se smješta u zapisnik po zajedničkim nizovima od 4 riječi i poravnava (difflib). Odlomci kojima zapisnik prenosi ≥ 50 % riječi ocjenjuju se Levenshteinovom udaljenošću na razini riječi: WER = (zamjene + umetanja + brisanja) / riječi zapisnika; slaganje = 1 − WER. Zapisnik je uređen (gramatika, izostavljene poštapalice), pa je ovo gornja granica stvarne pogreške ASR-a. Odlomke koje zapisnik ne prenosi (predsjedatelj, stanke) mjera ne vidi. Dodatno: CER = ista udaljenost po slovima bez razmaka (\"na zalost\" = \"nazalost\").",
+ "transcript_minutes": 95.2,
+ "asr": {
+  "windows_total": 99,
+  "windows_matched": 86,
+  "aligned_ref_words": 10984,
+  "aligned_hyp_words": 10213,
+  "edits": 3551,
+  "wer": 0.323,
+  "median_window_wer": 0.303,
+  "cer_no_spaces": 0.214,
+  "windows_wer_below_0_25": 34,
+  "unmatched_words": 1560
+ },
+ "passages": [
+  {
+   "t": 320,
+   "wer": 0.19,
+   "transcript": "su upozorili iz strucne sluzbe da u nasem poslovniku o radu ne stoji bas tako kako smo mi to dosad imali praksu vec da kaze da pitanje postavljeno u pisanom obliku imace prednost u okviru jednog aktualnog sata znaci pitanje",
+   "minutes": "su me iz strucne sluzbe upozorili da u nasem poslovniku o radu ne stoji bas tako kako smo mi to do sada imali praksu vec da kaze da pitanje postavljeno u pisanom obliku imat ce prednost u okviru jednog aktualnog"
+  },
+  {
+   "t": 1240,
+   "wer": 0.354,
+   "transcript": "toga smo odradili nazalost postoji nesto sto se zove fond i sto se zove ministrasa zasto okolisa cekamo njihove konkretne poteze jer ona je projekt koji je puno obecavao nazalost je propao u samost artu raspisivanja na sastanku gdje je",
+   "minutes": "toga smo odradili na zalost postoji nesto sto se zove fond i sto se zove ministarstvo zastite okolisa i cekamo njihove konkretne poteze jer onaj projekt koji je puno obecavao na zalost je propao u samom startu raspisivanja na sastanku"
+  },
+  {
+   "t": 2179,
+   "wer": 0.567,
+   "transcript": "veliku obvezu da od te djece naprave pravi sportace na tome imaju sve uvijete mogu i ne mozemo reci da o materskom sportu da je novac broj jedan ako nema novca nema nicega jer prije 15 godina nismo imali gdje",
+   "minutes": "veliku obvezu da od te djece naprave prave sportase prema tome imaju sve uvjete i mogu a ne mozemo reci da je u amaterskom sportu novac broj jedan i ako nema novca nema nicega jer prije 15 godina nismo imali"
+  },
+  {
+   "t": 3232,
+   "wer": 0.179,
+   "transcript": "se ne podudaraju s isplacenim iznosima navedenim u open city aplikaciji na sluzbenoj internet stranici grada slavonskog broda pa ja imam pitanja za gradonacelnika i procelnicu knezevic pa vas molim da mi ovaj put odgovorite na ono sve sto vas",
+   "minutes": "se ne podudaraju s isplacenim iznosima navedenim u opencity aplikaciji na sluzbenoj internet stranici grada slavonskog broda pa imam pitanja za gradonacelnika i procelnicu knezevic te vas molim da mi ovaj put odgovorite na ono sve sto vas pitam prvo"
+  },
+  {
+   "t": 4226,
+   "wer": 0.399,
+   "transcript": "priliku postaviti nesto sto sam istrazio ili samo traja reci da li smo protiv suzdazenih zahvala ako zelim nadopuniti nesto po prosle tocke nema problema bez obzira ako smo izglesali ako smatrate da ostalo nesto nedoreceno pa da pitao sam",
+   "minutes": "priliku postaviti nesto sto sam istrazio ili samo treba reci jesmo li protiv suzdrzani ili za jer prosli put predsjednik gradskog vijeca naznacio je ako zelite nadopuniti nesto po prosloj tocki nema problema bez obzira ako smo izglasali ako smatrate"
+  }
+ ],
+ "speakers": {
+  "windows_with_gold": 62,
+  "windows_with_prediction": 65,
+  "correct": 45,
+  "recall": 0.726,
+  "precision": 0.692,
+  "sample": [
+   {
+    "t": 320,
+    "gold": null,
+    "pred": null
+   },
+   {
+    "t": 367,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 415,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 465,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 518,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 570,
+    "gold": null,
+    "pred": null
+   },
+   {
+    "t": 620,
+    "gold": null,
+    "pred": null
+   },
+   {
+    "t": 685,
+    "gold": null,
+    "pred": null
+   },
+   {
+    "t": 755,
+    "gold": null,
+    "pred": null
+   },
+   {
+    "t": 816,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 856,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 898,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 954,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 1006,
+    "gold": null,
+    "pred": null
+   },
+   {
+    "t": 1056,
+    "gold": null,
+    "pred": null
+   },
+   {
+    "t": 1118,
+    "gold": "Slavica Lemaić",
+    "pred": null
+   },
+   {
+    "t": 1179,
+    "gold": "Hrvoje Špicer",
+    "pred": "Hrvoje Špicer"
+   },
+   {
+    "t": 1240,
+    "gold": "Hrvoje Špicer",
+    "pred": "Hrvoje Špicer"
+   },
+   {
+    "t": 1294,
+    "gold": "Hrvoje Špicer",
+    "pred": "Hrvoje Špicer"
+   },
+   {
+    "t": 1366,
+    "gold": "Hrvoje Špicer",
+    "pred": "Hrvoje Špicer"
+   },
+   {
+    "t": 1426,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1470,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1520,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1572,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1620,
+    "gold": null,
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1666,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1715,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1764,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1809,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1864,
+    "gold": null,
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 1925,
+    "gold": null,
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 2014,
+    "gold": null,
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 2060,
+    "gold": null,
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 2130,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 2179,
+    "gold": "Pero Veočić",
+    "pred": "Pero Veočić"
+   },
+   {
+    "t": 2241,
+    "gold": "Tomislav Delić",
+    "pred": "Tomislav Delić"
+   },
+   {
+    "t": 2288,
+    "gold": "Tomislav Delić",
+    "pred": "Tomislav Delić"
+   },
+   {
+    "t": 2345,
+    "gold": "Toni Tunjić",
+    "pred": "Toni Tunjić"
+   },
+   {
+    "t": 2407,
+    "gold": "Toni Tunjić",
+    "pred": "Toni Tunjić"
+   },
+   {
+    "t": 2467,
+    "gold": "Toni Tunjić",
+    "pred": "Toni Tunjić"
+   }
+  ]
+ },
+ "votes": {
+  "items_with_minutes_vote": 12,
+  "items_with_spoken_vote": 11,
+  "compared": 11,
+  "exact": 8,
+  "exact_pct": 72.7,
+  "with_number": 8,
+  "exact_of_numbered": "8/8",
+  "without_number": [
+   6,
+   12,
+   13
+  ],
+  "missing_in_recording": [
+   11
+  ],
+  "mismatches": [
+   {
+    "item": 6,
+    "spoken": [
+     [
+      null,
+      0,
+      0
+     ]
+    ],
+    "minutes": [
+     [
+      17,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "item": 12,
+    "spoken": [
+     [
+      null,
+      0,
+      0
+     ]
+    ],
+    "minutes": [
+     [
+      17,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "item": 13,
+    "spoken": [
+     [
+      null,
+      0,
+      0
+     ]
+    ],
+    "minutes": [
+     [
+      17,
+      0,
+      0
+     ]
+    ]
+   }
+  ]
+ }
+}

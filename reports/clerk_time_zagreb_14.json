@@ -1,0 +1,11 @@
+{
+ "session": 14,
+ "session_dates": "15. i 16. listopada 2026.",
+ "items": 32,
+ "drafted": 32,
+ "draft_seconds": 0.01,
+ "minutes_pdf": "4da7f728fbab43f4",
+ "minutes_pdf_created": "2026-10-29",
+ "days_after_last_session_day": 13,
+ "note": "Draft = rules over agenda, roll-call PDFs and speaker turns (no LLM). Includes items not in a transcribed recording (agenda + vote only). Excludes the one-off ASR time."
+}
