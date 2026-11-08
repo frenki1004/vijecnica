@@ -183,6 +183,7 @@ def main():
     for city in AUDIO_VOTES:  # item starts + spoken vote results (source='snimka') from the chair's words
         brod_audio(db, city)
     derive(db)
+    datagovhr(db)  # data.gov.hr tables, see datagovhr() below
     for t in ("segments_fts", "items_fts", "questions_fts"):
         db.execute(f"INSERT INTO {t}({t}) VALUES('rebuild')")
     db.commit()
@@ -197,6 +198,96 @@ def main():
         print(city, stats)
     db.close()
     tmp.replace(DB)
+
+
+# ---- data.gov.hr (collect/datagovhr.py -> data/datagovhr/*.json): units register, 2025 election results,
+# the cities' own datasets on the portal. Separate tables; nothing above reads them. Skipped if not collected.
+DGH = DATA / "datagovhr"
+DGH_TABLES = {
+    "datagovhr_sources": "dataset_id, dataset, title, publisher, license, metadata_modified, dataset_url, "
+                         "resource_url, resource_name, downloaded, sha256, note",
+    "units": "code, oib, name, type, county, website, population INTEGER, email",
+    "city_units": "city, code, oib",
+    "council_composition": "city, list, votes INTEGER, pct REAL, seats INTEGER, source",
+    "mayor_results": "city, round INTEGER, candidate, votes INTEGER, pct REAL, elected INTEGER, voted INTEGER, "
+                     "valid INTEGER, source",
+    "election_turnout": "city, body, seats_total INTEGER, registered INTEGER, voted INTEGER, valid INTEGER, "
+                        "invalid INTEGER, source",
+    "datagovhr_datasets": "city, organization, name, title, url, formats, resources INTEGER, modified, license",
+    "datagovhr_publishers": "city, organization, datasets INTEGER, relevant INTEGER",
+    "tax_rates": "city, unit, lower_2026 REAL, higher_2026 REAL, lower_2025 REAL, higher_2025 REAL",
+    "zagreb_assembly_parties": "party, seats INTEGER",
+    "voters": "city, voters INTEGER, as_of",
+}
+DGH_FILES = {"datagovhr_sources": "sources"}
+
+
+def datagovhr(db):
+    if not (DGH / "units.json").exists():
+        return
+    for table, cols in DGH_TABLES.items():
+        f = DGH / f"{DGH_FILES.get(table, table)}.json"
+        names = [c.split()[0] for c in cols.split(", ")]
+        db.execute(f"CREATE TABLE {table}({cols})")
+        rows = json.loads(f.read_text()) if f.exists() else []
+        db.executemany(f"INSERT INTO {table} VALUES({','.join('?' * len(names))})",
+                       [tuple(r.get(n) for n in names) for r in rows])
+    # who holds the council (2025 election, D'Hondt) next to what it decided (our sessions, items, roll calls)
+    db.execute("""CREATE VIEW city_overview AS
+        SELECT c.id AS city, u.name AS unit, u.code, u.oib, u.county, u.population, u.website, t.seats_total,
+               t.registered AS registered_2025, round(100.0 * t.voted / t.registered, 2) AS turnout_pct,
+               v.voters AS voters_2026,
+               (SELECT list FROM council_composition WHERE city = c.id ORDER BY seats DESC, votes DESC LIMIT 1)
+                   AS largest_list,
+               (SELECT max(seats) FROM council_composition WHERE city = c.id) AS largest_list_seats,
+               (SELECT max(seats) FROM council_composition WHERE city = c.id) * 2 > t.seats_total AS single_list_majority,
+               (SELECT candidate FROM mayor_results WHERE city = c.id AND elected) AS mayor,
+               (SELECT count(*) FROM sessions WHERE city = c.id) AS sessions,
+               (SELECT count(*) FROM items WHERE city = c.id) AS items,
+               (SELECT count(*) FROM items WHERE city = c.id AND za IS NOT NULL) AS items_with_totals,
+               (SELECT count(DISTINCT session || '/' || item_no || '/' || sub) FROM votes WHERE city = c.id)
+                   AS roll_call_items,
+               (SELECT count(*) FROM datagovhr_datasets WHERE city = c.id) AS own_datasets_on_datagovhr
+        FROM cities c LEFT JOIN city_units cu ON cu.city = c.id LEFT JOIN units u ON u.code = cu.code
+        LEFT JOIN election_turnout t ON t.city = c.id LEFT JOIN voters v ON v.city = c.id""")
+    # cross-check: party -> 2025 list (name tokens), for our members (everyone on an attendance list,
+    # substitutes included) and, for Zagreb, the city's own "seats per party" dataset on data.gov.hr
+    db.execute("CREATE TABLE council_crosscheck(city, list, seats_dhondt INTEGER, members_in_db INTEGER, "
+               "official_seats INTEGER, parties)")
+    fold = lambda s: re.sub(r"\s+", " ", (s or "").casefold())
+    alias = {"drito": "marija selak raspudić"}  # Drito is the party of the Selak Raspudić list
+
+    def assign(party, lists):
+        toks = [t.strip() for t in re.split(r"[,;]|\s-\s|\(|\)", fold(party)) if len(t.strip()) > 1]
+        score = lambda lst: (fold(alias.get(fold(party), party)) in fold(lst)) * 100 + sum(
+            bool(re.search(rf"(^|[\s\-+]){re.escape(t)}($|[\s\-+])", fold(lst))) for t in toks)
+        best = max(lists, key=score)
+        return best if score(best) else None
+
+    for city in [r[0] for r in db.execute("SELECT DISTINCT city FROM members WHERE party != ''")]:
+        lists = dict(db.execute("SELECT list, seats FROM council_composition WHERE city = ?", (city,)).fetchall())
+        if not lists:
+            continue
+        got = {}  # list -> [members, official seats, parties]
+        for party, n in db.execute("SELECT party, count(*) FROM members WHERE city = ? AND party != '' "
+                                   "GROUP BY party", (city,)):
+            g = got.setdefault(assign(party, lists), [0, 0, []])
+            g[0] += n
+            g[2].append(f"{party} {n}")
+        if city == "zagreb":
+            for party, n in db.execute("SELECT party, seats FROM zagreb_assembly_parties"):
+                g = got.setdefault(assign(party, lists), [0, 0, []])
+                g[1] += n
+                if not g[0]:
+                    g[2].append(f"{party} (official {n})")
+        for lst in [*lists, None]:
+            if lst in got or lists.get(lst):
+                n, off, parties = got.get(lst, [0, 0, []])
+                db.execute("INSERT INTO council_crosscheck VALUES(?,?,?,?,?,?)",
+                           (city, lst or "(no list matched)", lists.get(lst), n,
+                            off if city == "zagreb" else None, "; ".join(parties)))
+    print("datagovhr", {t: db.execute(f"SELECT count(*) FROM {t}").fetchone()[0]
+                        for t in (*DGH_TABLES, "council_crosscheck")})
 
 
 if __name__ == "__main__":

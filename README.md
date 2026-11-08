@@ -132,7 +132,7 @@ asr/*.py ─────> data/**/transcripts/*.json ──┘                  
 
 ## Izvori podataka
 
-- **Portal otvorenih podataka (data.gov.hr, CKAN API):** konektor `collect/datagovhr.py` je **u izradi** i u ovoj verziji još nije dio cjevovoda. data.gov.hr je ujedno i predviđeno odredište objave: izvoz (`data/export/datapackage.json`) pripremljen je za CKAN, ali na portalu još ništa nije objavljeno.
+- **Portal otvorenih podataka (data.gov.hr, CKAN API):** konektor `collect/datagovhr.py` preko CKAN API-ja (`package_show`) preuzima registar svih 556 jedinica (živi JSON API jpt.gov.hr: oznaka, OIB, županija), adresar s web-stranicama, popis stanovništva 2021., broj birača po jedinici (registar birača, 2026.), porezne stope 2025. i 2026. te sastav Gradske skupštine Zagreba, i popisuje skupove koje naših 19 jedinica samo objavljuje. Rezultati lokalnih izbora 2025. nisu na portalu (DIP ondje ima do 2021.), pa se uzimaju s izbori.hr i preračunavaju u mandate (D'Hondt, prag 5 %). `db/build.py` sve povezuje u pogled `city_overview` (tko ima većinu, odaziv, birači, uz broj sjednica i glasovanja). Pokretanje: `../.venv/bin/python collect/datagovhr.py [--voters]`, pa `db/build.py`. data.gov.hr je ujedno i predviđeno odredište objave: izvoz (`data/export/datapackage.json`) pripremljen je za CKAN, ali na portalu još ništa nije objavljeno.
 - **Službene stranice gradova:** web.zagreb.hr, slavonski-brod.hr, grad-krk.hr, rijeka.hr, osijek.hr, sibenik.hr.
 - **NetCom eSjednice:** javni portali 13 jedinica (sjednice.opatija.hr, gradsenj.esjednice.hr, …; popis u `collect/netcom.py`, `UNITS`).
 - **Snimke sjednica:** YouTube kanali gradova (Zagreb, Rijeka, Osijek, Šibenik) i MP3 zapisi na gradskim stranicama (Slavonski Brod, Krk) ili eSjednicama.

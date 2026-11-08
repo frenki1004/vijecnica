@@ -27,7 +27,7 @@ flowchart LR
   subgraph Prikupljanje["collect/"]
     C1["docs.py, list_videos.py<br/>brod.py, krk.py, rijeka.py<br/>osijek.py, sibenik.py"]
     C2["netcom.py<br/>(jedan skupljač, 13 jedinica)"]
-    C3["datagovhr.py<br/>(u izradi)"]
+    C3["datagovhr.py<br/>(CKAN API)"]
   end
 
   ASR["asr/<br/>Whisper + Silero VAD"]
@@ -64,7 +64,7 @@ flowchart LR
 | skupljači | `collect/docs.py`, `list_videos.py`, `brod.py`, `krk.py`, `rijeka.py`, `osijek.py`, `sibenik.py` | po jedan za šest gradova s vlastitim web stranicama |
 | skupljač eSjednica | `collect/netcom.py` | jedan skupljač za 13 jedinica na sustavu NetCom eSjednice; nova jedinica = jedan redak u `UNITS` |
 | ponovno parsiranje | `collect/reparse_votes.py` | Zagreb: poimenično glasovanje iz keširanih PDF-ova, bez mreže |
-| konektor data.gov.hr | `collect/datagovhr.py` | **u izradi** |
+| konektor data.gov.hr | `collect/datagovhr.py` | izrađen: 7 skupova preko CKAN API-ja, 12 tablica i pogled `city_overview` |
 | prepoznavanje govora | `asr/transcribe_local.py` (CPU), `asr/transcribe_mlx_local.py`, `asr/run_queue.py` + `asr/transcribe.py` (Apple silicon), `asr/convert_hf.py` | Silero VAD reže govor u odsječke do 25 s, Whisper ih prepisuje; vrijeme dolazi iz VAD-a |
 | izgradnja baze | `db/build.py` i moduli `align.py`, `derive.py`, `speakers.py`, `minutes.py`, `promises.py`, `brod_audio.py` | uvoz JSON-a, smještanje točaka u snimku, govornici iz poziva predsjedatelja, zapisnik po točkama (Zagreb), obećanja iz aktualnog sata, rezultati izgovoreni u snimci (Slavonski Brod) |
 | poslužitelj | `mcp_server.py`, `web/index.html`, `web/feed.html`, `web/demo.html` | MCP (stdio ili streamable HTTP), JSON API i web stranice u jednom procesu, samo čitanje baze |
@@ -161,7 +161,7 @@ Paket se može uvesti u CKAN (data.gov.hr) proširenjem `ckanext-datapackager` i
 
 | standard | gdje |
 |---|---|
-| **CKAN Action API** | data.gov.hr kao izvor (konektor u izradi) i kao odredište izvoza |
+| **CKAN Action API** | data.gov.hr kao izvor (`package_show`, `package_search`, `organization_list`) i kao odredište izvoza |
 | **Frictionless Data Package / Table Schema** | `data/export/datapackage.json` |
 | **CSV (RFC 4180), UTF-8** | svi izvozni resursi |
 | **JSON** | međuformat skupljača (`session_NN.json`), JSON API, `posts.json` |
@@ -177,7 +177,7 @@ Paket se može uvesti u CKAN (data.gov.hr) proširenjem `ckanext-datapackager` i
 
 | sustav | danas | kako se povezuje |
 |---|---|---|
-| **Portal otvorenih podataka (data.gov.hr, CKAN)** | izvor: konektor **u izradi**; odredište: izvoz pripremljen, nije objavljen | Kao izvor: CKAN Action API (`package_search`, `package_show`) za skupove podataka lokalnih jedinica. Kao odredište: Data Package se objavljuje kao CKAN skup podataka (resurs po CSV-u), preko API ključa organizacije izdavatelja. |
+| **Portal otvorenih podataka (data.gov.hr, CKAN)** | izvor: `collect/datagovhr.py` (registar jedinica, adresar, popis 2021., registar birača, porezne stope, sastav skupštine Zagreba, skupovi naših jedinica); odredište: izvoz pripremljen, nije objavljen | Kao izvor: CKAN Action API (`package_search`, `package_show`) za skupove podataka lokalnih jedinica. Kao odredište: Data Package se objavljuje kao CKAN skup podataka (resurs po CSV-u), preko API ključa organizacije izdavatelja. |
 | **NetCom eSjednice** | 13 jedinica, `collect/netcom.py` | Skupljač koristi iste javne pozive koje koristi i preglednik (`/meetingtype`, `/meeting`, `/dailyagenda`, `/dldocoriginal`). Svaka sljedeća jedinica na istom sustavu dodaje se jednim retkom u `UNITS` (domaćin i id vrste sjednice), uz provjeru njezinih zapisnika. Izvoz glasovanja u strojnom obliku od isporučitelja sustava uklonio bi parsiranje zapisnika. |
 | **Web stranice gradova** | Zagreb (Lotus Notes / Domino, `.nsf`), Rijeka i Osijek (WordPress), Slavonski Brod (Joomla), Krk (Drupal), Šibenik | Po jedan skupljač; nijedan grad ne nudi API za sjednice. |
 | **Službeni glasnici** | **planirano** | Za jedinice bez objavljenih zapisnika: dnevni red i donesene odluke iz službenog glasnika. |
@@ -256,7 +256,7 @@ Svaka objava prije objave prolazi ljudski pregled; objavljuje osoba, ne bot. Upu
 - **Transkripcija:** 16 od 110 snimki (svih 12 iz Slavonskog Broda, 4 od 33 iz Zagreba).
 - **Relevantnost i personalizacija:** „Samo bitno” je jednostavno pravilo po temi (698 od 952 objave označeno je kao bitno). Planirano: praćenje vlastitog grada i tema, obavijesti, bolja procjena važnosti uz isto javno pravilo.
 - **Više jedinica:** sljedeće jedinice na eSjednicama dodaju se u `UNITS`; za ostale, dvije razine: gdje postoje zapisnici, objave s glasovanjem; za ostale, dnevni red i odluke iz službenog glasnika te stranački sastav iz podataka DIP-a.
-- **data.gov.hr:** konektor u izradi; objava izvoza na portalu.
+- **data.gov.hr:** objava izvoza na portalu; kanonski nazivi stranaka iz Registra političkih stranaka; rezultati izbora 2025. na portalu, kad ih DIP objavi.
 - **Video isječci** iz snimki uz objave: transkripti s vremenom postoje, isječci nisu izrađeni.
 
 ## Provjera brojki
