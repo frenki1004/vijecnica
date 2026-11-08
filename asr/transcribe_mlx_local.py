@@ -15,7 +15,8 @@ from pathlib import Path
 
 from run_queue import DATA, ROOT, download, log  # asr/ is on sys.path when run as a script
 
-PY = ROOT / ".venv-mlx" / "bin" / "python"
+PY = next((p for p in (ROOT / ".venv-mlx" / "bin" / "python", ROOT.parent / ".venv-mlx" / "bin" / "python")
+           if p.exists()), ROOT / ".venv-mlx" / "bin" / "python")  # in the repo, or shared one level up
 MODEL = ROOT / "mlx_models" / "hr-parla"
 
 
@@ -23,7 +24,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("ids", nargs="*")
     ap.add_argument("--sessions", default="")
-    ap.add_argument("--city", default="zagreb", choices=["zagreb", "brod", "krk", "rijeka"])
+    ap.add_argument("--city", default="zagreb", choices=["zagreb", "brod", "krk", "rijeka", "cakovec", "velika_gorica", "petrinja"])
     a = ap.parse_args()
     base = DATA if a.city == "zagreb" else DATA / a.city
     (base / "transcripts").mkdir(parents=True, exist_ok=True)
