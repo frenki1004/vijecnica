@@ -18,11 +18,11 @@ Svaka objava je karusel od 3 do 5 slajdova: što je odlučeno, što to znači za
 **Kanali:** Instagram za karusele, a **Reddit** za raspravu: tjedni pregled po gradu u r/croatia (oko 440 tisuća članova), r/hrvatska i r/zagreb, uz dopuštenje moderatora, i vlastiti subreddit s oznakom po gradu. Na Redditu ljudi komentiraju i ispravljaju, a ispod svake objave stoji izvor.
 
 ## 1:15–2:15 Kako radi i zašto mu možeš vjerovati
-- **Podaci:** službene stranice 19 gradova i općina (od Zagreba, Rijeke i Osijeka do Kastva, Punta i Viškova): 198 sjednica, 3.441 točaka dnevnog reda, 2.013 glasovanja. Šest gradova ima vlastiti skupljač, a 13 jedinica pokriva jedan zajednički skupljač za sustav eSjednice. Zapisnici, poimenično glasovanje i snimke sjednica. Novi grad je jedan skupljač podataka; sve ostalo (odabir, pisanje, slike) radi bez promjena.
+- **Podaci:** službene stranice 19 gradova i općina (od Zagreba, Rijeke i Osijeka do Kastva, Punta i Viškova): 198 sjednica i 3.441 točka dnevnog reda, od kojih 2.013 s ishodom glasovanja. Šest gradova ima vlastiti skupljač, a 13 jedinica pokriva jedan zajednički skupljač za sustav eSjednice. Zapisnici, poimenično glasovanje i snimke sjednica. Novi grad je jedan skupljač podataka; sve ostalo (odabir, pisanje, slike) radi bez promjena.
 - **Odabir bez biranja strana:** pravila su fiksna i javna. Svaka točka s barem jednim glasom protiv ili suzdržanim dobiva svoju objavu, a sve jednoglasno ide u objavu „Ukratko”. Nitko ne bira što je zanimljivo.
 - **Pisanje:** AI piše prema strogim pravilima: samo činjenice iz zapisnika, svaki argument pripisan klubu, bez imena privatnih osoba, bez vlastitih procjena.
 - **Dvostruka provjera.** AI pisac ne samo da piše nego i uspoređuje brojke sa zapisnikom. Tako smo tijekom izrade uhvatili sjednicu na kojoj su se glasovi pomaknuli za jednu točku (vijeće je promijenilo redoslijed) i 26 šibenskih glasovanja kojima su nedostajali glasovi protiv, među njima dva rebalansa proračuna. Jedan krivo izračunat postotak uhvatili smo pri ljudskoj provjeri. Zato svaka objava prolazi i ljudsku provjeru, a stroj radi ostalo.
-- **Rezultat danas:** 304 objave iz 12 gradova i općina, 1.043 slike spremne za Instagram (1080×1350) i 304 objave pripremljene za Reddit, automatski.
+- **Rezultat danas:** 952 objave iz 12 gradova i općina (sve sjednice sa zapisnikom), 3.211 slika spremnih za Instagram (1080×1350) i 952 objave pripremljene za Reddit, automatski. Uz „Samo bitno” ostaje 680 odluka koje se izravno tiču stanovnika; tko želi, bira svoj grad i teme.
 
 ## 2:15–2:45 Zašto baš sada
 Zapisnici kasne. Danas, 7. 11. 2026.:
