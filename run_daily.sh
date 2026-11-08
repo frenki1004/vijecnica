@@ -20,6 +20,8 @@ step $PY collect/krk.py --audio
 step $PY collect/rijeka.py --fresh
 step $PY collect/osijek.py --fresh
 step $PY collect/sibenik.py --fresh
+step $PY collect/cakovec.py
+step $PY collect/audio_sites.py
 step $PY collect/netcom.py --fresh
 step $PY collect/datagovhr.py
 step $PY db/build.py
@@ -27,10 +29,11 @@ step $PY db/build.py
 # 2. transcribe new MP3 recordings on this Mac (mlx-whisper; skips what is already transcribed), then rebuild
 step timeout 5h $PY -u asr/transcribe_mlx_local.py --city brod
 step timeout 5h $PY -u asr/transcribe_mlx_local.py --city krk
+for c in cakovec velika_gorica petrinja; do step timeout 5h $PY -u asr/transcribe_mlx_local.py --city $c; done
 step $PY db/build.py
 
 # 3. new post drafts for every unit with votes (Claude API; skipped without a key), then feed and outputs
-for c in zagreb brod krk rijeka osijek sibenik opatija kastav senj ogulin viskovo punat; do
+for c in zagreb brod krk rijeka osijek sibenik cakovec opatija kastav senj ogulin viskovo punat; do
   step sh -c "$PY posts/build_queue.py --city $c > data/posts/queue_full_$c.json"
   if [ -n "${ANTHROPIC_API_KEY:-}" ]; then step $PY posts/write.py data/posts/queue_full_$c.json --out drafts_full_$c.json; fi
 done

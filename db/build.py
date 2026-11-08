@@ -1,6 +1,6 @@
 """Build data/vijecnica.db from every city's JSON (recordings, transcripts, session documents).
 
-Cities: zagreb (data/videos.json, data/transcripts, data/docs); brod, krk, rijeka, osijek, sibenik (data/<city>/recordings.json,
+Cities: zagreb (data/videos.json, data/transcripts, data/docs); brod, krk, rijeka, osijek, sibenik, cakovec (data/<city>/recordings.json,
 data/<city>/transcripts, data/<city>/docs; Rijeka's recordings are YouTube, the others MP3). Rebuilt from scratch each run (a few seconds); the JSON
 files are the source of truth.
 """
@@ -32,6 +32,8 @@ CITIES = {
                "site": "https://www.osijek.hr"},
     "sibenik": {"name": "Šibenik", "body": "Gradsko vijeće Grada Šibenika", "dir": DATA / "sibenik",
                 "site": "https://www.sibenik.hr"},
+    "cakovec": {"name": "Čakovec", "body": "Gradsko vijeće Grada Čakovca", "dir": DATA / "cakovec",
+                "site": "https://www.cakovec.hr"},
 }
 sys.path.insert(0, str(ROOT / "collect"))
 from netcom import UNITS as NETCOM  # noqa: E402  13 eSjednice portals, one generic collector

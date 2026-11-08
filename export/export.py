@@ -69,6 +69,8 @@ SOURCES = {
                "path": "https://www.osijek.hr/prijenos-sjednice/"},
     "sibenik": {"title": "Grad Šibenik (sibenik.hr): sjednice, materijali i zapisnici",
                 "path": "https://www.sibenik.hr/stranice/sjednice-gradskog-vijeca-2025-2029/260.html"},
+    "cakovec": {"title": "Grad Čakovec (cakovec.hr): sjednice, materijali, zapisnici i audio zapisi",
+                "path": "https://www.cakovec.hr/kategorija/gradsko-vijece/"},
     # 13 units on NetCom eSjednice public portals (collect/netcom.py)
     **{k: {"title": f"{u['name']} (eSjednice, {u['host']}): sjednice, dnevni red, odluke"
                     + (" i zapisnici" if u["tier"] == "A" else ""), "path": f"https://{u['host']}"}

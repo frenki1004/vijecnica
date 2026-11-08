@@ -15,10 +15,10 @@ from netcom import UNITS as NETCOM  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 POSTS = ROOT / "data" / "posts"
 CITY_TAG = {"zagreb": "#Zagreb", "brod": "#SlavonskiBrod", "rijeka": "#Rijeka", "krk": "#Krk",
-            "osijek": "#Osijek", "sibenik": "#Šibenik",
+            "osijek": "#Osijek", "sibenik": "#Šibenik", "cakovec": "#Čakovec",
             **{k: "#" + u["name"].replace(" ", "") for k, u in NETCOM.items()}}
 CITY_NAME = {"zagreb": "Zagreb", "brod": "Slavonski Brod", "rijeka": "Rijeka", "krk": "Krk", "osijek": "Osijek",
-             "sibenik": "Šibenik", **{k: u["name"] for k, u in NETCOM.items()}}
+             "sibenik": "Šibenik", "cakovec": "Čakovec", **{k: u["name"] for k, u in NETCOM.items()}}
 TOPIC_TAG = {"promet": "#promet", "stanovanje": "#stanovanje", "komunalno": "#komunalno", "otpad": "#otpad",
              "okolis": "#okoliš", "proracun": "#proračun", "porezi-i-naknade": "#poreziinaknade",
              "vrtici-i-skole": "#vrtićiiškole", "mladi": "#mladi", "sport": "#sport", "kultura": "#kultura",
