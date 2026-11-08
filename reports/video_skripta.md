@@ -33,7 +33,7 @@ poveznica. Na kraju crni ekran s brojkom.
 2024, FES / IDI
 
 ## 0:40–1:30 · Demo (*funkcionalnosti*)
-**Kadar 1 (0:40):** feed, odabir „Moj grad: Zagreb”, uključen „Samo bitno”, brojač „154 od 952 objava”.
+**Kadar 1 (0:40):** feed, odabir „Moj grad: Zagreb”, uključen „Samo bitno”, brojač „152 od 1014 objava”.
 > Odabereš svoj grad, a „Samo bitno” ostavlja odluke koje se tiču stanovnika.
 
 **Kadar 2 (0:52):** objava `zagreb-14-23-1`, listanje karusela do slajda „Kako su glasali klubovi”.
@@ -42,8 +42,8 @@ poveznica. Na kraju crni ekran s brojkom.
 
 **Kadar 3 (1:10):** objava `krk-5-18-1` („Sjednice vijeća i dalje bez prijenosa uživo”), pa klik na teme
 `#proračun`, `#vrtićiiškole`.
-> Prijedlog da se sjednice vijeća prenose uživo nije prošao. To je također vijest. Pratiš teme koje te zanimaju,
-> u devetnaest gradova i općina.
+> Prijedlog da se sjednice vijeća prenose uživo nije prošao, ni na Krku ni u Čakovcu. To je također vijest. Pratiš teme koje te zanimaju,
+> u dvadeset gradova i općina.
 
 **Kadar 4 (1:22):** mapa `data/posts/png` s karuselima, pa jedna Reddit datoteka.
 > Iste objave izlaze kao slike za Instagram i kao tekst za Reddit, s izvorom ispod svake.
@@ -52,7 +52,7 @@ poveznica. Na kraju crni ekran s brojkom.
 **Kadar:** tablica izvora (README), pa terminal s upitom nad pogledom `city_overview`:
 `sqlite3 -header -column data/vijecnica.db "select city, population, voters_2026, turnout_pct, seats_total, largest_list from city_overview limit 6"`
 **Narator:**
-> Podaci dolaze sa službenih stranica 19 gradova i općina: 198 sjednica i više od tri tisuće točaka dnevnog reda.
+> Podaci dolaze sa službenih stranica 20 gradova i općina: 205 sjednica i više od tri i pol tisuće točaka dnevnog reda.
 > S Portala otvorenih podataka preko API-ja uzimamo registar svih 556 jedinica, broj birača, popis stanovništva i
 > porezne stope, a izborne rezultate s DIP-a pretvaramo u mandate. Tako uz svaku odluku stoji tko ima većinu i
 > koliko ljudi ta odluka pogađa.

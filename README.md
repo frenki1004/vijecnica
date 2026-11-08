@@ -1,6 +1,6 @@
 # Vijećnica
 
-**Demo:** https://vijecnica.vercel.app (950 objava iz 12 gradova i općina; strojni nacrti, javni demo bez prijave)
+**Demo:** https://vijecnica.vercel.app (1.012 objava iz 13 gradova i općina; strojni nacrti, javni demo bez prijave)
 
 Vijećnica prikuplja službene podatke o sjednicama gradskih i općinskih vijeća (dnevni red, zapisnike, rezultate glasovanja, poimenično glasovanje, pitanja vijećnika i snimke sjednica), sprema ih u jednu pretraživu bazu i iz njih izrađuje kratke, neutralne objave za društvene mreže, s oznakom grada i teme (`#Zagreb #promet`).
 
@@ -20,15 +20,15 @@ Brojke su iz `data/vijecnica.db` i `data/posts/posts.json`; upiti za provjeru su
 
 | | |
 |---|---|
-| jedinice lokalne samouprave | 19 (saziv 2025.–2029.) |
-| sjednice | 198 (od toga 4 zakazane, s dnevnim redom) |
-| točke dnevnog reda | 3.441 |
-| točke s ishodom glasovanja (rezultat ili broj glasova) | 2.013 |
+| jedinice lokalne samouprave | 20 (saziv 2025.–2029.) |
+| sjednice | 205 (od toga 4 zakazane, s dnevnim redom) |
+| točke dnevnog reda | 3.621 |
+| točke s ishodom glasovanja (rezultat ili broj glasova) | 2.188 |
 | pojedinačni glasovi iz poimeničnog glasovanja (samo Zagreb, 565 točaka) | 26.498 |
 | pitanja vijećnika s odgovorom (Zagreb, Rijeka, Krk) | 343 |
-| snimke sjednica / strojno transkribirane | 110 / 16 |
-| objave za društvene mreže | 952 iz 12 jedinica (846 o pojedinoj točki, 106 pregleda jednoglasnih odluka) |
-| slike za Instagram (1080×1350) | 3.211 |
+| snimke sjednica / strojno transkribirane | 111 / 17 |
+| objave za društvene mreže | 1.014 iz 13 jedinica (901 o pojedinoj točki, 113 pregleda jednoglasnih odluka) |
+| slike za Instagram (1080×1350) | 3.435 |
 
 ### Pokrivenost po jedinicama
 
@@ -42,6 +42,7 @@ Brojke su iz `data/vijecnica.db` i `data/posts/posts.json`; upiti za provjeru su
 | Rijeka | `collect/rijeka.py` | dnevni red, doneseni akti, zapisnici, vijesti sa sjednica, pitanja, snimke (YouTube) | 13 | 11 | 174 | 124 | 79 |
 | Slavonski Brod | `collect/brod.py` | dnevni red, gotovo doslovni zapisnici, snimke (MP3) | 10 | 8 | 180 | 105 | 67 |
 | Krk | `collect/krk.py` | dnevni red, skenirani zapisnici (OCR), vijesti sa sjednica, aktualni sat, snimke (MP3) | 8 | 6 | 125 | 86 | 69 |
+| Čakovec | `collect/cakovec.py` | dnevni red s materijalima, doslovni zapisnici (dio skeniran, OCR), snimke (MP3) | 7 | 7 | 180 | 175 | 62 |
 | Opatija | `collect/netcom.py` | eSjednice: dnevni red, dokumenti, zapisnici | 14 | 13 | 177 | 137 | 89 |
 | Viškovo | `collect/netcom.py` | eSjednice: dnevni red, zapisnici (dio skeniran, OCR) | 14 | 12 | 179 | 125 | 53 |
 | Senj | `collect/netcom.py` | eSjednice: dnevni red, zapisnici | 12 | 11 | 145 | 131 | 50 |
@@ -55,13 +56,13 @@ Brojke su iz `data/vijecnica.db` i `data/posts/posts.json`; upiti za provjeru su
 | Ploče | `collect/netcom.py` | eSjednice: dnevni red, odluke, popis snimki | 9 | 0 | 99 | 0 | 0 |
 | Omišalj | `collect/netcom.py` | eSjednice: dnevni red, odluke | 9 | 0 | 137 | 0 | 0 |
 | Makarska | `collect/netcom.py` | eSjednice: dnevni red, odluke | 8 | 0 | 107 | 0 | 0 |
-| **ukupno** | | | **198** | **112** | **3.441** | **2.013** | **952** |
+| **ukupno** | | | **205** | **119** | **3.621** | **2.188** | **1.014** |
 
-Šest gradova ima vlastiti skupljač; 13 jedinica na sustavu NetCom eSjednice pokriva jedan zajednički skupljač (`collect/netcom.py`). Za sedam jedinica bez preuzetih zapisnika (zadnjih sedam redaka) baza ima dnevni red i odluke, ali ne i glasovanje, pa iz njih zasad nema objava.
+Sedam gradova ima vlastiti skupljač; 13 jedinica na sustavu NetCom eSjednice pokriva jedan zajednički skupljač (`collect/netcom.py`). Za sedam jedinica bez preuzetih zapisnika (zadnjih sedam redaka) baza ima dnevni red i odluke, ali ne i glasovanje, pa iz njih zasad nema objava.
 
-Snimke: strojno su transkribirane sve 12 snimki Slavonskog Broda i 4 od 33 snimke Zagreba. Ostale snimke su popisane (`videos`), ali još nisu transkribirane.
+Snimke: strojno su transkribirane sve 12 snimki Slavonskog Broda, 4 od 33 snimke Zagreba i zadnja sjednica Čakovca; transkribirana je i zadnja sjednica Velike Gorice (7 sati, `collect/audio_sites.py`), koja još nije u bazi jer za nju nema skupljača zapisnika. Ostale snimke su popisane (`videos`), ali još nisu transkribirane.
 
-Detaljni pregled po sjednici i točki (web stranica `/`, JSON API, MCP alati) trenutačno je izrađen za Zagreb, Slavonski Brod, Krk i Rijeku; feed objava (`/feed`) pokriva svih 12 jedinica s objavama. Vidi [ograničenja](ARHITEKTURA.md#10-ograničenja-i-daljnji-razvoj).
+Detaljni pregled po sjednici i točki (web stranica `/`, JSON API, MCP alati) trenutačno je izrađen za Zagreb, Slavonski Brod, Krk i Rijeku; feed objava (`/feed`) pokriva svih 13 jedinica s objavama. Vidi [ograničenja](ARHITEKTURA.md#10-ograničenja-i-daljnji-razvoj).
 
 ## Quickstart
 
@@ -134,7 +135,7 @@ asr/*.py ─────> data/**/transcripts/*.json ──┘                  
 
 ## Izvori podataka
 
-- **Portal otvorenih podataka (data.gov.hr, CKAN API):** konektor `collect/datagovhr.py` preko CKAN API-ja (`package_show`) preuzima registar svih 556 jedinica (živi JSON API jpt.gov.hr: oznaka, OIB, županija), adresar s web-stranicama, popis stanovništva 2021., broj birača po jedinici (registar birača, 2026.), porezne stope 2025. i 2026. te sastav Gradske skupštine Zagreba, i popisuje skupove koje naših 19 jedinica samo objavljuje. Rezultati lokalnih izbora 2025. nisu na portalu (DIP ondje ima do 2021.), pa se uzimaju s izbori.hr i preračunavaju u mandate (D'Hondt, prag 5 %). `db/build.py` sve povezuje u pogled `city_overview` (tko ima većinu, odaziv, birači, uz broj sjednica i glasovanja). Pokretanje: `../.venv/bin/python collect/datagovhr.py [--voters]`, pa `db/build.py`. data.gov.hr je ujedno i predviđeno odredište objave: izvoz (`data/export/datapackage.json`) pripremljen je za CKAN, ali na portalu još ništa nije objavljeno.
+- **Portal otvorenih podataka (data.gov.hr, CKAN API):** konektor `collect/datagovhr.py` preko CKAN API-ja (`package_show`) preuzima registar svih 556 jedinica (živi JSON API jpt.gov.hr: oznaka, OIB, županija), adresar s web-stranicama, popis stanovništva 2021., broj birača po jedinici (registar birača, 2026.), porezne stope 2025. i 2026. te sastav Gradske skupštine Zagreba, i popisuje skupove koje naših 20 jedinica samo objavljuje. Rezultati lokalnih izbora 2025. nisu na portalu (DIP ondje ima do 2021.), pa se uzimaju s izbori.hr i preračunavaju u mandate (D'Hondt, prag 5 %). `db/build.py` sve povezuje u pogled `city_overview` (tko ima većinu, odaziv, birači, uz broj sjednica i glasovanja). Pokretanje: `../.venv/bin/python collect/datagovhr.py [--voters]`, pa `db/build.py`. data.gov.hr je ujedno i predviđeno odredište objave: izvoz (`data/export/datapackage.json`) pripremljen je za CKAN, ali na portalu još ništa nije objavljeno.
 - **Službene stranice gradova:** web.zagreb.hr, slavonski-brod.hr, grad-krk.hr, rijeka.hr, osijek.hr, sibenik.hr.
 - **NetCom eSjednice:** javni portali 13 jedinica (sjednice.opatija.hr, gradsenj.esjednice.hr, …; popis u `collect/netcom.py`, `UNITS`).
 - **Snimke sjednica:** YouTube kanali gradova (Zagreb, Rijeka, Osijek, Šibenik) i MP3 zapisi na gradskim stranicama (Slavonski Brod, Krk) ili eSjednicama.

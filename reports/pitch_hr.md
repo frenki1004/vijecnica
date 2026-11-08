@@ -19,18 +19,18 @@ Svaka objava je karusel od 3 do 5 slajdova: što je odlučeno, što to znači za
 **Kanali:** Instagram za karusele, a **Reddit** za raspravu: tjedni pregled po gradu u r/croatia (oko 440 tisuća članova), r/hrvatska i r/zagreb, uz dopuštenje moderatora, i vlastiti subreddit s oznakom po gradu. Na Redditu ljudi komentiraju i ispravljaju, a ispod svake objave stoji izvor.
 
 ## 1:15–2:15 Kako radi i zašto mu možeš vjerovati
-- **Podaci:** službene stranice 19 gradova i općina (od Zagreba, Rijeke i Osijeka do Kastva, Punta i Viškova): 198 sjednica i 3.441 točka dnevnog reda, od kojih 2.013 s ishodom glasovanja. Šest gradova ima vlastiti skupljač, a 13 jedinica pokriva jedan zajednički skupljač za sustav eSjednice. Zapisnici, poimenično glasovanje i snimke sjednica. Novi grad je jedan skupljač podataka; sve ostalo (odabir, pisanje, slike) radi bez promjena.
+- **Podaci:** službene stranice 20 gradova i općina (od Zagreba, Rijeke, Osijeka i Čakovca do Kastva, Punta i Viškova): 205 sjednica i 3.621 točka dnevnog reda, od kojih 2.188 s ishodom glasovanja. Sedam gradova ima vlastiti skupljač, a 13 jedinica pokriva jedan zajednički skupljač za sustav eSjednice. Zapisnici, poimenično glasovanje i snimke sjednica. Novi grad je jedan skupljač podataka; sve ostalo (odabir, pisanje, slike) radi bez promjena.
 - **Odabir bez biranja strana:** pravila su fiksna i javna. Svaka točka s barem jednim glasom protiv ili suzdržanim dobiva svoju objavu, a sve jednoglasno ide u objavu „Ukratko”. Nitko ne bira što je zanimljivo.
 - **Pisanje:** AI piše prema strogim pravilima: samo činjenice iz zapisnika, svaki argument pripisan klubu, bez imena privatnih osoba, bez vlastitih procjena.
-- **Dvostruka provjera.** AI pisac ne samo da piše nego i uspoređuje brojke sa zapisnikom. Tako smo tijekom izrade uhvatili sjednicu na kojoj su se glasovi pomaknuli za jednu točku (vijeće je promijenilo redoslijed) i 26 šibenskih glasovanja kojima su nedostajali glasovi protiv, među njima dva rebalansa proračuna. Jedan krivo izračunat postotak uhvatili smo pri ljudskoj provjeri. Zato svaka objava prolazi i ljudsku provjeru, a stroj radi ostalo.
-- **Rezultat danas:** 952 objave iz 12 gradova i općina (sve sjednice sa zapisnikom), 3.211 slika spremnih za Instagram (1080×1350) i 952 objave pripremljene za Reddit, automatski. Uz „Samo bitno” ostaje 680 odluka koje se izravno tiču stanovnika; tko želi, bira svoj grad i teme.
+- **Dvostruka provjera.** AI pisac ne samo da piše nego i uspoređuje brojke sa zapisnikom. Tako smo tijekom izrade uhvatili sjednicu na kojoj su se glasovi pomaknuli za jednu točku (vijeće je promijenilo redoslijed) i 26 šibenskih glasovanja kojima su nedostajali glasovi protiv, među njima dva rebalansa proračuna. U zapisnicima Čakovca tri puta se broj glasova koji izgovori predsjedatelj razlikuje od službenog zaključka; u jednom zaključku zbroj glasova veći je od broja vijećnika (21 od 19), pa taj rezultat ne objavljujemo. Jedan krivo izračunat postotak uhvatili smo pri ljudskoj provjeri. Zato svaka objava prolazi i ljudsku provjeru, a stroj radi ostalo.
+- **Rezultat danas:** 1.014 objava iz 13 gradova i općina (sve sjednice sa zapisnikom), 3.435 slika spremnih za Instagram (1080×1350) i 1.014 objava pripremljenih za Reddit, automatski. Uz „Samo bitno” ostaje 723 odluke koje se izravno tiču stanovnika; tko želi, bira svoj grad i teme.
 
 ## 2:15–2:45 Zašto baš sada
 Zapisnici kasne. Danas, 7. 11. 2026.:
 - Krk, 7. sjednica (21. 7.): **109 dana** bez zapisnika.
 - Osijek: uz točke za usvajanje zapisnika 5., 6. i 7. sjednice (veljača–svibanj 2026.) zapisnici nisu objavljeni, iako su uz sve ranije sjednice.
 - Rijeka, 12. sjednica: 44 dana. Krk, 8. sjednica: 40 dana. Slavonski Brod, 10. sjednica: 29 dana.
-A uživo se često ne može ni pratiti: Gradsko vijeće Krka u ožujku 2026. odbilo je prijedlog da se sjednice prenose uživo (2 za, 7 protiv, 1 suzdržan).
+A uživo se često ne može ni pratiti: Gradsko vijeće Krka u ožujku 2026. odbilo je prijedlog da se sjednice prenose uživo (2 za, 7 protiv, 1 suzdržan), a Gradsko vijeće Čakovca u prosincu 2025. prijedlog da se sjednice snimaju i prenose videom (4 za, 12 protiv, 2 suzdržana).
 Vijećnica objavljuje čim zapisnik izađe, a prototip već prepoznaje govor sa snimke sjednice, pa rezultate može najaviti i prije zapisnika, jasno označene kao neslužbene. Na 9. sjednici Broda svih 11 rezultata koje je predsjedatelj izgovorio s brojem glasova prepoznato je točno do glasa, provjereno prema zapisniku.
 
 ## 2:45–3:00 Što tražimo

@@ -1,12 +1,12 @@
 # Vijećnica: tehnička arhitektura
 
-Dokument opisuje stanje koda 8. 11. 2026. Sve brojke dobivene su upitima nad `data/vijecnica.db` i `data/posts/posts.json` (upiti su u odjeljku [Provjera brojki](#provjera-brojki)). Ono što još nije izrađeno označeno je kao **u izradi** ili **planirano**.
+Dokument opisuje stanje koda 9. 11. 2026. Sve brojke dobivene su upitima nad `data/vijecnica.db` i `data/posts/posts.json` (upiti su u odjeljku [Provjera brojki](#provjera-brojki)). Ono što još nije izrađeno označeno je kao **u izradi** ili **planirano**.
 
 ## 1. Pregled
 
 Vijećnica je cjevovod u četiri sloja:
 
-1. **Prikupljanje** službenih podataka o sjednicama predstavničkih tijela lokalne samouprave (19 jedinica, saziv 2025.–2029.).
+1. **Prikupljanje** službenih podataka o sjednicama predstavničkih tijela lokalne samouprave (20 jedinica, saziv 2025.–2029.).
 2. **Obrada:** parsiranje zapisnika i glasovanja, prepoznavanje govora sa snimki, povezivanje svega s točkama dnevnog reda.
 3. **Pohrana** u jednu SQLite bazu s pretraživanjem punog teksta (FTS5).
 4. **Objava:** web stranica, JSON API, MCP poslužitelj za AI agente, otvoreni podaci (CSV + Frictionless Data Package za CKAN) i objave za društvene mreže (Instagram PNG, Reddit Markdown).
@@ -18,7 +18,7 @@ Sav kod je Python 3.12 i otvorenog je koda (EUPL-1.2). Skupljači koriste samo s
 ```mermaid
 flowchart LR
   subgraph Izvori["Javni izvori"]
-    W["Stranice gradova<br/>Zagreb, Rijeka, Osijek,<br/>Šibenik, Sl. Brod, Krk"]
+    W["Stranice gradova<br/>Zagreb, Rijeka, Osijek,<br/>Šibenik, Sl. Brod, Krk, Čakovec"]
     N["NetCom eSjednice<br/>13 jedinica"]
     Y["Snimke sjednica<br/>YouTube, MP3"]
     D["data.gov.hr<br/>CKAN API"]
@@ -154,7 +154,7 @@ Paket se može uvesti u CKAN (data.gov.hr) proširenjem `ckanext-datapackager` i
 
 ### 5.4 Objave: Instagram i Reddit
 
-- `posts/export_png.py` renderira živu stranicu `/feed` (Playwright, Chromium) u `data/posts/png/<id>/1.png …` (1080×1350, omjer 4:5) i `caption.txt` s opisom i oznakama. Trenutačno: 3.211 slika za 952 objave.
+- `posts/export_png.py` renderira živu stranicu `/feed` (Playwright, Chromium) u `data/posts/png/<id>/1.png …` (1080×1350, omjer 4:5) i `caption.txt` s opisom i oznakama. Trenutačno: 3.435 slika za 1.014 objava.
 - `posts/export_reddit.py` piše `data/posts/reddit/<id>.md` (zaglavlje s naslovom, flairom, gradom, temama i izvorom, zatim tijelo), tjedne preglede po gradu i ISO tjednu (`weekly/<grad>-<godina>-W<tjedan>.md`, dijeli ih ispod Redditove granice od 40.000 znakova) i `README.md` s uputama. Ne spaja se na Reddit.
 
 ## 6. Standardi
@@ -252,9 +252,9 @@ Svaka objava prije objave prolazi ljudski pregled; objavljuje osoba, ne bot. Upu
 
 - **Poimenično glasovanje objavljuje samo Zagreb.** Ostale jedinice objavljuju samo zbroj (ili ništa), pa se „kako su glasali klubovi” može prikazati samo za Zagreb. Sljedeći korak: zahtjevi za pristup informacijama (ZPPI) za izvještaje sustava za glasovanje.
 - **Sedam jedinica bez zapisnika u bazi** (Čavle, Kostrena, Baška, Novi Vinodolski, Ploče, Omišalj, Makarska): imaju dnevni red i odluke, ali ne i glasovanje, pa nemaju objava.
-- **Detaljni pregled (web `/`, JSON API, MCP) i izvoz otvorenih podataka zasad obuhvaćaju 4 jedinice** (Zagreb, Slavonski Brod, Krk, Rijeka): MCP alati primaju samo te četiri jedinice, a `export/export.py` ima opise izvora samo za njih, pa ga za ostalih 15 jedinica treba dopuniti (`SOURCES`, `URLS`) prije novog izvoza. Feed objava pokriva svih 12 jedinica s objavama.
-- **Transkripcija:** 16 od 110 snimki (svih 12 iz Slavonskog Broda, 4 od 33 iz Zagreba).
-- **Relevantnost i personalizacija:** „Samo bitno” je jednostavno pravilo po temi (698 od 952 objave označeno je kao bitno). Planirano: praćenje vlastitog grada i tema, obavijesti, bolja procjena važnosti uz isto javno pravilo.
+- **Detaljni pregled po sjednici na web stranici `/` zasad je izrađen za 4 jedinice** (Zagreb, Slavonski Brod, Krk, Rijeka). MCP alati, JSON API i izvoz otvorenih podataka (`export/export.py`) obuhvaćaju svih 20 jedinica, a feed objava svih 13 jedinica s objavama.
+- **Transkripcija:** 17 od 111 snimki u bazi (svih 12 iz Slavonskog Broda, 4 od 33 iz Zagreba, zadnja iz Čakovca), uz zadnju sjednicu Velike Gorice izvan baze.
+- **Relevantnost i personalizacija:** „Samo bitno” je jednostavno pravilo po temi (723 od 1.014 objava označeno je kao bitno). Planirano: praćenje vlastitog grada i tema, obavijesti, bolja procjena važnosti uz isto javno pravilo.
 - **Više jedinica:** sljedeće jedinice na eSjednicama dodaju se u `UNITS`; za ostale, dvije razine: gdje postoje zapisnici, objave s glasovanjem; za ostale, dnevni red i odluke iz službenog glasnika te stranački sastav iz podataka DIP-a.
 - **data.gov.hr:** objava izvoza na portalu; kanonski nazivi stranaka iz Registra političkih stranaka; rezultati izbora 2025. na portalu, kad ih DIP objavi.
 - **Video isječci** iz snimki uz objave: transkripti s vremenom postoje, isječci nisu izrađeni.
@@ -263,17 +263,17 @@ Svaka objava prije objave prolazi ljudski pregled; objavljuje osoba, ne bot. Upu
 
 ```bash
 sqlite3 -readonly data/vijecnica.db "
-SELECT count(*) FROM cities;                                                     -- 19
-SELECT count(*) FROM sessions;                                                   -- 198
+SELECT count(*) FROM cities;                                                     -- 20
+SELECT count(*) FROM sessions;                                                   -- 205
 SELECT count(*) FROM sessions WHERE date > '2026-11-08';                         -- 4 (zakazane)
-SELECT count(*) FROM sessions WHERE length(minutes_text) > 0;                    -- 112
-SELECT count(*) FROM items;                                                      -- 3441
-SELECT count(*) FROM items WHERE za IS NOT NULL OR coalesce(result,'') != '';    -- 2013
+SELECT count(*) FROM sessions WHERE length(minutes_text) > 0;                    -- 119
+SELECT count(*) FROM items;                                                      -- 3621
+SELECT count(*) FROM items WHERE za IS NOT NULL OR coalesce(result,'') != '';    -- 2188
 SELECT count(*) FROM votes;                                                      -- 26498 (Zagreb)
-SELECT count(*), sum(transcribed) FROM videos;                                   -- 110 | 16
+SELECT count(*), sum(transcribed) FROM videos;                                   -- 111 | 17
 SELECT count(*) FROM questions;                                                  -- 343"
 
 python3 -c "import json,collections as c; p=json.load(open('data/posts/posts.json')); \
-print(len(p), len({x['city'] for x in p}), c.Counter(x['kind'] for x in p))"   # 952 12 item 846, digest 106
+print(len(p), len({x['city'] for x in p}), c.Counter(x['kind'] for x in p))"   # 1014 13 item 901, digest 113
 find data/posts/png -name '*.png' | wc -l                                        # 3211
 ```
