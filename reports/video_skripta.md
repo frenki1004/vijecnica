@@ -74,7 +74,7 @@ feed / Instagram / Reddit / MCP / izvoz.
 > Mladi dobivaju razlog da se uključe, gradovi lakši put do građana, a novinari podatke koje mogu provjeriti. Jedan
 > skupljač već pokriva trinaest jedinica na istom sustavu za sjednice, a cilj su svih 556. Tražimo grad ili savjet
 > mladih za pilot, i objavu poimeničnog glasovanja u strojnom obliku.
-**Na ekranu:** „Vijećnica · github.com/frenki1004/vijecnica · Izazov A: Društvo i javne usluge”
+**Na ekranu:** „Vijećnica · vijecnica.vercel.app · github.com/frenki1004/vijecnica · Izazov A: Društvo i javne usluge”
 
 ---
 
