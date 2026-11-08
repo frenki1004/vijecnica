@@ -45,17 +45,18 @@ MONTHS = {m: i for i, m in enumerate(("siječnja veljače ožujka travnja svibnj
 MONTHS["studenog"] = 11
 HEAD = re.compile(r"^\f?[ \t]*Točka\s+(\d+)\.(?:(\d+)\.?)?[ \t]+(?=\S)", re.M)  # "Točka 4.", "Točka 18.1.", "22.2"
 OUTCOME = re.compile(r"\b(nije\s+)?(?:donesen\w*|usvojen\w*|dan[aeo]?|prihvaćen\w*|izabran\w*|imenovan\w*|"
-                     r"utvrđen\w*|potvrđen\w*|verificiran\w*)\b")
+                     r"utvrđen\w*|potvrđen\w*|verificiran\w*|proša?o|prošla)\b")
 TERM_START = "2025-06-01"
 SEATS = 19
 QUOTES = str.maketrans({c: '"' for c in "„“”«»"})
 
 
 def quotes(t):
-    return t.replace(",,", '"').translate(QUOTES)  # OCR: ,,protiv“
+    t = t.replace(",,", '"').translate(QUOTES)  # OCR: ,,protiv“
+    return re.sub(r'(?<=\s),(?=protiv"|suzdržan)', '"', t)  # OCR: ,suzdržanih“
 N = r"(\d+|O)"  # OCR reads 0 as O
-VOTE = re.compile(rf'"Za"\s+je\s+glasoval\w*\s+{N}\s+vijećnik\w*,\s*{N}\s+(?:\w+\s+){{1,2}}glasoval\w*\s+"protiv",'
-                  rf'\s*{N}\s+(?:\w+\s+){{1,2}}bi(?:o|l\w*)\s+"suzdržan\w*"\s*(.{{0,700}})', re.S)
+VOTE = re.compile(rf'"Za"\s+je\s+glasoval\w*\s+{N}\s+vijećnik\w*,\s*{N}\s+(?:\w+\s+){{1,2}}(?:glasova\w*|bi(?:o|l\w*))\s+"protiv",'
+                  rf'\s*{N}\s+(?:\w+\s+){{1,2}}bi(?:o|l\w*)\s+"suzdržan\w*"(?=,?\s*(.{{0,700}}))', re.S)  # tail: lookahead, the next formula may be near
 _robots, _last = None, [0.0]
 
 
@@ -189,12 +190,12 @@ def overlap(a, b):
 def formula(m):
     """(za, protiv, suzdržano, act named after "pa je", result) of a vote formula; act None for an amendment."""
     tail = re.sub(r"\s+", " ", m.group(4))
-    k = re.search(r"\bpa\s+(?:je\s+)?(?:predsjednik\s+Gradskog\s+vijeća\s+konstatira\w*\s+da\s+(?:je|su)\s+)?", tail)
+    k = re.search(r"\bpa\s+(?:je\s+)?(?:predsjednik\s+Gradskog\s+vijeća\s+konstatira\w*\s+da\s+(?:(?:je|su)\s+)?)?", tail)
     tail = tail[k.end():] if k else tail
     o = OUTCOME.search(tail)
     act = tail[:o.start()].strip(" ,") if o else tail[:200]
-    result = NO if o and o.group(1) else YES
     za, protiv, suzd = (int(m.group(j).replace("O", "0")) for j in (1, 2, 3))
+    result = NO if (o and o.group(1)) or za <= protiv else YES  # "nije prošao"; more against than for never passes
     return za, protiv, suzd, act, result
 
 
