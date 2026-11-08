@@ -1231,6 +1231,14 @@ async def api_posts(req: Request):
     return Response(f.read_bytes(), media_type="application/json", headers={"Cache-Control": "no-cache"})
 
 
+@mcp.custom_route("/api/towns", methods=["GET"])
+async def api_towns(req: Request):
+    """Per-city facts from data.gov.hr and DIP for the feed's town card (posts/assemble.py -> towns.json)."""
+    f = ROOT / "data" / "posts" / "towns.json"
+    return Response(f.read_bytes() if f.exists() else b"{}", media_type="application/json",
+                    headers={"Cache-Control": "no-cache"})
+
+
 @mcp.custom_route("/api/demo", methods=["GET"])
 async def api_demo(req: Request):
     f = ROOT / "demo" / "demo.json"

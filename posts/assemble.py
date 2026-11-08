@@ -5,6 +5,7 @@ Usage: .venv/bin/python posts/assemble.py
 """
 import json
 import re
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -51,6 +52,39 @@ def relevance(p):
     return (True, "tema: " + ", ".join(hit)) if hit else (False, "imenovanja ili rad uprave")
 
 
+def short_list(name):
+    """'HRVATSKA DEMOKRATSKA ZAJEDNICA - HDZ + MOST' -> 'HDZ + MOST': each party's own short name after its last ' - '."""
+    return " + ".join(part.rsplit(" - ", 1)[-1].strip() for part in name.split(" + "))
+
+
+def towns(db_path):
+    """Per city, the data.gov.hr and DIP facts the feed's town card shows, each with its source.
+    Built by collect/datagovhr.py + db/build.py (view city_overview); empty when that has not run."""
+    db = sqlite3.connect(db_path)
+    db.row_factory = sqlite3.Row
+    try:
+        rows = db.execute("SELECT * FROM city_overview").fetchall()
+    except sqlite3.OperationalError:
+        return {}
+    out = {}
+    for r in rows:
+        c = r["city"]
+        seats = [{"list": short_list(x["list"]), "seats": x["seats"], "pct": x["pct"]} for x in db.execute(
+            "SELECT list, seats, pct FROM council_composition WHERE city = ? AND seats > 0 ORDER BY seats DESC", (c,))]
+        tax = db.execute("SELECT * FROM tax_rates WHERE city = ?", (c,)).fetchone()
+        pub = db.execute("SELECT * FROM datagovhr_publishers WHERE city = ?", (c,)).fetchone()
+        out[c] = {"unit": r["unit"], "county": r["county"], "website": r["website"], "oib": r["oib"],
+                  "population": r["population"], "voters": r["voters_2026"], "turnout_2025": r["turnout_pct"],
+                  "seats_total": r["seats_total"], "seats": seats, "majority": bool(r["single_list_majority"]),
+                  "mayor": (r["mayor"] or "").title() or None,
+                  "tax": dict(tax) if tax else None,
+                  "datagovhr": {"organization": pub["organization"], "datasets": pub["datasets"]} if pub else None,
+                  "sources": {"population": "DZS, Popis 2021. (data.gov.hr)", "voters": "Registar birača 2026. (data.gov.hr)",
+                              "seats": "DIP, lokalni izbori 2025., preračun D'Hondt", "tax": "Porezna uprava (data.gov.hr)",
+                              "unit": "Popis javnopravnih tijela, jpt.gov.hr (data.gov.hr)"}}
+    return out
+
+
 def clubs(club_votes):
     """Roll call per party as rows for the feed's 'Kako su glasali klubovi' slide, biggest party first."""
     rows = [{"party": PARTY_SHORT.get(p, p), **v} for p, v in (club_votes or {}).items()]
@@ -85,6 +119,7 @@ def main():
         p["relevant"], p["relevance"] = relevance(p)
     out.sort(key=lambda p: (p.get("date") or "", p["kind"] == "item", p.get("no", 0)), reverse=True)
     (POSTS / "posts.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
+    (POSTS / "towns.json").write_text(json.dumps(towns(ROOT / "data" / "vijecnica.db"), ensure_ascii=False, indent=1))
     print(f"{len(out)} posts -> {POSTS / 'posts.json'}" + (f"; dropped {dropped}" if dropped else ""), file=sys.stderr)
 
 
