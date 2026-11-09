@@ -54,6 +54,13 @@ h1 span{color:var(--accent)}
 .facts div{display:flex;flex-direction:column}
 .facts b{font:700 20px/1.2 var(--body);white-space:nowrap}
 .facts .wide{grid-column:1/-1}
+.taxhr{display:block;margin-top:8px}
+.taxhr .scale{position:relative;display:block;height:6px;border-radius:3px;background:var(--line);margin:6px 0 4px}
+.taxhr .scale i{position:absolute;top:50%;transform:translate(-50%,-50%);border-radius:50%}
+.taxhr .avg{width:2px;height:14px;border-radius:1px!important;background:var(--muted)}
+.taxhr .me{width:12px;height:12px;background:var(--accent);border:2px solid var(--panel)}
+.taxhr .ends{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.taxhr .say{display:block;margin-top:4px;font-size:13px;color:var(--fg)}
 .facts span{font-size:13px;color:var(--muted)}
 .seatbar{display:flex;height:14px;border-radius:7px;overflow:hidden;gap:2px;margin:6px 0 8px}
 .seatbar i{display:block;background:var(--fg)}
@@ -383,6 +390,27 @@ const num = n => n == null ? "–" : Number(n).toLocaleString("hr-HR");
 // seats in neutral shades: the card says who holds the majority without party colours
 const SHADES = [1, .72, .52, .36, .24, .16];
 
+// where the town's income-tax rate stands among all 556 units (Porezna uprava, data.gov.hr): a scale from the lowest
+// to the highest lower rate, the Croatian average marked, and one sentence
+function taxCompare(tax) {
+  const h = tax.hr;
+  if (!h) return "";
+  const r = tax.lower_2026, counts = Object.entries(h.lower_counts).map(([k, n]) => [+k, n]);
+  const below = counts.filter(([k]) => k < r).reduce((s, [, n]) => s + n, 0), above = counts.filter(([k]) => k > r).reduce((s, [, n]) => s + n, 0);
+  const pos = v => `${100 * (v - h.lower_min) / (h.lower_max - h.lower_min)}%`, pc = v => `${num(v * 100)} %`,
+        pc1 = v => `${(Math.round(v * 1000) / 10).toLocaleString("hr-HR")} %`;
+  const same = (counts.find(([k]) => Math.abs(k - r) < 1e-9) || [0, 1])[1] - 1;
+  const most = counts.reduce((a, b) => b[1] > a[1] ? b : a);
+  const say = Math.abs(r - most[0]) < 1e-9 ? `Kao u većini Hrvatske: ${most[1]} od ${h.units} gradova i općina ima ${pc(h.lower_median)} / ${pc(h.higher_median)}.`
+    : r >= h.lower_max - 1e-9 ? `Najviša stopa u Hrvatskoj${same ? `; istu ima još ${same} od ${h.units} gradova i općina` : ": nitko drugi od 556 gradova i općina nema toliku"}.`
+    : r <= h.lower_min + 1e-9 ? `Najniža stopa u Hrvatskoj${same ? `; istu ima još ${same} od ${h.units} gradova i općina` : ""}.`
+    : r > most[0] ? `Iznad većine: višu stopu ima samo ${above} od ${h.units} gradova i općina.`
+    : `Ispod većine: nižu stopu ima samo ${below} od ${h.units} gradova i općina.`;
+  return `<span class="taxhr"><span class="scale"><i class="avg" style="left:${pos(h.lower_mean)}" title="prosjek"></i><i class="me" style="left:${pos(r)}"></i></span>
+    <span class="ends"><span>${pc(h.lower_min)}</span><span>prosjek Hrvatske ${pc1(h.lower_mean)} / ${pc1(h.higher_mean)}</span><span>${pc(h.lower_max)}</span></span>
+    <span class="say">${say}</span></span>`;
+}
+
 function townCard(c) {
   const t = towns[c];
   if (!t) return "";
@@ -392,7 +420,7 @@ function townCard(c) {
   const list = seats.map((s, i) => `<li><i style="opacity:${SHADES[i] || .12}"></i><span><b>${s.seats}</b> ${esc(s.list)}</span></li>`).join("");
   const majority = top ? (t.majority ? `Jedna lista ima većinu: ${top.seats} od ${t.seats_total} mjesta.`
                                      : `Nijedna lista nema većinu sama (najveća ima ${top.seats} od ${t.seats_total}).`) : "";
-  const tax = t.tax ? `<div class="wide"><b>${num(t.tax.lower_2026 * 100)} % / ${num(t.tax.higher_2026 * 100)} %</b><span>porez na dohodak 2026. (niža / viša stopa)</span></div>` : "";
+  const tax = t.tax ? `<div class="wide"><b>${num(t.tax.lower_2026 * 100)} % / ${num(t.tax.higher_2026 * 100)} %</b><span>porez na dohodak 2026. (niža / viša stopa)</span>${taxCompare(t.tax)}</div>` : "";
   const dg = t.datagovhr ? `<a href="https://data.gov.hr/ckan/organization/${encodeURIComponent(t.datagovhr.organization)}" target="_blank" rel="noopener">${num(t.datagovhr.datasets)} skupova podataka na data.gov.hr</a>` : "";
   return `<section class="town" aria-label="O gradu">
     <h2>${esc(name)}</h2><p class="sub2">${esc((t.county || "").toLowerCase())}${t.mayor ? ` · na čelu ${opcina ? "općine" : "grada"}: ${esc(t.mayor)}` : ""}</p>

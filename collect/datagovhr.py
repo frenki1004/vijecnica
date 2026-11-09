@@ -399,6 +399,19 @@ def tax_rates(ours):
     return out
 
 
+def tax_national():
+    """Income-tax rates 2026 of all 556 units (same Porezna uprava file): mean, median, range and how many units
+    have each lower rate, so a town card can say where its rate stands in Croatia."""
+    x = Xlsx(resource("https-porezna-uprava-gov-hr-hr-odluke-jls-4009", r"usporedba-2025-i-2026", ext=".xlsx"))
+    rows = [r for r in x.rows(next(iter(x.sheets))) if len(r) >= 6 and r[1] and re.match(r"[\d.]+$", r[2] or "")]
+    lo, hi = [float(r[2]) for r in rows], [float(r[3]) for r in rows]
+    mean = lambda v: round(sum(v) / len(v), 4)
+    med = lambda v: sorted(v)[len(v) // 2]
+    return [{"units": len(rows), "lower_mean": mean(lo), "higher_mean": mean(hi), "lower_median": med(lo),
+             "higher_median": med(hi), "lower_min": min(lo), "lower_max": max(lo), "higher_min": min(hi),
+             "higher_max": max(hi), "lower_counts": {str(k): lo.count(k) for k in sorted(set(lo))}}]
+
+
 def zagreb_assembly():
     p = resource("gradska-skupstina-grada-zagreba", r"raspodjeli-mandata.*\.csv", ext=".csv")
     rows = list(csv.reader(io.StringIO(p.read_bytes().decode("utf-8-sig")), delimiter=";"))
@@ -439,7 +452,7 @@ def main():
         "city_units": [{"city": c, "code": u["code"], "oib": u["oib"]} for c, u in ours.items()],
         "council_composition": council, "mayor_results": mayor, "election_turnout": turnout,
         "datagovhr_datasets": datasets, "datagovhr_publishers": summary,
-        "tax_rates": tax_rates(ours), "zagreb_assembly_parties": zagreb_assembly(),
+        "tax_rates": tax_rates(ours), "tax_national": tax_national(), "zagreb_assembly_parties": zagreb_assembly(),
     }
     # turnout of every unit (same DIP file), so a town card can say where its turnout ranks among all 556
     _, _, every = elections({u["code"]: u for u in units.values()})

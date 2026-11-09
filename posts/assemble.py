@@ -99,6 +99,8 @@ def towns(db_path):
     ranked = sorted(t["turnout_pct"] for t in every)
     big = {u["code"] for u in sorted(json.loads((dg / "units.json").read_text()), key=lambda u: -(u["population"] or 0))[:15]} \
         if (dg / "units.json").exists() else set()
+    nat = dg / "tax_national.json"
+    tax_hr = json.loads(nat.read_text())[0] if nat.exists() else None
     out = {}
     for r in rows:
         c = r["city"]
@@ -119,7 +121,7 @@ def towns(db_path):
                   "low_turnout": LOW_TURNOUT.get(c),  # one of the five lowest-turnout units: what its council publishes
                   "seats_total": r["seats_total"], "seats": seats, "majority": bool(r["single_list_majority"]),
                   "mayor": (r["mayor"] or "").title() or None,
-                  "tax": dict(tax) if tax else None,
+                  "tax": dict(tax, hr=tax_hr) if tax else None,  # hr: all 556 units (Porezna uprava)
                   "datagovhr": {"organization": pub["organization"], "datasets": pub["datasets"]} if pub else None,
                   "sources": {"population": "DZS, Popis 2021. (data.gov.hr)", "voters": "Registar birača 2026. (data.gov.hr)",
                               "seats": "DIP, lokalni izbori 2025., preračun D'Hondt", "tax": "Porezna uprava (data.gov.hr)",
@@ -169,8 +171,11 @@ def main():
         p["relevant"], p["relevance"] = relevance(p)
         p["source_url"] = links.get((p["city"], p["session"]))  # the minutes, else the session's page
     out.sort(key=lambda p: (p.get("date") or "", p["kind"] == "item", p.get("no", 0)), reverse=True)
-    from docs import add_docs  # links to the item's own documents (posts/docs.py)
-    add_docs(out)
+    import importlib.util  # posts/docs.py by path: collect/ (on sys.path) has its own docs.py
+    spec = importlib.util.spec_from_file_location("post_docs", Path(__file__).resolve().parent / "docs.py")
+    post_docs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(post_docs)
+    post_docs.add_docs(out)  # links to the item's own documents
     (POSTS / "posts.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     (POSTS / "towns.json").write_text(json.dumps(towns(ROOT / "data" / "vijecnica.db"), ensure_ascii=False, indent=1))
     (POSTS / "units.json").write_text(json.dumps(unit_names(), ensure_ascii=False, separators=(",", ":")))
