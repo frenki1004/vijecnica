@@ -55,10 +55,10 @@ ga QuickTimeom; stranica se sama vrti 3 minute.
 ### 1:45–2:15 · 5 · Podaci (skupovi podataka, tehnički pristup)
 **Slika:** Izvori preko API-ja (data.gov.hr CKAN, jpt.gov.hr, DZS, registar birača, porezne stope, DIP), brojke iz baze i rezultat pretraživača 556 jedinica.
 
-> `1:45` Podatke uzimamo s trideset i šest službenih stranica, među njima svih petnaest najvećih gradova
+> `1:45` Podatke uzimamo s 36 službenih stranica, i svih 15 najvećih gradova
 > `1:50` i s Portala otvorenih podataka, preko API-ja: registar jedinica, popis stanovništva, birače i porezne stope.
 > `1:58` Izborne rezultate pretvaramo u mandate.
-> `2:01` Naš pretraživač pregledao je svih 556 jedinica i našao snimke sjednica kod njih 87.
+> `2:01` Pregledali smo svih 556 jedinica: snimke smo našli kod njih 87.
 > `2:08` Snimke pretvaramo u tekst: sedam sati sjednice za manje od sat vremena.
 
 ### 2:15–2:40 · 6 · Povjerenje (tehnički pristup, kvaliteta)
