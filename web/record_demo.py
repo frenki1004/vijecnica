@@ -10,6 +10,7 @@ Usage: mcp_server.py --http 8103 running, then
 """
 import html
 import json
+import re
 import subprocess
 import sys
 import time
@@ -76,52 +77,76 @@ h1{{font:700 40px/1.2 Newsreader,Georgia,serif;margin:0 0 34px}}
 
 
 def reddit_page():
-    """The Čakovec live-stream post as it would look in a Reddit thread (a mock-up: not published; no Reddit logo)."""
+    """The Čakovec live-stream post as it would look in a Reddit community, new-Reddit dark layout (a mock-up: not
+    published, so no vote or comment counts; no Reddit logo or mascot; labelled in the top bar)."""
     t = (ROOT / "data" / "posts" / "reddit" / "cakovec-4-25-1.md").read_text()
     head, body = t.split("\n---\n", 1)
     title = next(line.split('"', 1)[1].rsplit('"', 1)[0] for line in head.splitlines() if line.startswith("title:"))
+    title = re.sub(r"^\[[^\]]+\]\s*|\s*\[[^\]]+\]$", "", title)  # flair and topic go to the flair pill
     body = body.rsplit("\n---\n", 1)[0]
-    up = '<svg viewBox="0 0 20 20" width="22"><path d="M10 3 3 11h4v6h6v-6h4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+    up = '<svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 3 3 11h4v6h6v-6h4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>'
+    nav = "".join(f'<div class="ni"><span>{i}</span>{n}</div>' for i, n in
+                  (("⌂", "Početna"), ("◎", "Popularno"), ("▤", "Vijesti"), ("✣", "Istraži")))
+    rules = "".join(f'<div class="ru"><span>{k}</span>{r}<i>⌄</i></div>' for k, r in enumerate(
+        ("Objavljuje osoba, ne bot", "Izvor uz svaku objavu", "Neutralno, bez komentara",
+         "Brojke automatski provjerene", "Samo uz dopuštenje moderatora"), 1))
     return f"""<!doctype html><meta charset="utf-8">
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <style>
-html{{zoom:1.45}} body{{margin:0;background:#dae0e6;font:15px/1.5 -apple-system,"Helvetica Neue",Arial,sans-serif;color:#1c1c1c}}
-.top{{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #edeff1;height:56px;display:flex;align-items:center;gap:18px;padding:0 24px}}
-.dot{{width:34px;height:34px;border-radius:50%;background:#ff4500;color:#fff;display:grid;place-items:center;font:800 15px sans-serif}}
-.search{{flex:1;max-width:620px;margin:0 auto;background:#f6f7f8;border:1px solid #edeff1;border-radius:20px;padding:9px 16px;color:#878a8c}}
-.mock{{background:#fff3cd;color:#664d03;font-size:14px;font-weight:600;padding:6px 14px;border-radius:6px}}
-.banner{{height:80px;background:linear-gradient(90deg,#0b4f9c,#1a7ec7)}}
-.sub{{background:#fff;padding:0 24px 12px}} .sub .in{{max-width:1080px;margin:0 auto;display:flex;align-items:end;gap:14px}}
-.sub .av{{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:#1a7ec7;color:#fff;display:grid;place-items:center;font:800 26px sans-serif;margin-top:-24px}}
-.sub h1{{font:700 26px sans-serif;margin:0}} .sub small{{color:#7c7c7c}}
-.wrap{{max-width:1080px;margin:20px auto;display:grid;grid-template-columns:1fr 312px;gap:24px}}
-.post{{background:#fff;border:1px solid #ccc;border-radius:6px;display:grid;grid-template-columns:44px 1fr}}
-.votes{{background:#f8f9fa;border-radius:6px 0 0 6px;display:flex;flex-direction:column;align-items:center;padding:10px 0;color:#878a8c;gap:4px;font-weight:700}}
-.votes .dn{{transform:rotate(180deg)}}
-.pc{{padding:10px 16px 6px}} .meta{{font-size:13px;color:#787c7e}} .meta b{{color:#1c1c1c}}
-.fl{{display:inline-block;background:#0079d3;color:#fff;font-size:12px;font-weight:700;border-radius:12px;padding:1px 9px;margin-left:6px}}
-h2{{font:600 21px/1.35 sans-serif;margin:6px 0 10px}}
-.b table{{border-collapse:collapse;margin:6px 0}} .b td,.b th{{border:1px solid #ccc;padding:4px 12px}} .b p{{margin:8px 0}}
-.b em{{color:#555}}
-.acts{{display:flex;gap:18px;color:#878a8c;font-size:13px;font-weight:700;padding:8px 0}}
-.cm{{border:1px solid #ccc;border-radius:4px;margin:6px 0 14px;padding:12px;color:#878a8c;min-height:60px}}
-.side .box{{background:#fff;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:16px}}
-.side .box h3{{margin:0;background:#0b4f9c;color:#fff;font-size:14px;padding:10px 12px}} .side .box p{{margin:0;padding:12px;font-size:14px}}
+html{{zoom:1.6}} *{{box-sizing:border-box}}
+body{{margin:0;background:#0e1113;color:#f2f4f5;font:14px/1.5 -apple-system,"Helvetica Neue",Arial,sans-serif;overflow-x:hidden}}
+.top{{position:sticky;top:0;z-index:5;height:56px;background:#0e1113;border-bottom:1px solid #2a3236;display:flex;align-items:center;padding:0 16px;gap:16px}}
+.word{{font:800 25px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:-1px;width:180px}}
+.search{{flex:1;max-width:560px;margin:0 auto;height:40px;border-radius:999px;background:#2a3236;display:flex;align-items:center;gap:8px;padding:0 6px;color:#b7cad4}}
+.search .chip{{background:#0e1113;border-radius:999px;padding:5px 10px;color:#f2f4f5;font-weight:600}}
+.mock{{background:#3b2f0b;color:#ffd666;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap}}
+.icons{{display:flex;gap:14px;color:#b7cad4;font-size:18px}} .me{{width:32px;height:32px;border-radius:50%;background:#d93a00}}
+.app{{display:grid;grid-template-columns:200px 1fr}}
+nav{{border-right:1px solid #2a3236;padding:12px 10px;min-height:100vh}}
+.ni{{display:flex;gap:12px;align-items:center;padding:9px 12px;border-radius:8px;color:#f2f4f5}} .ni span{{width:18px;color:#b7cad4}}
+.nh{{color:#8ba2ad;font-size:11px;letter-spacing:.12em;padding:18px 12px 6px;border-top:1px solid #2a3236;margin-top:12px}}
+.sub{{display:flex;gap:10px;align-items:center;padding:7px 12px;color:#f2f4f5}} .sub i{{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c8102e,#1d4f9c)}}
+main{{padding:8px 24px}}
+.banner{{height:96px;border-radius:12px;background:linear-gradient(100deg,#0b2a55 0%,#1d4f9c 45%,#c8102e 100%)}}
+.head{{display:flex;align-items:flex-end;gap:14px;margin:-34px 0 0 16px}}
+.av{{width:84px;height:84px;border-radius:50%;border:4px solid #0e1113;background:linear-gradient(135deg,#c8102e,#f2f4f5 50%,#1d4f9c);display:grid;place-items:center;font:800 28px sans-serif;color:#0e1113}}
+.head h1{{font:800 30px/1 -apple-system,Arial,sans-serif;margin:0 0 6px;flex:1}}
+.btn{{border:1px solid #6a7b84;border-radius:999px;padding:8px 16px;font-weight:700;margin-bottom:4px}} .btn.join{{background:#d93a00;border-color:#d93a00}}
+.cols{{display:grid;grid-template-columns:1fr 300px;gap:20px;margin-top:16px}}
+.sort{{color:#b7cad4;font-weight:600;padding:4px 0 10px;border-bottom:1px solid #2a3236}}
+.post{{padding:12px 0}} .meta{{display:flex;align-items:center;gap:8px;color:#8ba2ad;font-size:12.5px}}
+.meta i{{width:24px;height:24px;border-radius:50%;background:#1d4f9c}} .meta b{{color:#f2f4f5}}
+h2{{font:700 20px/1.3 -apple-system,Arial,sans-serif;margin:8px 0 6px}}
+.fl{{display:inline-block;background:#0dd3bb;color:#0e1113;font-size:12px;font-weight:600;border-radius:999px;padding:1px 9px;margin-right:6px}}
+.fl.b{{background:#2a3236;color:#f2f4f5}}
+.b{{color:#d7dfe2;font-size:14px}} .b p{{margin:8px 0}} .b strong{{color:#f2f4f5}} .b ul{{padding-left:22px}}
+.b table{{border-collapse:collapse;margin:6px 0}} .b td,.b th{{border:1px solid #3c474c;padding:4px 12px}} .b em{{color:#8ba2ad}}
+.acts{{display:flex;gap:8px;margin-top:10px}} .pill{{display:flex;align-items:center;gap:6px;background:#2a3236;border-radius:999px;padding:6px 12px;font-weight:600;font-size:13px;color:#f2f4f5}}
+.pill .dn svg{{transform:rotate(180deg)}}
+.cbox{{margin:16px 0 10px;border:1px solid #3c474c;border-radius:999px;padding:10px 16px;color:#8ba2ad}}
+.csort{{color:#8ba2ad;font-size:13px;margin:6px 0 16px}} .csort b{{color:#f2f4f5}}
+.empty{{display:flex;flex-direction:column;align-items:center;gap:4px;padding:26px 0 40px;color:#8ba2ad}} .empty b{{color:#f2f4f5;font-size:16px}}
+.side{{background:#000;border-radius:12px;padding:16px;align-self:start}}
+.side h3{{margin:0;font-size:16px}} .side .d{{color:#b7cad4;margin:2px 0 10px}} .side .m{{color:#8ba2ad;font-size:13px;margin:4px 0}}
+.side .h{{color:#8ba2ad;font-size:12px;letter-spacing:.1em;margin:16px 0 6px;padding-top:12px;border-top:1px solid #2a3236}}
+.ru{{display:flex;gap:14px;align-items:center;padding:9px 4px;color:#f2f4f5}} .ru span{{color:#8ba2ad;width:12px}} .ru i{{margin-left:auto;font-style:normal;color:#8ba2ad}}
 </style>
-<div class="top"><div class="dot">r/</div><b>r/croatia</b><div class="search">Pretraži r/croatia</div><span class="mock">Prikaz: kako bi objava izgledala</span></div>
-<div class="banner"></div>
-<div class="sub"><div class="in"><div class="av">hr</div><div><h1>Croatia</h1><small>r/croatia</small></div></div></div>
-<div class="wrap"><div>
- <div class="post"><div class="votes"><span>{up}</span><span>•</span><span class="dn">{up}</span></div>
- <div class="pc"><div class="meta"><b>r/croatia</b> · objavio u/evijecnica (osoba, ne bot) <span class="fl">Čakovec</span></div>
- <h2>{html.escape(title)}</h2><div class="b" data-md="{html.escape(body)}"></div>
- <div class="acts"><span>💬 Komentari</span><span>↗ Podijeli</span><span>☆ Spremi</span></div>
- <div class="cm">Što ti misliš? Dodaj komentar…</div></div></div>
-</div><div class="side">
- <div class="box"><h3>O objavi</h3><p>Tjedni pregled odluka gradskog vijeća, iz službenog zapisnika. Objavu priprema eVijećnica,
- a objavljuje osoba, uz dopuštenje moderatora. Izvor je naveden na dnu.</p></div>
- <div class="box"><h3>eVijećnica</h3><p>Ista objava kao karusel za Instagram i kao kartica na evijecnica.vercel.app.</p></div>
-</div></div>
+<div class="top"><div class="word">reddit</div><div class="search">⌕<span class="chip">r/croatia ✕</span>Pretraži r/croatia</div>
+<span class="mock">Prikaz: kako bi objava izgledala</span><div class="icons">💬 ＋ 🔔</div><div class="me"></div></div>
+<div class="app"><nav>{nav}<div class="nh">NEDAVNO</div><div class="sub"><i></i>r/croatia</div><div class="sub"><i></i>r/hrvatska</div><div class="sub"><i></i>r/zagreb</div></nav>
+<main><div class="banner"></div>
+<div class="head"><div class="av">hr</div><h1>r/croatia</h1><span class="btn">＋ Nova objava</span><span class="btn join">Pridruži se</span></div>
+<div class="cols"><div><div class="sort">Najbolje ⌄ &nbsp; ▤ ⌄</div>
+ <div class="post"><div class="meta"><i></i><b>u/evijecnica</b> · objavljuje osoba, ne bot</div>
+ <h2>{html.escape(title)}</h2><span class="fl">Čakovec</span><span class="fl b">gradska uprava</span>
+ <div class="b" data-md="{html.escape(body)}"></div>
+ <div class="acts"><span class="pill">{up}<span>Glasaj</span><span class="dn">{up}</span></span><span class="pill">💬 Komentiraj</span><span class="pill">↗ Podijeli</span></div>
+ <div class="cbox">Pridruži se razgovoru</div>
+ <div class="csort">Poredaj po: <b>Najbolje ⌄</b> &nbsp; ⌕ Pretraži komentare</div>
+ <div class="empty"><b>Budi prvi koji komentira</b><span>Što ti misliš o ovoj odluci?</span></div></div>
+</div><div class="side"><h3>Croatia</h3><div class="d">Hrvatski subreddit</div>
+ <div class="m">Tjedni pregled odluka gradskih vijeća iz službenih zapisnika: objavu priprema eVijećnica, objavljuje osoba, uz dopuštenje moderatora.</div>
+ <div class="h">KAKO eVIJEĆNICA OBJAVLJUJE</div>{rules}</div></div></main></div>
 <script>document.querySelectorAll('[data-md]').forEach(e=>e.innerHTML=marked.parse(e.dataset.md))</script>"""
 
 
@@ -221,7 +246,7 @@ def main():
         pg.goto((OUT / "reddit.html").as_uri())
         say("Zato je svaka objava spremna i za njih: najvažnije na Instagram, tjedni pregled na Reddit.")
         at(126)
-        pg.evaluate("window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})")
+        pg.evaluate("document.querySelector('.acts').scrollIntoView({behavior:'smooth',block:'center'})")
         at(130)
         # 2:10 MCP: the same server in three assistants (RAG over minutes and transcripts)
         for k, ui in enumerate(("chatgpt", "claude", "gemini")):

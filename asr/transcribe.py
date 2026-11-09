@@ -32,7 +32,9 @@ PROMPTS = {
 }
 # units from collect/audio_sites.py: no names (we have no member list for them yet), only the vocabulary
 for _key, _grad in (("cakovec", "Čakovca"), ("velika_gorica", "Velike Gorice"), ("petrinja", "Petrinje"),
-                   ("osijek", "Osijeka"), ("sibenik", "Šibenika"), ("ogulin", "Ogulina")):
+                   ("osijek", "Osijeka"), ("sibenik", "Šibenika"), ("ogulin", "Ogulina"), ("zadar", "Zadra"),
+                   ("varazdin", "Varaždina"), ("ploce", "Ploča"), ("kastela", "Kaštela"), ("karlovac", "Karlovca"),
+                   ("dubrovnik", "Dubrovnika"), ("bjelovar", "Bjelovara")):
     PROMPTS[_key] = (f"Sjednica Gradskog vijeća Grada {_grad}. Predsjednik Gradskog vijeća, gradonačelnik, "
                      "vijećnici, dnevni red, točka, aktualni sat, glasovanje, zaključak, prijedlog odluke.")
 
