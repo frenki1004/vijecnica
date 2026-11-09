@@ -1,6 +1,6 @@
 # eVijećnica: odakle dolaze podaci, za svaku jedinicu
 
-Stanje baze 9. 11. 2026. (31 jedinica, među njima svih 15 najvećih gradova). Sve brojke u ovom dokumentu izračunate su iz `data/vijecnica.db` i `data/posts/` (skripta je
+Stanje baze 9. 11. 2026. (36 jedinica: svih 15 najvećih gradova, 5 općina s najnižom izlaznošću i 16 manjih jedinica). Sve brojke u ovom dokumentu izračunate su iz `data/vijecnica.db` i `data/posts/` (skripta je
 u povijesti razgovora; upiti iste vrste su u `ARHITEKTURA.md`, „Provjera brojki”). Kod: EUPL-1.2. Izvedeni podaci:
 CC BY 4.0 ili uvjeti izvora (licenca po resursu u `datapackage.json` izvoza).
 
@@ -241,6 +241,40 @@ pa njih uzimamo sa službenih stranica vijeća.
 - **Što uzimamo:** zapisnici 11. i 12. sjednice (skenovi, OCR) iz paketa sljedeće sjednice; materijali 12. i 13. sjednice.
 - **U bazi:** 3 sjednice (2 sa zapisnikom), 43 točaka dnevnog reda (23 s ishodom glasovanja); snimke: 0 (0 pretvoreno u tekst); objave: 18.
 - **S data.gov.hr:** 37.435 stanovnika (DZS 2021.), 33.807 birača (registar 2026.), porez na dohodak 18 % / 27 % (2026.); vijeće 21 mjesta, izlaznost 50,11 % i 16.532 birača koji nisu glasovali (DIP 2025.); vlastitih skupova podataka na portalu: 13.
+
+## 4. Pet općina s najnižom izlaznošću (lokalni izbori 2025.)
+
+Izlaznost i mjesto među 555 jedinica: DIP 2025. Opis objavljenog stanje je 9. 11. 2026.; robots.txt nijedne od njih ne ograničava pristup.
+
+### Općina Brckovljani (izlaznost 22,05 %, 1. najniža od 555)
+- **Službeni izvor:** brckovljani.hr (dokumenti: Općinsko vijeće, Službeni glasnik). Skupljač: – (nema što skupljati).
+- **Što vijeće objavljuje:** Za ovaj saziv objavljen je samo poziv na konstituirajuću sjednicu; zapisnici i materijali nisu objavljeni, odluke su u službenom glasniku bez rezultata glasovanja.
+- **U bazi:** 0 sjednica (0 sa zapisnikom), 0 točaka (0 s ishodom glasovanja); objave: 0.
+- **S data.gov.hr:** 5.876 stanovnika (DZS 2021.), 6.165 birača (registar 2026.); vijeće 13 mjesta; 4.551 birača nije glasovalo 2025. (DIP).
+
+### Općina Gradište (izlaznost 25,22 %, 2. najniža od 555)
+- **Službeni izvor:** gradiste.hr (Dnevni red i odluke, Pozivi na sjednice, Proračuni). Skupljač: – (nema što skupljati).
+- **Što vijeće objavljuje:** Za ovaj saziv nisu objavljeni ni pozivi ni zapisnici; zadnja objavljena sjednica je iz lipnja 2023. Objavljeni su proračunski akti.
+- **U bazi:** 0 sjednica (0 sa zapisnikom), 0 točaka (0 s ishodom glasovanja); objave: 0.
+- **S data.gov.hr:** 2.227 stanovnika (DZS 2021.), 2.202 birača (registar 2026.); vijeće 9 mjesta; 1.613 birača nije glasovalo 2025. (DIP).
+
+### Općina Cernik (izlaznost 25,26 %, 3. najniža od 555)
+- **Službeni izvor:** cernik.hr/wp (Zapisnici, Službeni glasnik, Odluke). Skupljač: `collect/cernik.py`.
+- **Što vijeće objavljuje:** Objavljeni su zapisnici samo 8., 9. i 10. sjednice; ostali zapisnici, materijali i snimke nisu objavljeni.
+- **U bazi:** 3 sjednica (3 sa zapisnikom), 9 točaka (8 s ishodom glasovanja); objave: 3.
+- **S data.gov.hr:** 2.964 stanovnika (DZS 2021.), 2.985 birača (registar 2026.); vijeće 13 mjesta; 2.175 birača nije glasovalo 2025. (DIP).
+
+### Općina Sveti Juraj na Bregu (izlaznost 27,57 %, 4. najniža od 555)
+- **Službeni izvor:** svetijurajnabregu.hr (Dokumenti: sazivi i zapisnici). Skupljač: `collect/svetijuraj.py`.
+- **Što vijeće objavljuje:** Objavljeni su pozivi i zapisnici gotovo svih sjednica; snimke se ne objavljuju.
+- **U bazi:** 12 sjednica (9 sa zapisnikom), 160 točaka (122 s ishodom glasovanja); objave: 19.
+- **S data.gov.hr:** 4.929 stanovnika (DZS 2021.), 4.501 birača (registar 2026.); vijeće 13 mjesta; 3.210 birača nije glasovalo 2025. (DIP).
+
+### Općina Marija Gorica (izlaznost 27,96 %, 5. najniža od 555)
+- **Službeni izvor:** marija-gorica.hr (Dokumenti: sjednice, paketi materijala). Skupljač: `collect/marijagorica.py`.
+- **Što vijeće objavljuje:** Objavljeni su paketi materijala s pozivima i dijelom zapisnika (sjednice 1, 4, 7 i 8); snimke se ne objavljuju.
+- **U bazi:** 4 sjednica (4 sa zapisnikom), 52 točaka (50 s ishodom glasovanja); objave: 4.
+- **S data.gov.hr:** 2.094 stanovnika (DZS 2021.), 1.923 birača (registar 2026.); vijeće 9 mjesta; 1.350 birača nije glasovalo 2025. (DIP).
 
 ### Grad Petrinja (u izradi)
 - **Službeni izvor:** petrinja.hr (snimke sjednica). Poslužitelj je dvaput prekinuo vezu, pa ga zasad ne pitamo dalje.

@@ -196,6 +196,9 @@ h1.home{cursor:pointer}
     <section class="grp"><h3>Manji gradovi i općine</h3><p>Dokaz da isti postupak radi i za male jedinice. Većina koristi
       isti sustav za sjednice (eSjednice), pa ih pokriva jedan skupljač. Uz svaku je izlaznost na lokalnim izborima 2025.
       i njezino mjesto među svim jedinicama u Hrvatskoj.</p><div class="towns" id="towns-small"></div></section>
+    <section class="grp"><h3>Pet općina s najnižom izlaznošću u Hrvatskoj</h3><p>Na lokalnim izborima 2025. ondje je glasovao
+      tek svaki četvrti birač. Pogledali smo što njihova vijeća objavljuju: gdje ima zapisnika, ima i objava; gdje ih nema,
+      to piše na kartici općine.</p><div class="towns" id="towns-low"></div></section>
     <p style="margin-top:22px"><button class="all" id="all">Pokaži objave svih gradova i općina →</button></p>
     <p class="fine3">Demo za Datathon Portala otvorenih podataka: objave su strojni nacrti iz službenih dokumenata i još
       ih nije pregledala osoba. Službeni dokumenti imaju prednost.</p>
@@ -306,6 +309,7 @@ function townCard(c) {
     </div>
     ${seats.length ? `<p class="label2">Tko čini ${opcina ? "općinsko" : "gradsko"} vijeće (${t.seats_total} mjesta)</p>
     <div class="seatbar">${bar}</div><ul class="seatlist">${list}</ul><p class="sub2" style="margin:8px 0 0">${majority}</p>` : ""}
+    ${t.low_turnout ? `<p class="label2">Što vijeće objavljuje</p><p class="sub2" style="margin:2px 0 0">${esc(t.low_turnout)}</p>` : ""}
     <p class="src">${t.website ? `<a href="${esc(t.website)}" target="_blank" rel="noopener">Službena stranica</a> · ` : ""}${dg}<br>
     Izvori: DZS, registar birača i Porezna uprava preko Portala otvorenih podataka (data.gov.hr); mandati preračunati iz rezultata DIP-a (D'Hondt).</p>
   </section>`;
@@ -314,7 +318,7 @@ function townCard(c) {
 function how() {
   const cities = new Set(posts.map(p => p.city)).size;
   return `<section class="how desk" aria-label="Kako radi"><h2>Kako radi</h2><ol>
-    <li><span>Skupljamo službene zapisnike, materijale i snimke sjednica s 31 gradske i općinske stranice.</span></li>
+    <li><span>Skupljamo službene zapisnike, materijale i snimke sjednica sa službenih stranica ${Object.keys(towns).length} gradova i općina.</span></li>
     <li><span>Iz zapisnika čitamo dnevni red i glasovanje. Pravila bez urednika određuju što postaje objava.</span></li>
     <li><span>AI piše sažetak samo iz zapisnika; svaka se brojka automatski provjerava, a izvor stoji ispod objave.</span></li></ol>
     <p class="stat">${num(posts.length)} objava</p><p class="fine2">iz ${cities} gradova i općina · podaci i kod otvoreni (EUPL-1.2, CC BY 4.0)</p></section>`;
@@ -329,10 +333,13 @@ function turnoutNote(t) {
 function start() {
   const box = document.getElementById("start"), names = {}, n = {};
   posts.forEach(p => { names[p.city] = p.city_name || p.city; n[p.city] = (n[p.city] || 0) + 1; });
-  const btn = ([c, name]) => `<button data-c="${esc(c)}">${esc(name)}<small>${n[c]} ${plural(n[c], "objava", "objave", "objava")}</small>${turnoutNote(towns[c])}</button>`;
+  const btn = ([c, name]) => `<button data-c="${esc(c)}">${esc(name)}<small>${n[c] ? `${n[c]} ${plural(n[c], "objava", "objave", "objava")}` : "nema objava: zapisnici nisu objavljeni"}</small>${turnoutNote(towns[c])}</button>`;
+  Object.entries(towns).forEach(([c, t]) => { if (t.low_turnout && !names[c]) { names[c] = (t.unit || c).replace(/^OPĆINA /, "").toLowerCase().replace(/(^|\s)\S/g, m => m.toUpperCase()); n[c] = 0; } });
   const all = Object.entries(names), big = all.filter(([c]) => towns[c]?.big15);
+  const low = all.filter(([c]) => towns[c]?.low_turnout).sort((a, b) => towns[a[0]].turnout_2025 - towns[b[0]].turnout_2025);
   big.sort((a, b) => (towns[b[0]].population || 0) - (towns[a[0]].population || 0));
-  const small = all.filter(([c]) => !towns[c]?.big15).sort((a, b) => a[1].localeCompare(b[1], "hr"));
+  const small = all.filter(([c]) => !towns[c]?.big15 && !towns[c]?.low_turnout).sort((a, b) => a[1].localeCompare(b[1], "hr"));
+  document.getElementById("towns-low").innerHTML = low.map(btn).join("");
   document.getElementById("towns-big").innerHTML = big.map(btn).join("");
   document.getElementById("towns-small").innerHTML = small.map(btn).join("");
   const people = big.reduce((s, [c]) => s + (towns[c].population || 0), 0);
@@ -352,7 +359,11 @@ function render() {
   document.getElementById("shown").textContent = `${list.length} od ${posts.length} objava`;
   const feed = document.getElementById("feed");
   document.getElementById("side").innerHTML = (filter.city ? townCard(filter.city) : "") + how();
-  if (!list.length) { feed.innerHTML = `<p class="empty">Nema objava za ovaj odabir.</p>`; return; }
+  if (!list.length) {
+    const why = filter.city && towns[filter.city]?.low_turnout && !posts.some(p => p.city === filter.city)
+      ? "Vijeće ove općine za ovaj saziv nije objavilo zapisnike, pa nema ni objava. Što objavljuje, piše na kartici općine." : "Nema objava za ovaj odabir.";
+    feed.innerHTML = `<p class="empty">${why}</p>`; return;
+  }
   feed.innerHTML = list.map((p, k) => {
     const s = slides(p), t = TOPIC_COLOR[p.topics[0]] || "var(--accent)";
     return `<article style="--t:${t}">
@@ -431,7 +442,10 @@ function filters() {
   const sel = document.getElementById("city");
   if (sel.options.length === 1) {
     const names = {}; posts.forEach(p => names[p.city] = p.city_name || p.city);
-    for (const [label, test] of [["15 najvećih gradova", c => towns[c]?.big15], ["Manji gradovi i općine", c => !towns[c]?.big15]]) {
+    Object.entries(towns).forEach(([c, t]) => { if (t.low_turnout && !names[c]) names[c] = (t.unit || c).replace(/^OPĆINA /, "")
+      .toLowerCase().replace(/(^|\s)\S/g, m => m.toUpperCase()); });  // units without posts: the card says why
+    for (const [label, test] of [["15 najvećih gradova", c => towns[c]?.big15], ["Najniža izlaznost 2025.", c => towns[c]?.low_turnout],
+                                 ["Manji gradovi i općine", c => !towns[c]?.big15 && !towns[c]?.low_turnout]]) {
       const g = document.createElement("optgroup"); g.label = label;
       Object.entries(names).filter(([c]) => test(c)).sort((a, b) => a[1].localeCompare(b[1], "hr"))
         .forEach(([c, n]) => g.appendChild(new Option(`${n} (${posts.filter(p => p.city === c).length})`, c)));

@@ -32,7 +32,8 @@ ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "data" / "vijecnica.db"
 EXCERPT = 8000
 BODY = {"zagreb": "Gradske skupštine Grada Zagreba",  # everywhere else: Gradsko vijeće
-        **{k: "Općinskog vijeća" for k, u in NETCOM.items() if u["body"].startswith("Općin")}}
+        **{k: "Općinskog vijeća" for k, u in NETCOM.items() if u["body"].startswith("Općin")},
+        **{k: "Općinskog vijeća" for k in ("brckovljani", "gradiste", "cernik", "svetijuraj", "marijagorica")}}
 MARK = re.compile(r"^\W*(?:TOČKA |Točka |Ad ?|AD ?)(\d+)\.?(?=\s|$)", re.M)  # Krk: "Ad 4."; Osijek: title on the same line
 
 
@@ -85,7 +86,7 @@ def sibenik_sections(n):
     return out
 
 
-CUSTOM = ("cakovec", "zadar", "pula", "karlovac", "varazdin", "dubrovnik", "sisak", "kastela", "bjelovar", "velika_gorica", "samobor")
+CUSTOM = ("cakovec", "zadar", "pula", "karlovac", "varazdin", "dubrovnik", "sisak", "kastela", "bjelovar", "velika_gorica", "samobor", "cernik", "svetijuraj", "marijagorica")
 
 
 def custom_sections(city, n):

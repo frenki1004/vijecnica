@@ -1,6 +1,6 @@
 # eVijećnica
 
-**Demo:** https://vijecnica.vercel.app (1.208 objava iz 24 grada i općine; strojni nacrti, javni demo bez prijave)
+**Demo:** https://vijecnica.vercel.app (1.233 objave iz 27 gradova i općina; strojni nacrti, javni demo bez prijave)
 
 eVijećnica prikuplja službene podatke o sjednicama gradskih i općinskih vijeća (dnevni red, zapisnike, rezultate glasovanja, poimenično glasovanje, pitanja vijećnika i snimke sjednica), sprema ih u jednu pretraživu bazu i iz njih izrađuje kratke, neutralne objave za društvene mreže, s oznakom grada i teme (`#Zagreb #promet`).
 
@@ -20,15 +20,15 @@ Brojke su iz `data/vijecnica.db` i `data/posts/posts.json`; upiti za provjeru su
 
 | | |
 |---|---|
-| jedinice lokalne samouprave | 31, među njima svih 15 najvećih gradova (saziv 2025.–2029.) |
-| sjednice | 332 (od toga 6 zakazanih, s dnevnim redom) |
-| točke dnevnog reda | 6.461 |
-| točke s ishodom glasovanja (rezultat ili broj glasova) | 4.080 |
+| jedinice lokalne samouprave | 36: svih 15 najvećih gradova, 5 općina s najnižom izlaznošću 2025. i 16 manjih jedinica (saziv 2025.–2029.) |
+| sjednice | 351 (od toga 6 zakazanih, s dnevnim redom) |
+| točke dnevnog reda | 6.682 |
+| točke s ishodom glasovanja (rezultat ili broj glasova) | 4.260 |
 | pojedinačni glasovi iz poimeničnog glasovanja (samo Zagreb, 565 točaka) | 26.498 |
 | pitanja vijećnika s odgovorom (Zagreb, Rijeka, Krk) | 343 |
 | snimke sjednica / strojno transkribirane | 192 / 27 |
-| objave za društvene mreže | 1.223 iz 24 jedinice (1.095 o pojedinoj točki, 128 pregleda jednoglasnih odluka); za zadnje sjednice pisane i iz materijala i snimki |
-| slike za Instagram (1080×1350) | 4.089 |
+| objave za društvene mreže | 1.249 iz 27 jedinica (1.105 o pojedinoj točki, 144 pregleda jednoglasnih odluka); za zadnje sjednice pisane i iz materijala i snimki |
+| slike za Instagram (1080×1350) | 4.165 |
 
 ### Pokrivenost po jedinicama
 
@@ -54,12 +54,17 @@ Brojke su iz `data/vijecnica.db` i `data/posts/posts.json`; upiti za provjeru su
 | Dubrovnik | `collect/dubrovnik.py` | saziv s dnevnim redom, snimke (YouTube); zapisnik i materijali iz paketa materijala preuzetog ručno | 13 | 1 | 340 | 57 | 31 |
 | Zadar | `collect/zadar.py` | dnevni red s materijalima, izvadci iz zapisnika (skenovi, OCR), snimke (YouTube) | 14 | 13 | 287 | 187 | 26 |
 | Pula | `collect/pula.py` | dnevni red s materijalima, skraćeni zapisnici | 14 | 12 | 276 | 227 | 20 |
+| Sveti Juraj na Bregu | `collect/svetijuraj.py` | sazivi i zapisnici (.doc/.docx) | 12 | 9 | 160 | 122 | 19 |
 | Samobor | `collect/samobor.py` | zapisnici (skenovi, OCR) i materijali iz paketa preuzetih ručno (Grad u robots.txt isključuje AI sustave, pa ne skupljamo automatski) | 3 | 2 | 43 | 23 | 18 |
 | Karlovac | `collect/karlovac.py` | dnevni red, zapisnici (Word, u paketu materijala), snimke (YouTube) | 21 | 17 | 292 | 286 | 14 |
 | Sisak | `collect/sisak.py` | dnevni red s materijalima, zapisnici (skenovi, OCR) | 11 | 10 | 193 | 173 | 12 |
 | Kaštela | `collect/kastela.py` | dnevni red s materijalima, zapisnici (dio skeniran, OCR), snimke (YouTube) | 9 | 8 | 244 | 205 | 9 |
 | Velika Gorica | `collect/velika_gorica.py`, `audio_sites.py` | zapisnik i materijali iz paketa materijala preuzetog ručno; audio zapisi (MP3) | 2 | 1 | 45 | 21 | 5 |
+| Marija Gorica | `collect/marijagorica.py` | paketi materijala sa zapisnicima (djelomično) | 4 | 4 | 52 | 50 | 4 |
+| Cernik | `collect/cernik.py` | zapisnici (samo 8.–10. sjednica) | 3 | 3 | 9 | 8 | 3 |
 | Bjelovar | `collect/bjelovar.py` | najave s materijalima, zapisnici (.docx), snimke (YouTube) | 12 | 11 | 306 | 263 | 2 |
+| Brckovljani | – | objavljen samo poziv na konstituirajuću sjednicu; zapisnici nisu objavljeni | 0 | 0 | 0 | 0 | 0 |
+| Gradište | – | zapisnici ovog saziva nisu objavljeni; proračunski akti | 0 | 0 | 0 | 0 | 0 |
 | Kostrena | `collect/netcom.py` | eSjednice: samo donesene odluke | 10 | 0 | 138 | 0 | 0 |
 | Novi Vinodolski | `collect/netcom.py` | eSjednice: dnevni red, odluke | 9 | 0 | 75 | 0 | 0 |
 | Makarska | `collect/netcom.py` | eSjednice: dnevni red, odluke | 8 | 0 | 107 | 0 | 0 |
@@ -67,13 +72,13 @@ Brojke su iz `data/vijecnica.db` i `data/posts/posts.json`; upiti za provjeru su
 | Omišalj | `collect/netcom.py` | eSjednice: dnevni red, odluke | 9 | 0 | 137 | 0 | 0 |
 | Baška | `collect/netcom.py` | eSjednice: dnevni red, odluke | 10 | 0 | 139 | 0 | 0 |
 | Čavle | `collect/netcom.py` | eSjednice: dnevni red, odluke | 11 | 0 | 148 | 0 | 0 |
-| **ukupno** | | | **332** | **218** | **6.461** | **4.080** | **1.223** |
+| **ukupno** | | | **351** | **234** | **6.682** | **4.260** | **1.249** |
 
-17 gradova ima vlastiti skupljač; 14 jedinica na sustavu NetCom eSjednice pokriva jedan zajednički skupljač (`collect/netcom.py`). Za sedam jedinica bez preuzetih zapisnika (redovi s 0 zapisnika) baza ima dnevni red i odluke, ali ne i glasovanje, pa iz njih zasad nema objava.
+20 jedinica ima vlastiti skupljač; 14 jedinica na sustavu NetCom eSjednice pokriva jedan zajednički skupljač (`collect/netcom.py`). Za sedam jedinica bez preuzetih zapisnika (redovi s 0 zapisnika) baza ima dnevni red i odluke, ali ne i glasovanje, pa iz njih zasad nema objava.
 
 Snimke: strojno je transkribirano 26 snimki (sve 12 Slavonskog Broda, 4 Zagreba, 3 Ogulina, po 2 Krka i Rijeke, po jedna Čakovca, Osijeka i Šibenika), uglavnom zadnje sjednice; te zadnja sjednica Velike Gorice (7 sati, `collect/audio_sites.py`). Ostale snimke su popisane (`videos`), ali još nisu transkribirane.
 
-Detaljni pregled po sjednici i točki (web stranica `/`, JSON API, MCP alati) trenutačno je izrađen za Zagreb, Slavonski Brod, Krk i Rijeku; feed objava (`/feed`) pokriva sve 24 jedinice s objavama. Vidi [ograničenja](ARHITEKTURA.md#10-ograničenja-i-daljnji-razvoj).
+Detaljni pregled po sjednici i točki (web stranica `/`, JSON API, MCP alati) trenutačno je izrađen za Zagreb, Slavonski Brod, Krk i Rijeku; feed objava (`/feed`) pokriva svih 27 jedinica s objavama. Vidi [ograničenja](ARHITEKTURA.md#10-ograničenja-i-daljnji-razvoj).
 
 ## Quickstart
 

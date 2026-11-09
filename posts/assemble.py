@@ -15,10 +15,10 @@ from netcom import UNITS as NETCOM  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 POSTS = ROOT / "data" / "posts"
 CITY_TAG = {"zagreb": "#Zagreb", "brod": "#SlavonskiBrod", "rijeka": "#Rijeka", "krk": "#Krk",
-            "osijek": "#Osijek", "sibenik": "#Šibenik", "cakovec": "#Čakovec", "zadar": "#Zadar", "pula": "#Pula", "karlovac": "#Karlovac", "varazdin": "#Varaždin", "dubrovnik": "#Dubrovnik", "sisak": "#Sisak", "kastela": "#Kaštela", "bjelovar": "#Bjelovar", "velika_gorica": "#VelikaGorica", "samobor": "#Samobor",
+            "osijek": "#Osijek", "sibenik": "#Šibenik", "cakovec": "#Čakovec", "zadar": "#Zadar", "pula": "#Pula", "karlovac": "#Karlovac", "varazdin": "#Varaždin", "dubrovnik": "#Dubrovnik", "sisak": "#Sisak", "kastela": "#Kaštela", "bjelovar": "#Bjelovar", "velika_gorica": "#VelikaGorica", "samobor": "#Samobor", "brckovljani": "#Brckovljani", "gradiste": "#Gradište", "cernik": "#Cernik", "svetijuraj": "#SvetiJurajnaBregu", "marijagorica": "#MarijaGorica",
             **{k: "#" + u["name"].replace(" ", "") for k, u in NETCOM.items()}}
 CITY_NAME = {"zagreb": "Zagreb", "brod": "Slavonski Brod", "rijeka": "Rijeka", "krk": "Krk", "osijek": "Osijek",
-             "sibenik": "Šibenik", "cakovec": "Čakovec", "zadar": "Zadar", "pula": "Pula", "karlovac": "Karlovac", "varazdin": "Varaždin", "dubrovnik": "Dubrovnik", "sisak": "Sisak", "kastela": "Kaštela", "bjelovar": "Bjelovar", "velika_gorica": "Velika Gorica", "samobor": "Samobor", **{k: u["name"] for k, u in NETCOM.items()}}
+             "sibenik": "Šibenik", "cakovec": "Čakovec", "zadar": "Zadar", "pula": "Pula", "karlovac": "Karlovac", "varazdin": "Varaždin", "dubrovnik": "Dubrovnik", "sisak": "Sisak", "kastela": "Kaštela", "bjelovar": "Bjelovar", "velika_gorica": "Velika Gorica", "samobor": "Samobor", "brckovljani": "Brckovljani", "gradiste": "Gradište", "cernik": "Cernik", "svetijuraj": "Sveti Juraj na Bregu", "marijagorica": "Marija Gorica", **{k: u["name"] for k, u in NETCOM.items()}}
 TOPIC_TAG = {"promet": "#promet", "stanovanje": "#stanovanje", "komunalno": "#komunalno", "otpad": "#otpad",
              "okolis": "#okoliš", "proracun": "#proračun", "porezi-i-naknade": "#poreziinaknade",
              "vrtici-i-skole": "#vrtićiiškole", "mladi": "#mladi", "sport": "#sport", "kultura": "#kultura",
@@ -57,6 +57,16 @@ def short_list(name):
     return " + ".join(part.rsplit(" - ", 1)[-1].strip() for part in name.split(" + "))
 
 
+# the five units with the lowest 2025 turnout (DIP): what each council publishes for the 2025-2029 term (checked 9. 11. 2026.)
+LOW_TURNOUT = {
+    "brckovljani": "Za ovaj saziv objavljen je samo poziv na konstituirajuću sjednicu; zapisnici i materijali nisu objavljeni, odluke su u službenom glasniku bez rezultata glasovanja.",
+    "gradiste": "Za ovaj saziv nisu objavljeni ni pozivi ni zapisnici; zadnja objavljena sjednica je iz lipnja 2023. Objavljeni su proračunski akti.",
+    "cernik": "Objavljeni su zapisnici samo 8., 9. i 10. sjednice; ostali zapisnici, materijali i snimke nisu objavljeni.",
+    "svetijuraj": "Objavljeni su pozivi i zapisnici gotovo svih sjednica; snimke se ne objavljuju.",
+    "marijagorica": "Objavljeni su paketi materijala s pozivima i dijelom zapisnika (sjednice 1, 4, 7 i 8); snimke se ne objavljuju.",
+}
+
+
 def towns(db_path):
     """Per city, the data.gov.hr and DIP facts the feed's town card shows, each with its source.
     Built by collect/datagovhr.py + db/build.py (view city_overview); empty when that has not run."""
@@ -87,6 +97,7 @@ def towns(db_path):
                   "turnout_rank": sum(1 for x in ranked if x < r["turnout_pct"]) + 1 if r["turnout_pct"] and ranked else None,
                   "turnout_units": len(ranked) or None,
                   "big15": r["code"] in big,  # one of the 15 most populous units in Croatia (DZS 2021.)
+                  "low_turnout": LOW_TURNOUT.get(c),  # one of the five lowest-turnout units: what its council publishes
                   "seats_total": r["seats_total"], "seats": seats, "majority": bool(r["single_list_majority"]),
                   "mayor": (r["mayor"] or "").title() or None,
                   "tax": dict(tax) if tax else None,

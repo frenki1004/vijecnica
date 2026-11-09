@@ -83,6 +83,11 @@ SOURCES = {
                       "path": "https://gorica.hr/gradsko-vijece-2/sjednice-gradskog-vijeca/"},
     "samobor": {"title": "Grad Samobor (samobor.hr): sjednice, materijali i zapisnici (paketi preuzeti ručno; Grad u robots.txt isključuje AI sustave)",
                 "path": "https://www.samobor.hr/grad/sjednice-c229"},
+    "brckovljani": {"title": "Općina Brckovljani (www.brckovljani.hr): samo poziv na konstituirajuću sjednicu i službeni glasnik; zapisnici nisu objavljeni", "path": "https://www.brckovljani.hr"},
+    "gradiste": {"title": "Općina Gradište (www.gradiste.hr): proračunski akti; zapisnici ovog saziva nisu objavljeni", "path": "https://www.gradiste.hr"},
+    "cernik": {"title": "Općina Cernik (cernik.hr): zapisnici (djelomično), službeni glasnik", "path": "https://cernik.hr"},
+    "svetijuraj": {"title": "Općina Sveti Juraj na Bregu (www.svetijurajnabregu.hr): sazivi i zapisnici sjednica", "path": "https://www.svetijurajnabregu.hr"},
+    "marijagorica": {"title": "Općina Marija Gorica (www.marija-gorica.hr): paketi materijala sa zapisnicima (djelomično), službeni glasnik", "path": "https://www.marija-gorica.hr"},
     # 13 units on NetCom eSjednice public portals (collect/netcom.py)
     **{k: {"title": f"{u['name']} (eSjednice, {u['host']}): sjednice, dnevni red, odluke"
                     + (" i zapisnici" if u["tier"] == "A" else ""), "path": f"https://{u['host']}"}
