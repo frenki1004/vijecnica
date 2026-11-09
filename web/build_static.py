@@ -35,7 +35,9 @@ VERCEL = {"$schema": "https://openapi.vercel.sh/vercel.json", "framework": None,
                        {"source": "/demo", "destination": "/demo.html"}, {"source": "/intro", "destination": "/intro.html"}, {"source": "/api/demo", "destination": "/demo.json"},
                        {"source": "/api/towns", "destination": "/towns.json"},
                        {"source": "/api/units", "destination": "/units.json"}, {"source": "/feed", "destination": "/"},
-                       {"source": "/podaci", "destination": "/podaci.html"}],
+                       {"source": "/podaci", "destination": "/podaci.html"},
+                       {"source": "/mcp", "destination": "/api/server"}],
+          "functions": {"api/server.py": {"includeFiles": "{mcp_server.py,collect/netcom.py,data/vijecnica.db}", "maxDuration": 30}},
           "headers": [{"source": "/posts.json", "headers": [{"key": "Cache-Control", "value": "public, max-age=300"}]}]}
 
 
@@ -92,6 +94,34 @@ def podaci(posts):
     (OUT / "podaci.html").write_text((ROOT / "web" / "podaci.html").read_text().replace("__DATA__", json.dumps(data, ensure_ascii=False)))
 
 
+def mcp_public():
+    """The MCP server as a Vercel Python function (/mcp): api/server.py (not mcp.py: that name would hide the mcp package), mcp_server.py, collect/netcom.py and a
+    public copy of the database without NO_DOWNLOAD units (rows deleted, full-text indexes rebuilt)."""
+    import sqlite3
+    (OUT / "api").mkdir()
+    shutil.copy(ROOT / "web" / "vercel_mcp" / "server.py", OUT / "api" / "server.py")
+    shutil.copy(ROOT / "mcp_server.py", OUT / "mcp_server.py")
+    (OUT / "collect").mkdir()
+    shutil.copy(ROOT / "collect" / "netcom.py", OUT / "collect" / "netcom.py")
+    (OUT / "data").mkdir()
+    db_path = OUT / "data" / "vijecnica.db"
+    src = sqlite3.connect(f"file:{ROOT / 'data' / 'vijecnica.db'}?mode=ro", uri=True)
+    db = sqlite3.connect(db_path)
+    src.backup(db)
+    src.close()
+    tables = [r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE '%fts%'")]
+    for t in tables:
+        cols = [r[1] for r in db.execute(f"PRAGMA table_info({t})")]
+        for c in ("city",) if "city" in cols else ("id",) if t == "cities" else ():
+            db.execute(f"DELETE FROM {t} WHERE {c} IN ({','.join('?' * len(NO_DOWNLOAD))})", sorted(NO_DOWNLOAD))
+    for fts in ("segments_fts", "items_fts", "questions_fts"):
+        db.execute(f"INSERT INTO {fts}({fts}) VALUES ('rebuild')")
+    db.commit()
+    db.execute("VACUUM")
+    db.close()
+    (OUT / "requirements.txt").write_text("mcp==2.3.0\nstarlette==1.10.0\npydantic==2.14.3\n")
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     for f in OUT.iterdir():  # keep .vercel/ (the link to the Vercel project), replace the rest
@@ -108,6 +138,7 @@ def main():
     shutil.copy(ROOT / "data" / "posts" / "towns.json", OUT / "towns.json")
     shutil.copy(ROOT / "data" / "posts" / "units.json", OUT / "units.json")  # "Moj grad nije na popisu"
     podaci(posts)  # /podaci: the open-data package, whole and per town
+    mcp_public()  # /mcp: the MCP server for any AI assistant
     (OUT / "film.html").write_text((ROOT / "web" / "film.html").read_text())  # the 3-minute video as a page
     shutil.copytree(ROOT / "web" / "film", OUT / "film")
     # "Kako agent odgovara": six questions answered only through the MCP server (demo/record.py)

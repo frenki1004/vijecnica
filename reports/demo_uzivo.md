@@ -5,7 +5,7 @@ Za prezentaciju pred žirijem ili snimku zaslona. Tok: problem → kako smo doš
 
 ## Priprema (10 minuta prije)
 1. **Poslužitelj** (za MCP i lokalni feed): `cd drustvo_i_javne_usluge && ../.venv/bin/python mcp_server.py --http 8103`
-2. **AI asistent s MCP-om**, npr. Claude Code u drugom terminalu:
+2. **AI asistent s MCP-om** (javno: `https://evijecnica.vercel.app/mcp`; ili lokalno), npr. Claude Code u drugom terminalu:
    `claude mcp add --transport http evijecnica http://localhost:8103/mcp`, zatim `claude` i provjera `/mcp`
    (treba pisati 17 alata). Claude Desktop: Settings → Connectors → isti URL.
 3. **Kartice u pregledniku**, ovim redom (svaka preko cijelog ekrana):

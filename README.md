@@ -1,6 +1,9 @@
 # eVijećnica
 
 **Demo:** https://evijecnica.vercel.app (1.234 objave iz 27 gradova i općina; strojni nacrti, javni demo bez prijave)
+**Javni MCP poslužitelj:** `https://evijecnica.vercel.app/mcp` (17 alata, bez prijave; dodaj ga kao prilagođeni konektor u
+Claude, ChatGPT ili drugi MCP klijent, npr. `claude mcp add --transport http evijecnica https://evijecnica.vercel.app/mcp`)
+**Otvoreni podaci:** https://evijecnica.vercel.app/podaci
 
 eVijećnica prikuplja službene podatke o sjednicama gradskih i općinskih vijeća (dnevni red, zapisnike, rezultate glasovanja, poimenično glasovanje, pitanja vijećnika i snimke sjednica), sprema ih u jednu pretraživu bazu i iz njih izrađuje kratke, neutralne objave za društvene mreže, s oznakom grada i teme (`#Zagreb #promet`).
 
