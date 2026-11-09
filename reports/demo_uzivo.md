@@ -54,14 +54,17 @@ Tjedni pregled Čakovca i objava o prijenosu sjednica.
 
 **Rezerva:** `data/posts/reddit/weekly/cakovec-2025-W51.md`.
 
-## 2:10–2:45 MCP: pitaj vijeće (35 s)
-U Claude Codeu ili Claude Desktopu (postavi pitanja prije snimanja, pa samo pokaži odgovore):
-1. **„Kako su glasali klubovi o porezu na nekretnine u Zagrebu?”** → `get_item`: 24 za, 7 protiv, po klubovima.
-2. **„Što su vijećnici u Velikoj Gorici govorili o vrtićima?”** → `search` po transkriptu: što je rečeno, s vremenom u snimci.
-3. **„Koja su obećanja dana na aktualnom satu u Zagrebu?”** → `promises`: obećanja s citatom i rokom.
-> „Sve to dostupno je i AI asistentima, preko otvorenog MCP poslužitelja. To je RAG: asistent ne izmišlja, nego
-> prvo pretraži našu bazu zapisnika i transkripata sjednica, pa odgovori iz onoga što je našao. Zato odgovor
-> uvijek ima izvor: točku dnevnog reda, zapisnik ili trenutak u snimci.”
+## 2:10–2:45 MCP: pitaj vijeće, u tri AI asistenta (35 s)
+Isti MCP poslužitelj u tri sučelja (ilustracija; pozivi alata i podaci stvarni, `web/mcp_demo_calls.py`):
+1. **ChatGPT** (12 s): „Igram nogomet u Zagrebu. Hoće li mi grad platiti liječnički pregled?” → `search` + `get_item`:
+   prijedlog sufinanciranja 30–50 % nije prošao, 6 za i 23 protiv, po klubovima; iz transkripta: pregled 70–90 €, samo 3 lokacije.
+2. **Claude** (12 s): „Koliko su stipendije u Zagrebu, a koliko u Rijeci?” → dva `search`: Zagreb 380 € / 520 € (izvrsnost),
+   pet odluka; Rijeka: u raspravi rečeno da su udvostručene na 300 i 400 €.
+3. **Gemini** (11 s): „Gdje se u Hrvatskoj grade novi vrtići?” → `search` po svim gradovima: Split, Zadar, Kaštela, Pula,
+   Ogulin, Slavonski Brod, Velika Gorica.
+> „Sve to dostupno je i AI asistentima: ChatGPT-u, Claudeu, Geminiju ili bilo kojem koji podržava MCP. To je RAG:
+> asistent ne izmišlja, nego prvo pretraži našu bazu zapisnika i transkripata sjednica, pa odgovori iz onoga što je
+> našao. Zato odgovor uvijek ima izvor: točku dnevnog reda, zapisnik ili trenutak u snimci.”
 
 **Rezerva:** https://evijecnica.vercel.app/demo (snimljeni razgovori).
 
@@ -75,6 +78,8 @@ Završni ekran /intro: „Glasaj. Budi dio promjene.” → logo.
 ## Ako žiri pita
 - **Je li AI pouzdan?** Piše samo iz zapisnika, materijala i transkripata; brojke se automatski provjeravaju; u
   Čakovcu smo tako našli zapisnik u kojem zbroj glasova (21) premašuje broj vijećnika (19) i taj rezultat ne objavljujemo.
+- **Jesu li to prave aplikacije?** Sučelja u videu su ilustracija; pozivi alata i svi podaci u odgovorima stvarni su
+  rezultati našeg MCP poslužitelja. Uživo pokazujemo isto u Claude Codeu (`claude mcp add … /mcp`).
 - **Je li to RAG?** Da, u širem smislu: asistent preko MCP alata pretražuje bazu (SQLite s pretraživanjem punog
   teksta, FTS5) i odgovara iz pronađenih zapisa, s izvorom. Nije vektorska baza; za službene dokumente točno
   pretraživanje po riječima i brojkama pokazalo se dovoljnim.

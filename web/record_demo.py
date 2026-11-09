@@ -3,7 +3,7 @@
 Opens with /intro?part=a (the numbers and how we got the data, 65 s), then drives the real feed (local server):
 start screen → #mjesto (town card) → #tema (topic chip, a hashtag) → one post (carousel, "did not pass", source,
 "Zašto ovo vidim?"); then the Reddit text of the same posts (rendered Markdown from data/posts/reddit/), three
-questions answered through the MCP server (real calls, deploy/demo_video/mcp_calls.json), and /intro?part=b. Narration is shown as captions. 1920x1080, H.264.
+questions answered through the MCP server in three assistants (web/mcp_chats.py; real calls in deploy/demo_video/mcp_calls.json), and /intro?part=b. Narration is shown as captions. 1920x1080, H.264.
 
 Usage: mcp_server.py --http 8103 running, then
        uv run --with playwright python web/record_demo.py [--clean]  ->  deploy/demo_video/demo.mp4 (demo_clean.mp4)
@@ -16,6 +16,8 @@ import time
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
+
+import mcp_chats
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "deploy" / "demo_video"
@@ -77,83 +79,6 @@ h2{{font:600 21px/1.35 sans-serif;margin:6px 0 10px}}
 <script>document.querySelectorAll('[data-md]').forEach(e=>e.innerHTML=marked.parse(e.dataset.md))</script>"""
 
 
-def mcp_page():
-    """An AI-assistant chat (any MCP client: Claude, ChatGPT, Gemini…) answering from the real MCP calls in
-    mcp_calls.json; window.step(i) shows question i, the tool call, then the answer (driven by main())."""
-    calls = json.loads((OUT / "mcp_calls.json").read_text())
-    e = html.escape
-    turns = []
-    for c in calls:
-        r, tool = c["result"], c["tool"]
-        if tool == "get_item":
-            rows = "".join(f"<tr><td>{e(k['short'])}</td><td>{k['za']}</td><td>{k['protiv']}</td><td>{k['nije_glasovao']}</td>"
-                           f"<td>{k['odsutan']}</td></tr>" for k in r["clubs"][:6])
-            ans = (f"<p>Skupština je <b>usvojila</b> izmjene Odluke o lokalnim porezima: <b>{r['za']} za, {r['protiv']} protiv</b>, "
-                   f"{r['suzdrzano']} suzdržanih. Predlagatelj je gradonačelnik.</p><p>Po klubovima:</p>"
-                   f"<table><tr><th>klub</th><th>za</th><th>protiv</th><th>nije glasovao</th><th>odsutan</th></tr>{rows}</table>"
-                   f"<p class='src'>Izvor: 14. sjednica, točka 9, službeno poimenično glasovanje · <a>web.zagreb.hr</a></p>")
-        elif tool == "search":
-            items = "".join(f"<li>„{e(x['text'].replace('**', ''))[:230]}”<br><a>▶ {x['at']} u snimci</a></li>"
-                            for x in r["said_in_session"][:3])
-            ans = (f"<p>Na <b>8. sjednici</b> Gradskog vijeća vrtići su se spominjali nekoliko puta. Iz transkripta snimke:</p>"
-                   f"<ul>{items}</ul><p class='src'>Izvor: transkript audio snimke sjednice (gorica.hr), s vremenom u snimci</p>")
-        else:
-            ps = [p for p in r["promises"] if p["deadline"] and len(p["quote"]) <= 160][:3]
-            items = "".join(f"<li><b>{e(p['speaker'])}</b>: „{e(p['quote'])}”<br><small>rok: {e(p['deadline'])} · "
-                            f"{e(p['status_label'])}</small></li>" for p in ps)
-            ans = (f"<p>Na aktualnom satu zabilježeno je <b>{r['count']} obećanja</b>. Neka s rokom:</p><ul>{items}</ul>"
-                   f"<p class='src'>Izvor: transkript 14. sjednice, aktualni sat</p>")
-        args = ", ".join(f'{k}: {json.dumps(v, ensure_ascii=False)}' for k, v in c["args"].items())
-        turns.append(f"<div class='turn'><div class='you'>{e(c['q'])}</div>"
-                     f"<div class='bot'><div class='tool'><span class='spin'></span>evijecnica · <b>{tool}</b>"
-                     f"<code>{{{e(args)}}}</code><span class='ms'>{c['ms']} ms</span></div>"
-                     f"<div class='ans'>{ans}</div></div></div>")
-    return f"""<!doctype html><meta charset="utf-8">{FONTS}<style>
-body{{margin:0;background:#f7f6f2;color:#1f1e1c;font:19px/1.55 -apple-system,"Public Sans",system-ui,sans-serif;display:grid;grid-template-columns:270px 1fr;height:100vh}}
-aside{{background:#efede6;border-right:1px solid #e2dfd6;padding:22px 18px;font-size:16px;color:#5c5a54}}
-aside .new{{background:#fff;border:1px solid #e2dfd6;border-radius:10px;padding:10px 14px;color:#1f1e1c;font-weight:600;margin-bottom:22px}}
-aside .h{{font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}}
-aside .conn{{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2dfd6;border-radius:10px;padding:10px 12px;color:#1f1e1c}}
-aside .conn i{{width:9px;height:9px;border-radius:50%;background:#2e9e5b}}
-aside .works{{margin-top:12px;line-height:1.7}}
-main{{display:flex;flex-direction:column;min-height:0}}
-.bar{{padding:14px 32px;border-bottom:1px solid #e2dfd6;display:flex;justify-content:space-between;font-size:16px;color:#5c5a54}}
-.bar b{{color:#1f1e1c}}
-.chat{{flex:1;overflow:auto;padding:26px 0 40px;scroll-behavior:smooth}}
-.turn{{max-width:960px;margin:0 auto 34px;padding:0 32px;display:none}} .turn.on{{display:block}}
-.you{{margin-left:auto;width:fit-content;max-width:75%;background:#e9e5da;border-radius:18px;padding:12px 18px;margin-bottom:18px}}
-.bot{{display:grid;grid-template-columns:36px 1fr;gap:14px}}
-.bot:before{{content:"✳";width:34px;height:34px;border-radius:50%;background:#d97757;color:#fff;display:grid;place-items:center;font-size:18px}}
-.tool{{grid-column:2;display:flex;align-items:center;gap:10px;border:1px solid #e2dfd6;background:#fff;border-radius:10px;padding:8px 14px;font-size:15px;color:#5c5a54;width:fit-content;opacity:0;transition:opacity .4s}}
-.tool code{{font:14px ui-monospace,Menlo,monospace;color:#8a5a2b}} .tool .ms{{color:#9a978e}}
-.spin{{width:12px;height:12px;border-radius:50%;border:2px solid #d97757;border-right-color:transparent;animation:r .8s linear infinite}}
-.tool.done .spin{{animation:none;border:0;background:#2e9e5b}}
-@keyframes r{{to{{transform:rotate(1turn)}}}}
-.ans{{grid-column:2}} .ans>*{{opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}} .ans>.on{{opacity:1;transform:none}}
-.ans p{{margin:10px 0}} .ans ul{{margin:6px 0;padding-left:22px}} .ans li{{margin:8px 0}} .ans small,.src{{color:#7a776f;font-size:15px}}
-.ans a{{color:#b4562f;text-decoration:underline}}
-table{{border-collapse:collapse;font-size:16px;margin:4px 0}} td,th{{border:1px solid #e2dfd6;padding:4px 12px;text-align:left;background:#fff}}
-.input{{max-width:960px;width:calc(100% - 64px);margin:0 auto 22px;border:1px solid #d6d2c6;background:#fff;border-radius:16px;padding:16px 18px;color:#9a978e;display:flex;justify-content:space-between}}
-.input span{{font-size:14px;border:1px solid #e2dfd6;border-radius:8px;padding:2px 10px;color:#5c5a54}}
-</style>
-<aside><div class="new">+ Novi razgovor</div><div class="h">Povezani MCP poslužitelji</div>
-<div class="conn"><i></i><b>evijecnica</b>&nbsp;· 17 alata</div>
-<div class="works"><div class="h">Isti poslužitelj radi u</div>Claude<br>ChatGPT<br>Gemini<br>i drugim MCP klijentima</div></aside>
-<main><div class="bar"><span><b>AI asistent</b> · pitaj vijeće</span><span>MCP: http…/mcp · streamable HTTP</span></div>
-<div class="chat" id="chat">{''.join(turns)}</div>
-<div class="input">Pitaj bilo što o svom gradskom vijeću…<span>⚙ evijecnica</span></div></main>
-<script>
-window.step = i => {{
-  const t = document.querySelectorAll('.turn')[i], chat = document.getElementById('chat'), down = () => chat.scrollTop = chat.scrollHeight;
-  t.classList.add('on'); down();
-  const tool = t.querySelector('.tool'), parts = [...t.querySelectorAll('.ans>*')];
-  setTimeout(() => {{ tool.style.opacity = 1; down(); }}, 700);
-  setTimeout(() => tool.classList.add('done'), 1700);
-  parts.forEach((p, k) => setTimeout(() => {{ p.classList.add('on'); p.scrollIntoView({{behavior:'smooth',block:'end'}}); }}, 1900 + k * 650));
-}};
-</script>"""
-
-
 CAP = """(t) => { let c = document.getElementById('__cap'); if (!c) { c = document.createElement('div'); c.id = '__cap';
   c.style.cssText = 'position:fixed;left:50%;bottom:36px;transform:translateX(-50%);max-width:1500px;z-index:99999;'
    + 'background:rgba(0,0,0,.78);color:#fff;font:600 30px/1.35 system-ui,sans-serif;padding:12px 26px;border-radius:12px;text-align:center';
@@ -166,7 +91,7 @@ CAPTIONS = "--clean" not in sys.argv  # --clean: no on-screen captions (for the 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "reddit.html").write_text(reddit_page())
-    (OUT / "mcp.html").write_text(mcp_page())
+    mcp_chats.build()  # mcp_chatgpt.html, mcp_claude.html, mcp_gemini.html from mcp_calls.json
     with sync_playwright() as p:
         b = p.chromium.launch()
         ctx = b.new_context(viewport={"width": 1920, "height": 1080}, record_video_dir=str(OUT / "raw"),
@@ -243,17 +168,13 @@ def main():
         at(121)
         pg.evaluate("window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})")
         at(130)
-        # 2:10 MCP: RAG over minutes and transcripts, in an AI-assistant chat
-        pg.goto((OUT / "mcp.html").as_uri())
-        say("MCP: AI asistent prvo pretraži našu bazu zapisnika i transkripata, pa odgovori. To je RAG.")
-        pg.evaluate("step(0)")
-        at(142)
-        pg.evaluate("step(1)")
-        say("Što su vijećnici u Velikoj Gorici rekli o vrtićima: iz transkripta, s vremenom u snimci.")
-        at(154)
-        pg.evaluate("step(2)")
-        say("Obećanja s aktualnog sata u Zagrebu, svako s citatom i rokom. Odgovor uvijek ima izvor.")
-        at(165)
+        # 2:10 MCP: the same server in three assistants (RAG over minutes and transcripts)
+        for k, ui in enumerate(("chatgpt", "claude", "gemini")):
+            pg.goto((OUT / f"mcp_{ui}.html").as_uri())
+            pg.evaluate("document.documentElement.style.zoom = '1.25'; play(); 0")
+            say(["ChatGPT: sport, liječnički pregled i kako se glasalo.", "Claude: stipendije u Zagrebu i Rijeci.",
+                 "Gemini: novi vrtići u cijeloj Hrvatskoj."][k])
+            at(142 + 12 * k - (1 if k == 2 else 0))
         # 2:45 the closing idea (/intro?part=b, 15 s)
         say("")
         pg.goto(f"{URL}/intro?part=b")

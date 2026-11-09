@@ -39,6 +39,7 @@ def scenes():
                 sec["steps"].append({"title": st.group(1), "dur": int(st.group(2)), "q": []})
             elif re.match(r"\s*> ", line):
                 (sec["steps"][-1]["q"] if sec["steps"] else sec["q"]).append(line)
+                sec.setdefault("all", []).append(line)
     res = []
     for k, s in enumerate(out):
         if s["steps"] and all(x["q"] for x in s["steps"]):
@@ -47,9 +48,9 @@ def scenes():
                 res.append({"id": f"s{k}_{j}", "title": f"{s['title'].split(':')[0]}: {x['title']}", "chapter": s["title"],
                             "start": t, "dur": x["dur"], "text": quote(x["q"])})
                 t += x["dur"]
-        elif s["q"]:
-            res.append({"id": f"s{k}", "title": s["title"], "chapter": s["title"], "start": s["start"],
-                        "dur": s["end"] - s["start"], "text": quote(s["q"])})
+        elif s.get("all"):  # one scene for the section (steps without a quote each)
+            res.append({"id": f"s{k}", "title": s["title"].split(",")[0], "chapter": s["title"], "start": s["start"],
+                        "dur": s["end"] - s["start"], "text": quote(s["all"])})
     return res
 
 
