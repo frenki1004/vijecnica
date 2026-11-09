@@ -6,7 +6,7 @@ Dokument opisuje stanje koda 9. 11. 2026. Sve brojke dobivene su upitima nad `da
 
 eVijećnica je cjevovod u četiri sloja:
 
-1. **Prikupljanje** službenih podataka o sjednicama predstavničkih tijela lokalne samouprave (20 jedinica, saziv 2025.–2029.).
+1. **Prikupljanje** službenih podataka o sjednicama predstavničkih tijela lokalne samouprave (29 jedinica, saziv 2025.–2029.).
 2. **Obrada:** parsiranje zapisnika i glasovanja, prepoznavanje govora sa snimki, povezivanje svega s točkama dnevnog reda.
 3. **Pohrana** u jednu SQLite bazu s pretraživanjem punog teksta (FTS5).
 4. **Objava:** web stranica, JSON API, MCP poslužitelj za AI agente, otvoreni podaci (CSV + Frictionless Data Package za CKAN) i objave za društvene mreže (Instagram PNG, Reddit Markdown).
@@ -19,14 +19,14 @@ Sav kod je Python 3.12 i otvorenog je koda (EUPL-1.2). Skupljači koriste samo s
 flowchart LR
   subgraph Izvori["Javni izvori"]
     W["Stranice gradova<br/>Zagreb, Rijeka, Osijek,<br/>Šibenik, Sl. Brod, Krk, Čakovec"]
-    N["NetCom eSjednice<br/>13 jedinica"]
+    N["NetCom eSjednice<br/>14 jedinica"]
     Y["Snimke sjednica<br/>YouTube, MP3"]
     D["data.gov.hr<br/>CKAN API"]
   end
 
   subgraph Prikupljanje["collect/"]
     C1["docs.py, list_videos.py<br/>brod.py, krk.py, rijeka.py<br/>osijek.py, sibenik.py"]
-    C2["netcom.py<br/>(jedan skupljač, 13 jedinica)"]
+    C2["netcom.py<br/>(jedan skupljač, 14 jedinica)"]
     C3["datagovhr.py<br/>(CKAN API)"]
   end
 
@@ -62,7 +62,7 @@ flowchart LR
 | komponenta | datoteke | uloga |
 |---|---|---|
 | skupljači | `collect/docs.py`, `list_videos.py`, `brod.py`, `krk.py`, `rijeka.py`, `osijek.py`, `sibenik.py` | po jedan za šest gradova s vlastitim web stranicama |
-| skupljač eSjednica | `collect/netcom.py` | jedan skupljač za 13 jedinica na sustavu NetCom eSjednice; nova jedinica = jedan redak u `UNITS` |
+| skupljač eSjednica | `collect/netcom.py` | jedan skupljač za 14 jedinica na sustavu NetCom eSjednice; nova jedinica = jedan redak u `UNITS` |
 | ponovno parsiranje | `collect/reparse_votes.py` | Zagreb: poimenično glasovanje iz keširanih PDF-ova, bez mreže |
 | konektor data.gov.hr | `collect/datagovhr.py` | izrađen: 7 skupova preko CKAN API-ja, 12 tablica i pogled `city_overview` |
 | prepoznavanje govora | `asr/transcribe_local.py` (CPU), `asr/transcribe_mlx_local.py`, `asr/run_queue.py` + `asr/transcribe.py` (Apple silicon), `asr/convert_hf.py` | Silero VAD reže govor u odsječke do 25 s, Whisper ih prepisuje; vrijeme dolazi iz VAD-a |
@@ -154,7 +154,7 @@ Paket se može uvesti u CKAN (data.gov.hr) proširenjem `ckanext-datapackager` i
 
 ### 5.4 Objave: Instagram i Reddit
 
-- `posts/export_png.py` renderira živu stranicu `/feed` (Playwright, Chromium) u `data/posts/png/<id>/1.png …` (1080×1350, omjer 4:5) i `caption.txt` s opisom i oznakama. Trenutačno: 3.435 slika za 1.014 objava.
+- `posts/export_png.py` renderira živu stranicu `/feed` (Playwright, Chromium) u `data/posts/png/<id>/1.png …` (1080×1350, omjer 4:5) i `caption.txt` s opisom i oznakama. Trenutačno: 4.016 slika za 1.200 objava.
 - `posts/export_reddit.py` piše `data/posts/reddit/<id>.md` (zaglavlje s naslovom, flairom, gradom, temama i izvorom, zatim tijelo), tjedne preglede po gradu i ISO tjednu (`weekly/<grad>-<godina>-W<tjedan>.md`, dijeli ih ispod Redditove granice od 40.000 znakova) i `README.md` s uputama. Ne spaja se na Reddit.
 
 ## 6. Standardi
@@ -178,7 +178,7 @@ Paket se može uvesti u CKAN (data.gov.hr) proširenjem `ckanext-datapackager` i
 | sustav | danas | kako se povezuje |
 |---|---|---|
 | **Portal otvorenih podataka (data.gov.hr, CKAN)** | izvor: `collect/datagovhr.py` (registar jedinica, adresar, popis 2021., registar birača, porezne stope, sastav skupštine Zagreba, skupovi naših jedinica); odredište: izvoz pripremljen, nije objavljen | Kao izvor: CKAN Action API (`package_search`, `package_show`) za skupove podataka lokalnih jedinica. Kao odredište: Data Package se objavljuje kao CKAN skup podataka (resurs po CSV-u), preko API ključa organizacije izdavatelja. |
-| **NetCom eSjednice** | 13 jedinica, `collect/netcom.py` | Skupljač koristi iste javne pozive koje koristi i preglednik (`/meetingtype`, `/meeting`, `/dailyagenda`, `/dldocoriginal`). Svaka sljedeća jedinica na istom sustavu dodaje se jednim retkom u `UNITS` (domaćin i id vrste sjednice), uz provjeru njezinih zapisnika. Izvoz glasovanja u strojnom obliku od isporučitelja sustava uklonio bi parsiranje zapisnika. |
+| **NetCom eSjednice** | 14 jedinica, `collect/netcom.py` | Skupljač koristi iste javne pozive koje koristi i preglednik (`/meetingtype`, `/meeting`, `/dailyagenda`, `/dldocoriginal`). Svaka sljedeća jedinica na istom sustavu dodaje se jednim retkom u `UNITS` (domaćin i id vrste sjednice), uz provjeru njezinih zapisnika. Izvoz glasovanja u strojnom obliku od isporučitelja sustava uklonio bi parsiranje zapisnika. |
 | **Web stranice gradova** | Zagreb (Lotus Notes / Domino, `.nsf`), Rijeka i Osijek (WordPress), Slavonski Brod (Joomla), Krk (Drupal), Šibenik | Po jedan skupljač; nijedan grad ne nudi API za sjednice. |
 | **Službeni glasnici** | **planirano** | Za jedinice bez objavljenih zapisnika: dnevni red i donesene odluke iz službenog glasnika. |
 | **DIP (Državno izborno povjerenstvo)** | **planirano** | Stranački sastav vijeća iz izbornih rezultata za svih 556 jedinica lokalne samouprave (128 gradova i 428 općina), za oznake „vlast/oporba” i pregled po klubovima. |
@@ -254,7 +254,7 @@ Svaka objava prije objave prolazi ljudski pregled; objavljuje osoba, ne bot. Upu
 - **Sedam jedinica bez zapisnika u bazi** (Čavle, Kostrena, Baška, Novi Vinodolski, Ploče, Omišalj, Makarska): imaju dnevni red i odluke, ali ne i glasovanje, pa nemaju objava.
 - **Detaljni pregled po sjednici na web stranici `/` zasad je izrađen za 4 jedinice** (Zagreb, Slavonski Brod, Krk, Rijeka). MCP alati, JSON API i izvoz otvorenih podataka (`export/export.py`) obuhvaćaju svih 20 jedinica, a feed objava svih 13 jedinica s objavama.
 - **Transkripcija:** 17 od 111 snimki u bazi (svih 12 iz Slavonskog Broda, 4 od 33 iz Zagreba, zadnja iz Čakovca), uz zadnju sjednicu Velike Gorice izvan baze.
-- **Relevantnost i personalizacija:** „Samo bitno” je jednostavno pravilo po temi (723 od 1.014 objava označeno je kao bitno). Planirano: praćenje vlastitog grada i tema, obavijesti, bolja procjena važnosti uz isto javno pravilo.
+- **Relevantnost i personalizacija:** „Samo bitno” je jednostavno pravilo po temi (870 od 1.200 objava označeno je kao bitno). Planirano: praćenje vlastitog grada i tema, obavijesti, bolja procjena važnosti uz isto javno pravilo.
 - **Više jedinica:** sljedeće jedinice na eSjednicama dodaju se u `UNITS`; za ostale, dvije razine: gdje postoje zapisnici, objave s glasovanjem; za ostale, dnevni red i odluke iz službenog glasnika te stranački sastav iz podataka DIP-a.
 - **data.gov.hr:** objava izvoza na portalu; kanonski nazivi stranaka iz Registra političkih stranaka; rezultati izbora 2025. na portalu, kad ih DIP objavi.
 - **Video isječci** iz snimki uz objave: transkripti s vremenom postoje, isječci nisu izrađeni.
@@ -263,17 +263,17 @@ Svaka objava prije objave prolazi ljudski pregled; objavljuje osoba, ne bot. Upu
 
 ```bash
 sqlite3 -readonly data/vijecnica.db "
-SELECT count(*) FROM cities;                                                     -- 20
-SELECT count(*) FROM sessions;                                                   -- 205
-SELECT count(*) FROM sessions WHERE date > '2026-11-08';                         -- 4 (zakazane)
-SELECT count(*) FROM sessions WHERE length(minutes_text) > 0;                    -- 119
-SELECT count(*) FROM items;                                                      -- 3621
-SELECT count(*) FROM items WHERE za IS NOT NULL OR coalesce(result,'') != '';    -- 2188
+SELECT count(*) FROM cities;                                                     -- 29
+SELECT count(*) FROM sessions;                                                   -- 327
+SELECT count(*) FROM sessions WHERE date > '2026-11-09';                         -- 6 (zakazane)
+SELECT count(*) FROM sessions WHERE length(minutes_text) > 0;                    -- 215
+SELECT count(*) FROM items;                                                      -- 6373
+SELECT count(*) FROM items WHERE za IS NOT NULL OR coalesce(result,'') != '';    -- 4036
 SELECT count(*) FROM votes;                                                      -- 26498 (Zagreb)
-SELECT count(*), sum(transcribed) FROM videos;                                   -- 111 | 17
+SELECT count(*), sum(transcribed) FROM videos;                                   -- 191 | 26
 SELECT count(*) FROM questions;                                                  -- 343"
 
 python3 -c "import json,collections as c; p=json.load(open('data/posts/posts.json')); \
-print(len(p), len({x['city'] for x in p}), c.Counter(x['kind'] for x in p))"   # 1014 13 item 901, digest 113
-find data/posts/png -name '*.png' | wc -l                                        # 3211
+print(len(p), len({x['city'] for x in p}), c.Counter(x['kind'] for x in p))"   # 1200 22 item 1075, digest 125
+find data/posts/png -name '*.png' | wc -l                                        # 4016
 ```

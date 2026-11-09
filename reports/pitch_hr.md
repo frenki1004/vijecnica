@@ -22,11 +22,11 @@ Svaka objava je karusel od 3 do 5 slajdova: što je odlučeno, što to znači za
 **Kanali:** Instagram za karusele, a **Reddit** za raspravu: tjedni pregled po gradu u r/croatia (oko 440 tisuća članova), r/hrvatska i r/zagreb, uz dopuštenje moderatora, i vlastiti subreddit s oznakom po gradu. Na Redditu ljudi komentiraju i ispravljaju, a ispod svake objave stoji izvor.
 
 ## 1:15–2:15 Kako radi i zašto mu možeš vjerovati
-- **Podaci:** službene stranice 20 gradova i općina (od Zagreba, Rijeke, Osijeka i Čakovca do Kastva, Punta i Viškova): 205 sjednica i 3.621 točka dnevnog reda, od kojih 2.188 s ishodom glasovanja. Sedam gradova ima vlastiti skupljač, a 13 jedinica pokriva jedan zajednički skupljač za sustav eSjednice. Zapisnici, poimenično glasovanje i snimke sjednica. Novi grad je jedan skupljač podataka; sve ostalo (odabir, pisanje, slike) radi bez promjena.
+- **Podaci:** službene stranice 29 gradova i općina, među njima 13 od 15 najvećih gradova (Zagreb, Split, Rijeka, Osijek, Zadar, Pula, Slavonski Brod, Karlovac, Varaždin, Šibenik, Dubrovnik, Sisak, Kaštela) i manje jedinice od Kastva do Punta: 327 sjednica i 6.373 točke dnevnog reda, od kojih 4.036 s ishodom glasovanja. 15 gradova ima vlastiti skupljač, a 14 jedinica pokriva jedan zajednički skupljač za sustav eSjednice. Zapisnici, poimenično glasovanje i snimke sjednica. Novi grad je jedan skupljač podataka; sve ostalo (odabir, pisanje, slike) radi bez promjena.
 - **Odabir bez biranja strana:** pravila su fiksna i javna. Svaka točka s barem jednim glasom protiv ili suzdržanim dobiva svoju objavu, a sve jednoglasno ide u objavu „Ukratko”. Nitko ne bira što je zanimljivo.
 - **Pisanje:** AI piše prema strogim pravilima: samo činjenice iz zapisnika, svaki argument pripisan klubu, bez imena privatnih osoba, bez vlastitih procjena.
 - **Dvostruka provjera.** AI pisac ne samo da piše nego i uspoređuje brojke sa zapisnikom. Tako smo tijekom izrade uhvatili sjednicu na kojoj su se glasovi pomaknuli za jednu točku (vijeće je promijenilo redoslijed) i 26 šibenskih glasovanja kojima su nedostajali glasovi protiv, među njima dva rebalansa proračuna. U zapisnicima Čakovca tri puta se broj glasova koji izgovori predsjedatelj razlikuje od službenog zaključka; u jednom zaključku zbroj glasova veći je od broja vijećnika (21 od 19), pa taj rezultat ne objavljujemo. Jedan krivo izračunat postotak uhvatili smo pri ljudskoj provjeri. Zato svaka objava prolazi i ljudsku provjeru, a stroj radi ostalo.
-- **Rezultat danas:** 1.014 objava iz 13 gradova i općina (sve sjednice sa zapisnikom), 3.435 slika spremnih za Instagram (1080×1350) i 1.014 objava pripremljenih za Reddit, automatski. Uz „Samo bitno” ostaje 723 odluke koje se izravno tiču stanovnika; tko želi, bira svoj grad i teme.
+- **Rezultat danas:** 1.200 objava iz 22 grada i općine, 4.016 slika spremnih za Instagram (1080×1350) i 1.200 objava pripremljenih za Reddit, automatski. Objave zadnjih sjednica pisane su i iz materijala (prijedlog odluke, obrazloženje), pa kažu konkretno što se mijenja (npr. Zagreb: porez na nekretnine od 2027. 8,00 eura po m² umjesto 5,00), a rasprava dolazi i iz snimke sjednice. Uz „Samo bitno” ostaje 870 odluka koje se izravno tiču stanovnika; tko želi, bira svoj grad i teme.
 
 ## 2:15–2:45 Zašto baš sada
 Zapisnici kasne. Danas, 7. 11. 2026.:
@@ -40,7 +40,7 @@ eVijećnica objavljuje čim zapisnik izađe, a prototip već prepoznaje govor sa
 - Grad ili savjet mladih za **pilot**: jedan Instagram profil po gradu kroz tri mjeseca, i mjerimo doseg među mladima.
 - Pristup sustavu za glasovanje i zapisnicima u strojnom obliku, da provjera bude brža.
 Hrvatska ima 556 jedinica lokalne samouprave, a put do svih je konkretan:
-- **Jedan skupljač već pokriva 13 jedinica:** gradovi i općine na istom sustavu za sjednice (NetCom eSjednice), od Opatije i Senja do Punta i Viškova; sljedeća jedinica na istom sustavu dodaje se redom u postavkama, uz provjeru njezinih zapisnika.
+- **Jedan skupljač već pokriva 14 jedinica:** gradovi i općine na istom sustavu za sjednice (NetCom eSjednice), od Splita, Opatije i Senja do Punta i Viškova; sljedeća jedinica na istom sustavu dodaje se redom u postavkama, uz provjeru njezinih zapisnika.
 - **Isti obrasci u cijeloj zemlji:** zapisnici gotovo svugdje pišu „Točka N.” i „N glasova ZA”, pa jedan parser radi za većinu.
 - **Dvije razine:** gdje postoje zapisnici, objave s glasovanjem; za ostale, dnevni red i odluke iz službenog glasnika te stranački sastav vijeća iz podataka DIP-a za svih 556 jedinica.
 
