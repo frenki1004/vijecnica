@@ -16,7 +16,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "deploy" / "vijecnica"
 # not for publication until a person has looked at them (misleading cover, or a case about a named councillor)
-HOLD = {"zagreb-12-37-2", "zagreb-11-9-1"}
+HOLD = {"zagreb-12-37-2", "zagreb-11-9-1",
+        # Varaždin 7: collector paired items 5-13 with the wrong titles; counts that do not add up in the minutes
+        *(f"varazdin-7-{n}-1" for n in range(5, 14)), "split-7-39-1", "sibenik-5-11-1"}
 NOTICE = ('<p class="demo-note">Demo za Datathon Portala otvorenih podataka: objave su strojni nacrti iz službenih '
           'zapisnika i još ih nije pregledala osoba. Službeni dokumenti imaju prednost. '
           '<a href="otvoreni-podaci.zip" download>Preuzmi otvorene podatke</a> (CSV i Frictionless Data Package '

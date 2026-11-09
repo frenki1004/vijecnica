@@ -123,9 +123,11 @@ def main():
         docs = sorted((d for d in docs if score(d["name"]) > -5), key=lambda d: -score(d["name"]))[:2]
         got = []
         for d in docs:
-            url = urllib.parse.quote(urllib.parse.urljoin(site.get(p["city"], "") + "/", d["url"]), safe=":/?=&%$#~+,;@")
+            local = d["url"].startswith("manual/")  # downloaded by hand from the city's own link (Dubrovnik)
+            url = d["url"] if local else urllib.parse.quote(urllib.parse.urljoin(site.get(p["city"], "") + "/", d["url"]),
+                                                             safe=":/?=&%$#~+,;@")
             try:
-                f = get(url, ROOT / "data" / p["city"] / "raw" / "materials")
+                f = ROOT / "data" / p["city"] / url if local else get(url, ROOT / "data" / p["city"] / "raw" / "materials")
                 t, pages = text_of(f)
             except Exception as e:
                 print(f"   !! {p['id']}: {d['name'][:60]}: {e}")

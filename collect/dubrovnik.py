@@ -24,6 +24,7 @@ import hashlib
 import html
 import json
 import re
+import subprocess
 import sys
 import time
 import urllib.request
@@ -43,6 +44,15 @@ POST = re.compile(r"""href=["'](/vijesti/((\d+)-sjednica-gradskog-vijeca-grada-d
                   r"""konstituirajuca-sjednica-gradskog-vijeca-grada-dubrovnika|"""
                   r"""dopuna[^"']*?(\d+)-sjednice[^"']*|(\d+)-sjednica-gradskog-vijeca-grada-dubrovnika---dopuna[^"']*)"""
                   r"""[^"']*)["']""")
+YES, NO = "Prijedlog usvojen", "Prijedlog nije usvojen"
+MANUAL = D / "manual"
+MINUTES_SOURCE = "ručno preuzeto iz paketa materijala {p}. sjednice (cloud.dubrovnik.hr, javna poveznica Grada)"
+AD = re.compile(r"^\f?[ \t]*Ad[ \t]+(\d+)\s*\.?[ \t]*$", re.M)  # section heading per agenda item: "Ad 12."
+Q = "„“”\"'"
+VOTE = re.compile(r"nakon\s+glasovanja\s*,?\s+utvrdi\w*\s+je\s*,?\s+da\s+(?:je\s+)?"
+                  r"(?P<how>jednoglasno|većinom\s+glasova\s*\((?P<counts>[^)]{0,160})\))\s*"
+                  r"(?P<what>[^.]{0,80}?)\b(?P<neg>nije\s+)?(?P<verb>donesen\w*|prihvaćen\w*|usvojen\w*|izabran\w*|"
+                  r"imenovan\w*|utvrđen\w*|dan[aoe]?\b|odbijen\w*|potvrđen\w*|verificiran\w*)", re.S)
 _robots, _last = None, [0.0]
 
 
@@ -162,9 +172,138 @@ def links(page):
     return yt, cloud, docs
 
 
+def pdf_text(path):
+    return subprocess.run(["pdftotext", "-layout", str(path), "-"], capture_output=True, text=True).stdout
+
+
+def manual_packages():
+    """{package session P: [pdf paths]} from data/dubrovnik/manual/<P>/** (unpacked by hand; zips are ignored)."""
+    out = {}
+    if MANUAL.exists():
+        for d in sorted(MANUAL.iterdir()):
+            if d.is_dir() and d.name.isdigit():
+                out[int(d.name)] = sorted(d.rglob("*.pdf"))
+    return out
+
+
+def manual_minutes(packages):
+    """{session N: (text, package P)} for each "ZAPISNIK sa N. sjednic*.pdf" in a package."""
+    out = {}
+    for pkg, files in packages.items():
+        for f in files:
+            m = re.match(r"zapisnik\s+sa?\s+(\d+)\s*\.\s*sjednic", f.name, re.I)
+            if m:
+                out[int(m.group(1))] = (pdf_text(f), pkg)
+    return out
+
+
+def stems(t):
+    return {w[:6] for w in re.findall(r"\w{4,}", t.lower())} - {"prijed", "odluke", "odluka", "grada", "dubrov",
+                                                                "zaklju", "godinu"}
+
+
+def overlap(a, b):
+    a, b = stems(a), stems(b)
+    return len(a & b) / max(1, min(len(a), len(b)))
+
+
+def materials(files, items):
+    """Per-item PDFs of a package ("7.Prijedlog zaključka ….pdf") onto items: the same number when the titles agree,
+    else the item with the most similar title. Returns the package's other PDFs (call), minutes excluded."""
+    common = []
+    for f in files:
+        rel = f.relative_to(D).as_posix()
+        att = {"name": f.name, "url": rel}
+        if re.match(r"zapisnik", f.name, re.I):
+            continue
+        m = re.match(r"(\d+)\s*\.\s*(.*)\.pdf$", f.name, re.I)
+        if not m:
+            common.append(att)
+            continue
+        no, title = int(m.group(1)), m.group(2)
+        it = next((x for x in items if x["no"] == no and overlap(x["title"], title) >= 0.5), None)
+        if it is None:
+            best = max(items, key=lambda x: overlap(x["title"], title), default=None)
+            it = best if best and overlap(best["title"], title) >= 0.6 else None
+        if it is None:
+            print(f"   material not matched: {rel}", flush=True)
+            common.append(att)
+        else:
+            it.setdefault("attachments", []).insert(0, att)
+    return common
+
+
+def minutes_agenda(t):
+    """The adopted agenda: the numbered list after "Dnevni red" (after the agenda vote), before "Ad 1."."""
+    a1 = AD.search(t)
+    heads = [m for m in re.finditer(r"^\s*Dnevni\s+red\s*$", t[:a1.start() if a1 else len(t)], re.M)]
+    if not heads or not a1:
+        return []
+    block = t[heads[-1].end():a1.start()]
+    items, want = [], 1
+    for ln in block.split("\n"):
+        s_ = ln.strip()
+        if not s_ or re.fullmatch(r"\d{1,3}|-\s*\d+\s*-", s_):
+            continue
+        m = re.match(r"(\d{1,2})\s*\.\s+(\S.*)", s_)
+        if m and int(m.group(1)) == want:
+            items.append({"no": want, "sub_label": None, "title": m.group(2)})
+            want += 1
+        elif items:
+            items[-1]["title"] += " " + s_
+    for it in items:
+        it["title"] = it["full_title"] = re.sub(r"\s+", " ", it["title"].rstrip("= ")).strip()
+    return items
+
+
+def num_of(word, counts):
+    m = re.search(rf"(\d+)\s*[{Q}]*\s*{word}", counts, re.I)
+    return int(m.group(1)) if m else None
+
+
+def minutes_votes(t):
+    """({item no: [vote]}, formulas found, skipped) from the "Ad N." sections; amendment votes are skipped."""
+    heads, last = [], 0
+    for m in AD.finditer(t):
+        n = int(m.group(1))
+        if n <= last:
+            continue
+        heads.append((m.start(), n))
+        last = n
+    out, skipped = {}, 0
+    found = len(VOTE.findall(t))
+    for i, (pos, n) in enumerate(heads):
+        end = heads[i + 1][0] if i + 1 < len(heads) else len(t)
+        for v in VOTE.finditer(t, pos, end):
+            k = t.rfind("stavio je", pos, v.start())
+            k = t.rfind("Predsjedni", pos, k) if k > 0 else -1
+            start = k if k >= 0 and v.start() - k < 1500 else max(pos, v.start() - 300)
+            subject = t[start:v.start()] + v.group("what")
+            if re.search(r"amandman", subject, re.I):
+                skipped += 1
+                continue
+            if v.group("how") == "jednoglasno":
+                za, protiv, suzd = None, 0, 0
+            else:
+                c = v.group("counts")
+                za, protiv, suzd = num_of("za", c), num_of("protiv", c), num_of("suzdrž", c)
+            neg = bool(v.group("neg")) or v.group("verb").startswith("odbij")
+            result = NO if neg or (za is not None and protiv is not None and za <= protiv) else YES
+            quote = re.sub(r"\s+", " ", t[start:v.end()]).strip()
+            act = re.match(r"\s*([A-ZČĆŠŽĐ][A-ZČĆŠŽĐ \n]{2,40})\b", t[v.end():v.end() + 60])  # "ODLUKA", "ZAK LJ U ČAK"
+            if act:
+                quote += " " + re.sub(r"\s+", " ", act.group(1)).strip()
+            vote = {"za": za, "protiv": protiv, "suzdrzano": suzd, "result": result, "members": {},
+                    "unanimous": v.group("how") == "jednoglasno" and result == YES, "quote": quote[-400:]}
+            out.setdefault(n, []).append(vote)
+    return out, found, skipped
+
+
 def main(fresh=False):
     (D / "docs").mkdir(parents=True, exist_ok=True)
     main_posts, extra = posts(fresh)
+    packages = manual_packages()
+    minutes = manual_minutes(packages)
     recordings = []
     for n, url in sorted(main_posts.items()):
         page = get(url, fresh=fresh)
@@ -193,29 +332,67 @@ def main(fresh=False):
             for v in s_yt:
                 if v not in yt:
                     yt.append(v)
+        text_m, pkg = minutes.get(n, (None, None))
+        found = skipped = 0
+        if text_m:  # the adopted agenda in the minutes replaces the proposed one (items are renumbered)
+            m_items = minutes_agenda(text_m)
+            if m_items:
+                for it in m_items:
+                    it["attachments"] = list(common)
+                items = m_items
+            votes, found, skipped = minutes_votes(text_m)
+            for it in items:
+                vs = votes.get(it["no"])
+                if vs:
+                    it["votes"], it["vote"] = vs, vs[-1]
+            unknown = [k for k in votes if not any(x["no"] == k for x in items)]
+            for k in unknown:
+                print(f"   votes for Ad {k} without an agenda item", flush=True)
+        package_common = materials(packages.get(n, []), items)
         for it in items:
+            it["attachments"] = it.get("attachments", []) + package_common
             it["proposer"] = ""
-            it["status"] = None
+            v = it.get("vote")
+            it["status"] = ("prihvaćen" if v["result"] == YES else "nije prihvaćen") if v else None
             it["url"] = url
         title = "Konstituirajuća sjednica Gradskog vijeća Grada Dubrovnika" if n == 1 else \
             f"{n}. sjednica Gradskog vijeća Grada Dubrovnika"
         doc = {"session": n, "title": title, "date": date, "url": url, "supplement_urls": supp_urls,
-               "minutes_url": None, "minutes_text": None, "items": items, "attendance": [], "questions": []}
+               "minutes_url": None, "minutes_text": text_m,
+               "minutes_source": MINUTES_SOURCE.format(p=pkg) if text_m else None,
+               "items": items, "attendance": [], "questions": []}
         (D / "docs" / f"session_{n:02d}.json").write_text(json.dumps(doc, ensure_ascii=False, indent=1))
         for p, vid in enumerate(yt, 1):
             recordings.append({"id": f"dubrovnik-{n:02d}-{p}", "session": n, "part": p, "date": date,
                                "url": f"https://www.youtube.com/watch?v={vid}", "kind": "youtube",
                                "title": f"{title} ({date})" + (f", dio {p}" if len(yt) > 1 else "")})
+        nv = sum(1 for i in items if i.get("vote"))
+        nm = sum(len(i.get("votes", [])) for i in items)
         print(f"dubrovnik session {n} ({date}): {len(items)} items "
-              f"({sum(1 for i in items if i.get('supplement'))} from supplements), 0 with votes (no minutes), "
-              f"{len(yt)} video, materials {'yes' if cloud else 'no'}", flush=True)
+              f"({sum(1 for i in items if i.get('supplement'))} from supplements), {nv} with votes; "
+              + (f"minutes (package {pkg}): {found} vote formulas, {skipped} amendment votes skipped, {nm} matched; "
+                 if text_m else "no minutes; ")
+              + f"{len(yt)} video, materials link {'yes' if cloud else 'no'}, "
+              f"{sum(1 for i in items for a in i['attachments'] if a['url'].startswith('manual/'))} local PDFs",
+              flush=True)
+        if text_m:
+            for it in items:
+                if not it.get("vote"):
+                    print(f"   no vote: {it['no']}. {it['title'][:90]}", flush=True)
     (D / "recordings.json").write_text(json.dumps(recordings, ensure_ascii=False, indent=1))
     print(f"dubrovnik: {len(recordings)} recordings", flush=True)
 
 
 def headings(text, items):
-    """[(pos, item)]: no minutes are published, so there are no sections to cut ([] for any text)."""
-    return []
+    """[(pos, item)]: each "Ad N." section heading of the (hand-downloaded) minutes with its item."""
+    out, last = [], 0
+    for m in AD.finditer(text or ""):
+        n = int(m.group(1))
+        it = next((x for x in items if x["no"] == n), None)
+        if it is not None and n > last:
+            out.append((m.start(), it))
+            last = n
+    return out
 
 
 if __name__ == "__main__":
