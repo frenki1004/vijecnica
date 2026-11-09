@@ -169,6 +169,8 @@ def main():
         p["relevant"], p["relevance"] = relevance(p)
         p["source_url"] = links.get((p["city"], p["session"]))  # the minutes, else the session's page
     out.sort(key=lambda p: (p.get("date") or "", p["kind"] == "item", p.get("no", 0)), reverse=True)
+    from docs import add_docs  # links to the item's own documents (posts/docs.py)
+    add_docs(out)
     (POSTS / "posts.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     (POSTS / "towns.json").write_text(json.dumps(towns(ROOT / "data" / "vijecnica.db"), ensure_ascii=False, indent=1))
     (POSTS / "units.json").write_text(json.dumps(unit_names(), ensure_ascii=False, separators=(",", ":")))

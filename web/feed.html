@@ -217,6 +217,7 @@ h1.home{cursor:pointer}
   .desk{display:block}
 }
 .dlink{font-weight:700;color:var(--accent)}
+.docs{margin:6px 0 2px;font-size:14px;color:var(--muted)} .docs a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -524,6 +525,7 @@ function more() {
       <div class="caption short"><p>${esc(p.caption)}</p><button class="more">više</button>
         <div class="tags">${p.hashtags.map(h => `<a href="#${encodeURIComponent(h.slice(1))}">${esc(h)}</a>`).join("")}</div>
         <details class="why"><summary>Zašto ovo vidim?</summary><p>${why(p)} Pravila odabira ista su za sve gradove i općine; nitko ne bira što je zanimljivo.</p></details>
+        ${(p.docs || []).length ? `<p class="docs">📄 Dokumenti: ${p.docs.map(d => `<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.name)} ↗</a>`).join(" · ")}</p>` : ""}
         ${p.source_url ? `<a class="srclink" href="${esc(p.source_url)}" target="_blank" rel="noopener">Službeni izvor: ${p.source_url.endsWith(".pdf") ? "zapisnik" : "stranica sjednice"} ↗</a>` : ""}</div>
     </article>`;
   }).join(""));
