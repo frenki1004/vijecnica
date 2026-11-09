@@ -33,8 +33,16 @@ h1 span{color:var(--accent)}
   scrollbar-width:none;border-bottom:1px solid var(--line);margin-bottom:16px}
 .filters::-webkit-scrollbar{display:none}
 .controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-top:6px}
-.pick{display:flex;align-items:center;gap:8px;font:600 14px var(--body);color:var(--muted)}
-.pick select{font:600 15px var(--body);padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);max-width:60vw}
+/* the town picker: a big button; the real <select> lies invisibly on top, so a tap opens the phone's own list */
+.pick{position:relative;display:block;flex-basis:100%;font:600 13px var(--body);color:var(--muted)}
+.pick .pk-l{display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+.pick .pk-b{display:flex;align-items:center;gap:10px;border:2px solid var(--accent);border-radius:14px;padding:11px 14px;
+  background:var(--panel);color:var(--fg);box-shadow:0 2px 0 var(--line)}
+.pick .pk-b b{font:700 22px/1.1 var(--display);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick .pk-b small{font:700 14px var(--body);color:var(--accent);white-space:nowrap}
+.pick:focus-within .pk-b{outline:3px solid var(--soft)}
+.pick select{position:absolute;left:0;right:0;bottom:0;height:56px;width:100%;opacity:0;cursor:pointer;font-size:16px}
+.pick .pk-n{display:block;margin-top:4px;font:400 12.5px var(--body);text-transform:none;letter-spacing:0}
 .toggle{font:600 14px var(--body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
 .toggle[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
 .toggle[aria-pressed="true"]::before{content:"✓ "}
@@ -189,6 +197,11 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
 .towns button small.t.low{color:var(--protiv)}
 .fine3{color:var(--muted);font-size:13px;margin:26px 0 0;max-width:640px}
 h1.home{cursor:pointer}
+/* the town picker at the top of the start screen (first thing on a phone); the choice is kept in localStorage */
+.quick{display:flex;flex-direction:column;gap:8px;font:700 17px var(--body);margin:20px 0 0;max-width:560px}
+.quick select{font:600 18px var(--body);padding:14px 16px;border-radius:12px;border:2px solid var(--accent);
+  background:var(--panel);color:var(--fg);width:100%}
+.remember{color:var(--muted);font-size:13px;margin:8px 0 0}
 /* "Moj grad nije na popisu": ask for a town; the request opens as a GitHub issue of the project (no backend) */
 .ask{font:600 14px var(--body);background:none;border:1px dashed var(--accent);color:var(--accent);border-radius:999px;
   padding:6px 12px;cursor:pointer}
@@ -200,8 +213,7 @@ h1.home{cursor:pointer}
   .right{grid-column:3;grid-row:1;position:sticky;top:28px;padding-top:28px;max-height:100vh;overflow:auto}
   .filters{position:static;flex-wrap:wrap;overflow:visible;border:0;margin:12px 0 0}
   .controls{flex-direction:column;align-items:flex-start}
-  .pick{flex-direction:column;align-items:flex-start}
-  .pick select{max-width:100%;width:250px}
+  .pick .pk-b b{font-size:20px}
   .desk{display:block}
 }
 </style>
@@ -210,6 +222,9 @@ h1.home{cursor:pointer}
 <section id="start" hidden aria-label="Odaberi grad">
   <div class="in">
     <h1><span>e</span>Vijećnica</h1>
+    <label class="quick">Odaberi svoj grad ili općinu
+      <select id="startcity"><option value="" disabled selected>Odaberi…</option></select></label>
+    <p class="remember">Izbor pamtimo samo na ovom uređaju; promijeniti ga možeš bilo kada na vrhu stranice.</p>
     <p class="q">Što je tvoje gradsko ili općinsko vijeće odlučilo?</p>
     <p class="lead">Gradska i općinska vijeća odlučuju o porezima, vrtićima, prometu i otpadu, ali to piše u zapisnicima
       od šezdeset stranica i snimkama od sedam sati. eVijećnica svaku odluku pretvara u objavu od minute: što je odlučeno,
@@ -238,8 +253,10 @@ h1.home{cursor:pointer}
     <p class="sub">Što je tvoje gradsko vijeće odlučilo, objašnjeno u minuti.</p>
   </header>
   <div class="controls">
-    <label class="pick">Moj grad ili općina
-      <select id="city"><option value="">Svi</option></select></label>
+    <label class="pick"><span class="pk-l">Tvoj grad ili općina</span>
+      <span class="pk-b" aria-hidden="true">📍 <b id="cityname">Odaberi grad</b><small>promijeni ▾</small></span>
+      <select id="city" aria-label="Odaberi svoj grad ili općinu"><option value="">Svi gradovi i općine</option></select>
+      <span class="pk-n" id="citynote"></span></label>
     <button class="ask" data-ask>+ Moj grad nije na popisu</button>
     <button class="toggle" id="important" aria-pressed="true" title="Samo odluke koje se izravno tiču stanovnika i prijedlozi koji nisu prošli">Samo bitno</button>
     <span class="shown" id="shown"></span>
@@ -448,7 +465,22 @@ function start() {
   const pick = c => { filter.city = c; store.set("vij.city", c); box.hidden = true; filters(); render(); scrollTo(0, 0); };
   box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => pick(b.dataset.c));
   document.getElementById("all").onclick = () => pick("");
+  // the same list as the town picker in the feed (filters() has filled it by now), plus "all towns"
+  const quick = document.getElementById("startcity");
+  if (quick.options.length === 1) {
+    quick.insertAdjacentHTML("beforeend", [...document.querySelectorAll("#city optgroup")].map(g => g.outerHTML).join("")
+      + `<option value="*">Svi gradovi i općine</option>`);
+    quick.onchange = () => pick(quick.value === "*" ? "" : quick.value);
+  }
+  quick.value = "";
   box.hidden = false;
+}
+
+// the big town button shows the chosen town (the <select> under it holds the value; it is remembered per device)
+function cityLabel() {
+  const sel = document.getElementById("city"), opt = sel.selectedOptions[0];
+  document.getElementById("cityname").textContent = filter.city && opt ? opt.textContent.replace(/ \(\d+\)$/, "") : "Svi gradovi i općine";
+  document.getElementById("citynote").textContent = filter.city ? "Zapamćeno na ovom uređaju." : "Odaberi svoj grad: zapamtit ćemo ga na ovom uređaju.";
 }
 
 function render() {
@@ -462,7 +494,20 @@ function render() {
       ? "Vijeće ove općine za ovaj saziv nije objavilo zapisnike, pa nema ni objava. Što objavljuje, piše na kartici općine." : "Nema objava za ovaj odabir.";
     feed.innerHTML = `<p class="empty">${why}</p>`; return;
   }
-  feed.innerHTML = list.map((p, k) => {
+  // draw the posts a batch at a time as the reader scrolls: all of them at once (up to ~1,200 carousels with
+  // SVG stamps) runs mobile Safari out of memory and it reloads the tab ("A problem repeatedly occurred")
+  feed.innerHTML = "";
+  rendered = {list, next: 0};
+  more();
+}
+
+let rendered = {list: [], next: 0}, moreObs;
+function more() {
+  const feed = document.getElementById("feed"), {list} = rendered;
+  const batch = list.slice(rendered.next, rendered.next + 12);
+  rendered.next += batch.length;
+  feed.querySelector(".sentinel")?.remove();
+  feed.insertAdjacentHTML("beforeend", batch.map((p, k) => {
     const s = slides(p), t = TOPIC_COLOR[p.topics[0]] || "var(--accent)";
     return `<article style="--t:${t}">
       <div class="top"><div class="avatar">${LOGO}</div><div class="who">vijecnica.${esc(p.city)}<small>${esc(p.city_name || CITY_NAME[p.city] || p.city)} · ${fmtDate(p.date)}</small></div></div>
@@ -478,10 +523,18 @@ function render() {
         <details class="why"><summary>Zašto ovo vidim?</summary><p>${why(p)} Pravila odabira ista su za sve gradove i općine; nitko ne bira što je zanimljivo.</p></details>
         ${p.source_url ? `<a class="srclink" href="${esc(p.source_url)}" target="_blank" rel="noopener">Službeni izvor: ${p.source_url.endsWith(".pdf") ? "zapisnik" : "stranica sjednice"} ↗</a>` : ""}</div>
     </article>`;
-  }).join("");
-  feed.querySelectorAll("article").forEach(carousel);
-  feed.querySelectorAll(".more").forEach(b => b.onclick = () => { b.parentElement.classList.remove("short"); b.remove(); });
+  }).join(""));
+  feed.querySelectorAll("article:not([data-ready])").forEach(a => { a.dataset.ready = 1; carousel(a); });
+  feed.querySelectorAll(".more:not([data-ready])").forEach(b => { b.dataset.ready = 1;
+    b.onclick = () => { b.parentElement.classList.remove("short"); b.remove(); }; });
+  if (rendered.next < list.length) feed.insertAdjacentHTML("beforeend", `<div class="sentinel" style="height:1px"></div>`);
 }
+// near the end of what is drawn (1200 px ahead): draw the next batch
+function nearEnd() {
+  const s = document.querySelector("#feed .sentinel");
+  if (s && s.getBoundingClientRect().top < innerHeight + 1200) more();
+}
+if (!moreObs) { moreObs = true; addEventListener("scroll", nearEnd, {passive: true}); addEventListener("resize", nearEnd); }
 
 // Touch swipes scroll natively; mouse users get arrows, clickable dots, keyboard arrows and drag.
 function carousel(art) {
@@ -550,12 +603,13 @@ function filters() {
         .forEach(([c, n]) => g.appendChild(new Option(`${n} (${posts.filter(p => p.city === c).length})`, c)));
       sel.appendChild(g);
     }
-    sel.onchange = () => { filter.city = sel.value; store.set("vij.city", sel.value); render(); scrollTo(0, 0); };
+    sel.onchange = () => { filter.city = sel.value; store.set("vij.city", sel.value); cityLabel(); render(); scrollTo(0, 0); };
     const imp = document.getElementById("important");
     imp.onclick = () => { filter.important = !filter.important; store.set("vij.important", filter.important ? "1" : "0");
                           imp.setAttribute("aria-pressed", filter.important); render(); };
   }
   sel.value = filter.city;
+  cityLabel();
   document.getElementById("important").setAttribute("aria-pressed", filter.important);
 }
 
