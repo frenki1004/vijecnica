@@ -12,7 +12,7 @@ MCP (kako AI asistent odgovara iz istih podataka). Svaki korak ima rezervu ako n
    - https://vijecnica.vercel.app u **privatnom prozoru** (da se pokaže početni ekran, ne zadnji odabrani grad)
    - privatni subreddit s tri objave iz `reports/reddit_demo.md` (ako ga nema: otvori `data/posts/reddit/weekly/cakovec-2025-W51.md`)
    - https://vijecnica.vercel.app/demo (snimljeni odgovori agenta, rezerva za MCP)
-4. Zvuk računala uključen (MCP korak pušta isječak gradske snimke).
+4. Po želji zvuk računala uključen, ako u MCP koraku pustiš isječak gradske snimke.
 
 ---
 
@@ -49,9 +49,10 @@ U Claude Codeu (ili Claude Desktopu) postavi redom, na hrvatskom:
 
 1. **„Što je Gradska skupština Zagreba na 14. sjednici odlučila o lokalnim porezima i kako su glasali klubovi?”**
    Agent zove `get_item` i vraća 24 za, 7 protiv i poimenično glasovanje po klubovima (Možemo! 16 i SDP 8 za; protiv Drito 4, HDZ, DP i HNS po jedan).
-2. **„Što su vijećnici u Velikoj Gorici govorili o vrtićima? Daj mi trenutak u snimci.”**
-   Agent zove `search` i vraća rečenice iz 8. sjednice s vremenom (npr. 3:26:21) i poveznicom na gradsku snimku.
-   **Klikni poveznicu: snimka se pušta točno u tom trenutku.** (najzabavniji trenutak dema)
+2. **„Što su vijećnici u Velikoj Gorici govorili o vrtićima?”**
+   Agent zove `search` i vraća što je rečeno na 8. sjednici, kao tekst (strojni prijepis snimke), s vremenom u snimci
+   (npr. 3:26:21). Dovoljno je pročitati odgovor; uz svaki citat je i poveznica na gradsku snimku, pa po želji klik
+   pušta snimku točno u tom trenutku.
 3. **„Koja su obećanja gradonačelnik Zagreba i njegovi suradnici dali na aktualnom satu i jesu li ispunjena?”**
    Agent zove `promises` i `promise_followup`: 57 obećanja s citatom i rokom (npr. Kino Tuškanac, „sljedeće godine”).
 
