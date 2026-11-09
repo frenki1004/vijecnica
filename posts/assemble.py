@@ -97,6 +97,7 @@ def towns(db_path):
                   # 1 = lowest turnout of all units with 2025 results (DIP), and how many there are
                   "turnout_rank": sum(1 for x in ranked if x < r["turnout_pct"]) + 1 if r["turnout_pct"] and ranked else None,
                   "turnout_units": len(ranked) or None,
+                  "turnout_median": ranked[len(ranked) // 2] if ranked else None,  # of all units with 2025 results
                   "big15": r["code"] in big,  # one of the 15 most populous units in Croatia (DZS 2021.)
                   "low_turnout": LOW_TURNOUT.get(c),  # one of the five lowest-turnout units: what its council publishes
                   "seats_total": r["seats_total"], "seats": seats, "majority": bool(r["single_list_majority"]),
