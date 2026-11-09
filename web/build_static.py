@@ -33,6 +33,7 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect wi
            'fill="#fff"/></svg>')
 VERCEL = {"$schema": "https://openapi.vercel.sh/vercel.json", "framework": None, "buildCommand": "",
           "rewrites": [{"source": "/api/posts", "destination": "/posts.json"}, {"source": "/film", "destination": "/film.html"},
+                       {"source": "/demo", "destination": "/demo.html"}, {"source": "/api/demo", "destination": "/demo.json"},
                        {"source": "/api/towns", "destination": "/towns.json"}, {"source": "/feed", "destination": "/"}],
           "headers": [{"source": "/posts.json", "headers": [{"key": "Cache-Control", "value": "public, max-age=300"}]}]}
 
@@ -54,6 +55,9 @@ def main():
     shutil.make_archive(str(OUT / "otvoreni-podaci"), "zip", EXPORT)  # the open-data package, as published
     (OUT / "film.html").write_text((ROOT / "web" / "film.html").read_text())  # the 3-minute video as a page
     shutil.copytree(ROOT / "web" / "film", OUT / "film")
+    # "Kako agent odgovara": six questions answered only through the MCP server (demo/record.py)
+    (OUT / "demo.html").write_text((ROOT / "web" / "demo.html").read_text().replace("← natrag na sjednice", "← natrag na objave"))
+    shutil.copy(ROOT / "demo" / "demo.json", OUT / "demo.json")
     (OUT / "favicon.svg").write_text(FAVICON)
     (OUT / "vercel.json").write_text(json.dumps(VERCEL, indent=1))
     print(f"{len(posts)} posts -> {OUT}")

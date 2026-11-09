@@ -7,6 +7,7 @@ import json
 import re
 import sqlite3
 import sys
+import urllib.parse
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "collect"))
@@ -141,7 +142,10 @@ def main():
             out[d["id"]] = ({**q, **d, "topics": topics, "city_name": CITY_NAME.get(q["city"], q["city"]),
                         "hashtags": [CITY_TAG.get(q["city"], "#" + q["city"])] + [TOPIC_TAG[t] for t in topics]})
     db = sqlite3.connect(ROOT / "data" / "vijecnica.db")
+    site = dict(db.execute("SELECT id, site FROM cities"))
     links = {(c, n): m or u for c, n, m, u in db.execute("SELECT city, n, minutes_url, url FROM sessions")}
+    links = {k: (v if not v or v.startswith("http") else urllib.parse.urljoin(site.get(k[0]) or "", v))
+             for k, v in links.items()}  # Zagreb's and Brod's links are site-relative
     out = list(out.values())
     for p in out:
         p["relevant"], p["relevance"] = relevance(p)
