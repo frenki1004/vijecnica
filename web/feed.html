@@ -216,6 +216,7 @@ h1.home{cursor:pointer}
   .pick .pk-b b{font-size:20px}
   .desk{display:block}
 }
+.dlink{font-weight:700;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -242,6 +243,7 @@ h1.home{cursor:pointer}
       to piše na kartici općine.</p><div class="towns" id="towns-low"></div></section>
     <p style="margin-top:18px"><button class="ask" data-ask>+ Moj grad nije na popisu</button></p>
     <p style="margin-top:18px"><button class="all" id="all">Pokaži objave svih gradova i općina →</button></p>
+    <p style="margin-top:10px"><a class="dlink" href="podaci">⬇ Svi podaci za preuzimanje (otvoreni podaci, CSV)</a></p>
     <p class="fine3">Demo za Datathon Portala otvorenih podataka: objave su strojni nacrti iz službenih dokumenata i još
       ih nije pregledala osoba. Službeni dokumenti imaju prednost.</p>
   </div>
@@ -403,6 +405,7 @@ function townCard(c) {
     <div class="seatbar">${bar}</div><ul class="seatlist">${list}</ul><p class="sub2" style="margin:8px 0 0">${majority}</p>` : ""}
     ${t.low_turnout ? `<p class="label2">Što vijeće objavljuje</p><p class="sub2" style="margin:2px 0 0">${esc(t.low_turnout)}</p>` : ""}
     <p class="src">${t.website ? `<a href="${esc(t.website)}" target="_blank" rel="noopener">Službena stranica</a> · ` : ""}${dg}<br>
+      <a class="dlink" href="podaci#${c}">⬇ Preuzmi podatke: transkripti, glasovanja, objave</a><br>
     Izvori: DZS, registar birača i Porezna uprava preko Portala otvorenih podataka (data.gov.hr); mandati preračunati iz rezultata DIP-a (D'Hondt).</p>
   </section>`;
 }

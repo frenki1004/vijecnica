@@ -6,7 +6,7 @@ start screen → #mjesto (town card) → #tema (topic chip, a hashtag) → one p
 questions answered through the MCP server in three assistants (web/mcp_chats.py; real calls in deploy/demo_video/mcp_calls.json), and /intro?part=b. Narration is shown as captions. 1920x1080, H.264.
 
 Usage: mcp_server.py --http 8103 running, then
-       uv run --with playwright python web/record_demo.py [--clean]  ->  deploy/demo_video/demo.mp4 (demo_clean.mp4)
+       uv run --with playwright==1.64.1 python web/record_demo.py [--clean]  ->  deploy/demo_video/demo.mp4 (demo_clean.mp4)
 """
 import html
 import json
@@ -149,7 +149,7 @@ def main():
         t0 = [0.0]
         at = lambda sec: pg.wait_for_timeout(max(0, int((t0[0] + sec - time.monotonic()) * 1000)))
         say = (lambda t: pg.evaluate(CAP, t)) if CAPTIONS else (lambda t: None)
-        pg.on("load", lambda _: pg.evaluate("location.protocol.startsWith('http') && /^\\/(feed|demo)$/.test(location.pathname) && (document.documentElement.style.zoom = '1.35')"))
+        pg.on("load", lambda _: pg.evaluate("location.protocol.startsWith('http') && /^\\/(feed|demo|podaci)$/.test(location.pathname) && (document.documentElement.style.zoom = '1.35')"))
         art = "article:has-text('{}')"
 
         # 0:00 problem + how we got the data (/intro?part=a plays by itself, 65 s)
@@ -209,6 +209,10 @@ def main():
         post.locator("details.why summary").click()
         post.locator(".srclink").evaluate("e => e.scrollIntoView({behavior:'smooth',block:'center'})")
         say("Ispod svake objave je izvor: zapisnik, materijal ili trenutak u snimci.")
+        at(112)
+        # 1:52 open data: everything for download (/podaci)
+        pg.goto(f"{URL}/podaci")
+        say("A sve podatke možeš preuzeti: transkripte, glasovanja i objave, kao otvorene podatke.")
         at(115)
         # 1:55 why social media (research), then the Reddit thread
         pg.goto((OUT / "research.html").as_uri())

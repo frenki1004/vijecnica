@@ -1225,6 +1225,25 @@ async def feed_page(req: Request):
     return FileResponse(WEB / "feed.html", headers={"Cache-Control": "no-cache"})
 
 
+@mcp.custom_route("/podaci", methods=["GET"])
+async def podaci_page(req: Request):
+    """'Otvoreni podaci': downloads, as built by web/build_static.py into deploy/vijecnica/."""
+    f = ROOT / "deploy" / "vijecnica" / "podaci.html"
+    return FileResponse(f) if f.is_file() else JSONResponse({"error": "run web/build_static.py"}, status_code=404)
+
+
+@mcp.custom_route("/podaci/{name}", methods=["GET"])
+async def podaci_file(req: Request):
+    f = ROOT / "deploy" / "vijecnica" / "podaci" / Path(req.path_params["name"]).name
+    return FileResponse(f) if f.is_file() else JSONResponse({"error": "not found"}, status_code=404)
+
+
+@mcp.custom_route("/otvoreni-podaci.zip", methods=["GET"])
+async def podaci_zip(req: Request):
+    f = ROOT / "deploy" / "vijecnica" / "otvoreni-podaci.zip"
+    return FileResponse(f) if f.is_file() else JSONResponse({"error": "run web/build_static.py"}, status_code=404)
+
+
 @mcp.custom_route("/intro", methods=["GET"])
 async def intro_page(req: Request):
     """'Pogledajmo brojke': the animated opening of the live demo (reports/demo_uzivo.md)."""

@@ -23,8 +23,7 @@ HOLD = {"zagreb-12-37-2", "zagreb-11-9-1",
         "samobor-11-13-1"}  # OCR: "I." or "II." izmjene unclear
 NOTICE = ('<p class="demo-note">Demo za Datathon Portala otvorenih podataka: objave su strojni nacrti iz službenih '
           'zapisnika i još ih nije pregledala osoba. Službeni dokumenti imaju prednost. '
-          '<a href="otvoreni-podaci.zip" download>Preuzmi otvorene podatke</a> (CSV i Frictionless Data Package '
-          'spreman za CKAN, 20 gradova i općina; licenca po resursu u datapackage.json).</p>')
+          '<a href="podaci">Preuzmi sve podatke</a>: transkripte, glasovanja i objave (CSV i Data Package za CKAN).</p>')
 EXPORT = ROOT / "data" / "export"  # export/export.py
 NOTICE_CSS = (".demo-note{margin:10px 0 0;padding:8px 12px;border-radius:8px;background:var(--soft);"
               "color:var(--muted);font-size:14px}")
@@ -35,8 +34,62 @@ VERCEL = {"$schema": "https://openapi.vercel.sh/vercel.json", "framework": None,
           "rewrites": [{"source": "/api/posts", "destination": "/posts.json"}, {"source": "/film", "destination": "/film.html"},
                        {"source": "/demo", "destination": "/demo.html"}, {"source": "/intro", "destination": "/intro.html"}, {"source": "/api/demo", "destination": "/demo.json"},
                        {"source": "/api/towns", "destination": "/towns.json"},
-                       {"source": "/api/units", "destination": "/units.json"}, {"source": "/feed", "destination": "/"}],
+                       {"source": "/api/units", "destination": "/units.json"}, {"source": "/feed", "destination": "/"},
+                       {"source": "/podaci", "destination": "/podaci.html"}],
           "headers": [{"source": "/posts.json", "headers": [{"key": "Cache-Control", "value": "public, max-age=300"}]}]}
+
+
+# not offered for download: Samobor's robots.txt excludes AI systems by name (its posts stay on the web, with sources)
+NO_DOWNLOAD = {"samobor"}
+LABELS = {"sessions": "sjednice", "items": "točke dnevnog reda", "spoken_votes": "glasovi iz snimke", "votes": "poimenično glasovanje",
+          "attendance": "nazočnost", "members": "članovi vijeća", "questions": "pitanja vijećnika", "segments": "transkript",
+          "speaker_turns": "govornici", "promises": "obećanja"}
+
+
+def podaci(posts):
+    """deploy/vijecnica/podaci.html + podaci/ (per-town zips, the Data Package, posts, data.gov.hr provenance) and
+    otvoreni-podaci.zip with everything, all from the export/export.py package minus NO_DOWNLOAD."""
+    import csv
+    import zipfile
+    d = OUT / "podaci"
+    d.mkdir()
+    pkg = json.loads((EXPORT / "datapackage.json").read_text())
+    pkg["resources"] = [r for r in pkg["resources"] if r["path"].split("/")[0] not in NO_DOWNLOAD]
+    (d / "datapackage.json").write_text(json.dumps(pkg, ensure_ascii=False, indent=1))
+    names = {p["city"]: p.get("city_name") or p["city"] for p in posts}
+    towns = json.loads((ROOT / "data" / "posts" / "towns.json").read_text())
+    rows, cities, descriptions = {}, [], {}
+    keys = sorted({r["path"].split("/")[0] for r in pkg["resources"] if "/" in r["path"]})
+    with zipfile.ZipFile(OUT / "otvoreni-podaci.zip", "w", zipfile.ZIP_DEFLATED) as everything:
+        for f in ("datapackage.json",):
+            everything.write(d / f, f)
+        for f in ("README.txt",):
+            if (EXPORT / f).exists():
+                everything.write(EXPORT / f, f)
+        for key in keys:
+            tables = []
+            with zipfile.ZipFile(d / f"{key}.zip", "w", zipfile.ZIP_DEFLATED) as z:
+                for f in sorted((EXPORT / key).glob("*.csv")):
+                    with f.open(newline="") as fh:
+                        n = max(0, sum(1 for _ in csv.reader(fh)) - 1)
+                    z.write(f, f"{key}/{f.name}")
+                    everything.write(f, f"{key}/{f.name}")
+                    tables.append({"name": f.stem, "rows": n})
+                    rows[f.stem] = rows.get(f.stem, 0) + n
+                z.write(d / "datapackage.json", "datapackage.json")
+            t = towns.get(key, {})
+            name = names.get(key) or (t.get("unit") or key).replace("OPĆINA ", "").replace("GRAD ", "").title()
+            cities.append({"key": key, "name": name, "tables": tables, "size": (d / f"{key}.zip").stat().st_size})
+    for r in pkg["resources"]:
+        descriptions.setdefault(r["name"].split("-", 1)[-1] if "-" in r["name"] else r["name"], r.get("description", ""))
+    descriptions = {k: v for k, v in descriptions.items() if k in LABELS}
+    (d / "objave.json").write_text(json.dumps(posts, ensure_ascii=False, indent=1))
+    shutil.copy(ROOT / "data" / "datagovhr" / "sources.json", d / "datagovhr-izvori.json")
+    data = {"cities": sorted(cities, key=lambda c: c["name"]), "rows": rows, "posts": len(posts),
+            "postsSize": (d / "objave.json").stat().st_size, "zip": (OUT / "otvoreni-podaci.zip").stat().st_size,
+            "labels": LABELS, "descriptions": descriptions,
+            "excluded": [names.get(k, k.title()) for k in sorted(NO_DOWNLOAD)]}
+    (OUT / "podaci.html").write_text((ROOT / "web" / "podaci.html").read_text().replace("__DATA__", json.dumps(data, ensure_ascii=False)))
 
 
 def main():
@@ -54,7 +107,7 @@ def main():
     (OUT / "posts.json").write_text(json.dumps(posts, ensure_ascii=False, separators=(",", ":")))
     shutil.copy(ROOT / "data" / "posts" / "towns.json", OUT / "towns.json")
     shutil.copy(ROOT / "data" / "posts" / "units.json", OUT / "units.json")  # "Moj grad nije na popisu"
-    shutil.make_archive(str(OUT / "otvoreni-podaci"), "zip", EXPORT)  # the open-data package, as published
+    podaci(posts)  # /podaci: the open-data package, whole and per town
     (OUT / "film.html").write_text((ROOT / "web" / "film.html").read_text())  # the 3-minute video as a page
     shutil.copytree(ROOT / "web" / "film", OUT / "film")
     # "Kako agent odgovara": six questions answered only through the MCP server (demo/record.py)

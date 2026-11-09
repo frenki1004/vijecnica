@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eVijećnica: otvoreni podaci</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600;6..72,700&family=Public+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* "Podaci": everything eVijećnica collected and derived, for download (web/build_static.py fills __DATA__). */
+:root{--bg:#f4f6fa;--panel:#fff;--fg:#14213a;--muted:#5b667a;--line:#d9dfe9;--soft:#eaf0fa;--accent:#1d4f9c;
+  --display:"Newsreader",Georgia,serif;--body:"Public Sans",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1320;--panel:#151d2d;--fg:#e4e9f2;--muted:#98a3b8;
+  --line:#26314a;--soft:#1a2740;--accent:#7fa8ec;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1320;--panel:#151d2d;--fg:#e4e9f2;--muted:#98a3b8;--line:#26314a;--soft:#1a2740;--accent:#7fa8ec;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);padding:0 16px 64px}
+.w{max-width:880px;margin:0 auto}
+a{color:var(--accent)}
+.back{display:inline-block;margin:22px 0 4px;font-weight:600;text-decoration:none}
+h1{font:700 40px/1.1 var(--display);margin:8px 0 10px} h1 span{color:var(--accent)}
+h2{font:700 24px/1.2 var(--display);margin:34px 0 10px}
+.lead{font-size:18px;color:var(--muted);max-width:700px}
+.big{display:flex;flex-wrap:wrap;gap:14px;margin:22px 0}
+.dl{display:flex;flex-direction:column;gap:4px;flex:1 1 250px;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:16px 18px;text-decoration:none;color:var(--fg)}
+.dl.main{border:2px solid var(--accent)} .dl b{font-size:17px} .dl span{color:var(--muted);font-size:14px}
+.dl i{font-style:normal;font-weight:800;color:var(--accent)}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 0} .kpis div{background:var(--soft);border-radius:10px;padding:8px 14px}
+.kpis b{font-size:20px;display:block}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:15px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top} th{color:var(--muted);font-weight:600;font-size:13px}
+tr:target td{background:var(--soft)}
+td small{color:var(--muted)}
+.wrap-t{overflow-x:auto}
+ul{padding-left:20px} li{margin:6px 0}
+.note{background:var(--soft);border-radius:12px;padding:12px 16px;color:var(--fg)}
+code{font:14px ui-monospace,Menlo,monospace;background:var(--soft);padding:1px 6px;border-radius:5px}
+</style>
+</head>
+<body><div class="w">
+<a class="back" href="/">← natrag na objave</a>
+<h1><span>e</span>Vijećnica: otvoreni podaci</h1>
+<p class="lead">Sve što smo skupili i izveli iz službenih stranica gradskih i općinskih vijeća i s Portala otvorenih podataka
+možeš preuzeti, provjeriti i ponovno upotrijebiti. Formati su CSV i Frictionless Data Package, spremni za CKAN i data.gov.hr.</p>
+<div class="kpis" id="kpis"></div>
+
+<div class="big" id="big"></div>
+
+<h2>Po gradu i općini</h2>
+<div class="wrap-t"><table><thead><tr><th>Grad ili općina</th><th>Što je u paketu</th><th>Preuzmi</th></tr></thead>
+<tbody id="cities"></tbody></table></div>
+
+<h2>Što je u podacima</h2>
+<ul id="tables"></ul>
+
+<h2>Odakle podaci dolaze</h2>
+<ul>
+  <li><b>Portal otvorenih podataka (data.gov.hr), preko CKAN API-ja:</b> registar jedinica lokalne samouprave, adresar
+    službenih stranica, popis stanovništva 2021. (DZS), registar birača, porezne stope (Porezna uprava), rezultati
+    lokalnih izbora 2025. (DIP). Svaki skup, s datumom preuzimanja i kontrolnim zbrojem: <a href="podaci/datagovhr-izvori.json">datagovhr-izvori.json</a>.</li>
+  <li><b>Službene stranice vijeća:</b> zapisnici, dnevni redovi, materijali i audio ili video snimke sjednica. Izvorne
+    dokumente ne prenosimo: svaki redak ima poveznicu na službeni izvor.</li>
+  <li><b>Naša obrada:</b> strojni transkripti snimki (model za hrvatski jezik), prepoznati govornici, izdvojena obećanja i
+    objave koje piše AI uz automatsku provjeru brojki.</li>
+</ul>
+
+<h2>Licenca i napomene</h2>
+<div class="note">
+  <p><b>Izvedeni podaci</b> (struktura, stupci, strojni transkripti i vremena, govornici, obećanja, objave): <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, navedi „eVijećnica”.
+  <b>Službeni tekst</b> (naslovi točaka, pitanja, fonogrami) prenesen je doslovno i za njega vrijede uvjeti izvora i
+  <a href="https://www.zakon.hr/z/126/Zakon-o-pravu-na-pristup-informacijama">Zakon o pravu na pristup informacijama</a>. Licenca po datoteci piše u <code>datapackage.json</code>.</p>
+  <p>Transkripti i objave strojno su izvedeni i mogu sadržavati pogreške; službeni dokumenti imaju prednost. Imena su imena
+  izabranih dužnosnika i službenika u obavljanju javne funkcije; ime građanina spomenutog na sjednici uklanjamo na zahtjev.</p>
+  <p id="excluded"></p>
+</div>
+
+<h2>Za programere</h2>
+<ul>
+  <li><b>MCP poslužitelj</b> (17 alata, za Claude, ChatGPT, Gemini i druge AI asistente) i sav kod: <a href="https://github.com/frenki1004/vijecnica">github.com/frenki1004/vijecnica</a> (EUPL-1.2).</li>
+  <li>JSON za web: <a href="api/posts">objave</a>, <a href="api/towns">podaci o gradovima</a>, <a href="api/units">556 jedinica (data.gov.hr)</a>.</li>
+</ul>
+</div>
+<script>
+const D = __DATA__;
+const num = n => n.toLocaleString("hr-HR"), mb = b => b > 1e6 ? `${(b / 1e6).toFixed(1).replace(".", ",")} MB` : `${Math.max(1, Math.round(b / 1e3))} kB`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+document.getElementById("kpis").innerHTML = `<div><b>${D.cities.length}</b>gradova i općina</div><div><b>${num(D.rows.items || 0)}</b>točaka dnevnog reda</div>
+  <div><b>${num(D.rows.segments || 0)}</b>odsječaka transkripta</div><div><b>${num(D.posts)}</b>objava</div>`;
+document.getElementById("big").innerHTML = `
+  <a class="dl main" href="otvoreni-podaci.zip" download><i>⬇ Sve odjednom</i><b>otvoreni-podaci.zip</b><span>svi gradovi, CSV + datapackage.json · ${mb(D.zip)}</span></a>
+  <a class="dl" href="podaci/objave.json" download><i>⬇ Objave</i><b>objave.json</b><span>${num(D.posts)} objava s izvorom i glasovima · ${mb(D.postsSize)}</span></a>
+  <a class="dl" href="podaci/datapackage.json"><i>Opis stupaca</i><b>datapackage.json</b><span>Frictionless Data Package, licenca po datoteci</span></a>`;
+document.getElementById("cities").innerHTML = D.cities.map(c => `<tr id="${c.key}"><td><b>${esc(c.name)}</b></td>
+  <td>${c.tables.map(t => `${esc(D.labels[t.name] || t.name)} <small>(${num(t.rows)})</small>`).join(", ")}</td>
+  <td><a href="podaci/${c.key}.zip" download>${c.key}.zip</a> <small>${mb(c.size)}</small></td></tr>`).join("");
+document.getElementById("tables").innerHTML = Object.entries(D.descriptions).map(([k, v]) => `<li><b>${esc(D.labels[k] || k)}</b> (<code>${k}.csv</code>): ${esc(v)}</li>`).join("");
+document.getElementById("excluded").textContent = D.excluded.length ? `Nije u paketu za preuzimanje: ${D.excluded.join(", ")} (stranica grada isključuje automatsku obradu za AI sustave; objave su na webu, s poveznicom na izvor).` : "";
+if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView({block: "center"});
+</script>
+</body>
+</html>

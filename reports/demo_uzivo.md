@@ -13,6 +13,7 @@ Za prezentaciju pred žirijem ili snimku zaslona. Tok: problem → kako smo doš
    - https://evijecnica.vercel.app u **privatnom prozoru** (da se pokaže početni ekran, ne zadnji odabrani grad)
    - privatni subreddit s tri objave iz `reports/reddit_demo.md` (ako ga nema: otvori `data/posts/reddit/weekly/cakovec-2025-W51.md`)
    - https://evijecnica.vercel.app/demo (snimljeni odgovori agenta, rezerva za MCP)
+   - https://evijecnica.vercel.app/podaci (otvoreni podaci za preuzimanje)
 
 ---
 
@@ -40,10 +41,11 @@ Animirani tok u šest koraka: data.gov.hr → pretraživač → skupljači → g
    > „Odabereš svoje mjesto i vidiš samo svoje vijeće: tko u njemu sjedi i što je odlučilo.”
 3. **#tema** (14 s): klik na temu (npr. #proračun ili #vrtićiiškole), pa klik na hashtag u samoj objavi.
    > „Ili kreneš od teme koja te zanima. Svaki hashtag je poveznica, pa jednim klikom vidiš istu temu u drugim gradovima.”
-4. **Objava** (14 s): „Samo bitno” uključeno, listanje vrtuljka (naslovnica s pečatom grada → što je odlučeno →
-   kako se glasalo), pečat „NIJE PROŠLO”, izvor ispod objave, „Zašto ovo vidim?”.
-   > „Svaka objava stane u minutu: što je odlučeno, kako se glasalo i što to znači za tebe. Vijest je i ono što
-   > nije prošlo. Ispod svake objave je izvor: zapisnik, materijal ili trenutak u snimci.”
+4. **Objava i podaci** (14 s): „Samo bitno” uključeno, listanje vrtuljka (naslovnica s pečatom grada → što je
+   odlučeno → kako se glasalo), pečat „NIJE PROŠLO”, izvor ispod objave, „Zašto ovo vidim?”; zatim stranica
+   **/podaci** (red grada): preuzimanje transkripata, glasovanja i objava.
+   > „Svaka objava stane u minutu: što je odlučeno i kako se glasalo. Ispod je izvor, a sve podatke, i transkripte,
+   > možeš preuzeti kao otvorene podatke.”
 
 **Rezerva:** isto lokalno na http://localhost:8103/feed.
 
