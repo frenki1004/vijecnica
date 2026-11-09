@@ -1,6 +1,6 @@
 # eVijećnica: video od 3 minute, verzija 2
 
-Video je stranica `web/film.html` (`/film` na lokalnom poslužitelju i na https://vijecnica.vercel.app/film):
+Video je stranica `web/film.html` (`/film` na lokalnom poslužitelju i na https://evijecnica.vercel.app/film):
 sedam scena s točnim vremenima i titlovima na ekranu. `web/record_film.py` snima je u
 `deploy/film/vijecnica.mp4` (1920×1080, točno 3:00, bez zvuka) i piše titlove u `deploy/film/vijecnica.srt`.
 Naracija ispod jednaka je titlovima (izvor istine je popis `SUBS` u `web/film.html`); oko 300 riječi, mirnim tempom.

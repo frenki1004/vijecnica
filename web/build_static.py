@@ -6,7 +6,7 @@ vercel.json that serves /api/posts and /api/towns from the JSON files, the paths
 
 The demo carries a notice: its posts are machine drafts that no person has reviewed yet.
 
-Live: https://vijecnica.vercel.app
+Live: https://evijecnica.vercel.app
 Usage: .venv/bin/python web/build_static.py, then: npx vercel deploy deploy/vijecnica --prod
 """
 import json
@@ -34,7 +34,8 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect wi
 VERCEL = {"$schema": "https://openapi.vercel.sh/vercel.json", "framework": None, "buildCommand": "",
           "rewrites": [{"source": "/api/posts", "destination": "/posts.json"}, {"source": "/film", "destination": "/film.html"},
                        {"source": "/demo", "destination": "/demo.html"}, {"source": "/intro", "destination": "/intro.html"}, {"source": "/api/demo", "destination": "/demo.json"},
-                       {"source": "/api/towns", "destination": "/towns.json"}, {"source": "/feed", "destination": "/"}],
+                       {"source": "/api/towns", "destination": "/towns.json"},
+                       {"source": "/api/units", "destination": "/units.json"}, {"source": "/feed", "destination": "/"}],
           "headers": [{"source": "/posts.json", "headers": [{"key": "Cache-Control", "value": "public, max-age=300"}]}]}
 
 
@@ -52,6 +53,7 @@ def main():
              for p in json.loads((ROOT / "data" / "posts" / "posts.json").read_text()) if p["id"] not in HOLD]
     (OUT / "posts.json").write_text(json.dumps(posts, ensure_ascii=False, separators=(",", ":")))
     shutil.copy(ROOT / "data" / "posts" / "towns.json", OUT / "towns.json")
+    shutil.copy(ROOT / "data" / "posts" / "units.json", OUT / "units.json")  # "Moj grad nije na popisu"
     shutil.make_archive(str(OUT / "otvoreni-podaci"), "zip", EXPORT)  # the open-data package, as published
     (OUT / "film.html").write_text((ROOT / "web" / "film.html").read_text())  # the 3-minute video as a page
     shutil.copytree(ROOT / "web" / "film", OUT / "film")

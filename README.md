@@ -1,6 +1,6 @@
 # eVijećnica
 
-**Demo:** https://vijecnica.vercel.app (1.234 objave iz 27 gradova i općina; strojni nacrti, javni demo bez prijave)
+**Demo:** https://evijecnica.vercel.app (1.234 objave iz 27 gradova i općina; strojni nacrti, javni demo bez prijave)
 
 eVijećnica prikuplja službene podatke o sjednicama gradskih i općinskih vijeća (dnevni red, zapisnike, rezultate glasovanja, poimenično glasovanje, pitanja vijećnika i snimke sjednica), sprema ih u jednu pretraživu bazu i iz njih izrađuje kratke, neutralne objave za društvene mreže, s oznakom grada i teme (`#Zagreb #promet`).
 

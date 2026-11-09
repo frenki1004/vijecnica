@@ -168,7 +168,7 @@ def main():
         pg.evaluate("localStorage.removeItem('vij.city')")
         pg.goto(f"{URL}/feed")
         pg.wait_for_selector("#start:not([hidden])")
-        say("Otvoreni podaci, otvoreni kod. eVijećnica: tvoj grad, u minuti. vijecnica.vercel.app")
+        say("Otvoreni podaci, otvoreni kod. eVijećnica: tvoj grad, u minuti. evijecnica.vercel.app")
         at(180.5)
         video = pg.video.path()
         ctx.close()

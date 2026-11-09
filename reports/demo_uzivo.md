@@ -9,10 +9,10 @@ MCP (kako AI asistent odgovara iz istih podataka). Svaki korak ima rezervu ako n
    `claude mcp add --transport http evijecnica http://localhost:8103/mcp`, zatim `claude` i provjera `/mcp`
    (treba pisati 17 alata). Claude Desktop: Settings → Connectors → isti URL.
 3. **Kartice u pregledniku**, ovim redom (svaka preko cijelog ekrana):
-   - https://vijecnica.vercel.app/intro (uvod s brojkama; sam se vrti 35 s, → ili razmaknica za dalje)
-   - https://vijecnica.vercel.app u **privatnom prozoru** (da se pokaže početni ekran, ne zadnji odabrani grad)
+   - https://evijecnica.vercel.app/intro (uvod s brojkama; sam se vrti 35 s, → ili razmaknica za dalje)
+   - https://evijecnica.vercel.app u **privatnom prozoru** (da se pokaže početni ekran, ne zadnji odabrani grad)
    - privatni subreddit s tri objave iz `reports/reddit_demo.md` (ako ga nema: otvori `data/posts/reddit/weekly/cakovec-2025-W51.md`)
-   - https://vijecnica.vercel.app/demo (snimljeni odgovori agenta, rezerva za MCP)
+   - https://evijecnica.vercel.app/demo (snimljeni odgovori agenta, rezerva za MCP)
 4. Po želji zvuk računala uključen, ako u MCP koraku pustiš isječak gradske snimke.
 
 ---
@@ -27,9 +27,9 @@ Stranica se vrti sama; govori preko nje.
 
 ## 0:35–1:40 Web (65 s)
 1. **Početni ekran** (10 s): skupine i grafikon izlaznosti.
-   > „eVijećnica pokriva svih petnaest najvećih gradova i pokazuje gdje je izlaznost najniža.”
+   > „eVijećnica pokriva petnaest najvećih gradova Hrvatske i pokazuje gdje je izlaznost najniža.”
 2. **Brckovljani** (12 s), u skupini s najnižom izlaznošću.
-   > „Najniža izlaznost u Hrvatskoj, a vijeće za ovaj saziv nije objavilo nijedan zapisnik.”
+   > „Najniža izlaznost u Hrvatskoj, a vijeće za ovaj saziv nije objavilo nijedan zapisnik u 2026. godini”
 3. Logo → **Zagreb** → objava **„Porez na nekretnine … 8,00 eura po m² umjesto 5,00”** (28 s). Listaj: naslovnica
    (pečat grada) → što je odlučeno → **kako su glasali klubovi**.
    > „Zapisnik kaže samo ‚izmjene lokalnih poreza’. Brojku smo pročitali iz prijedloga odluke, a kako su glasali
@@ -53,7 +53,7 @@ U Claude Codeu ili Claude Desktopu (postavi pitanja prije snimanja, pa samo poka
 > „Isti podaci dostupni su svakom AI asistentu, preko otvorenog MCP poslužitelja. Odgovor uvijek ima izvor:
 > točku, zapisnik ili trenutak u snimci.”
 
-**Rezerva:** https://vijecnica.vercel.app/demo (snimljeni razgovori).
+**Rezerva:** https://evijecnica.vercel.app/demo (snimljeni razgovori).
 
 ## 2:45–3:00 Kraj (15 s)
 Početni ekran.

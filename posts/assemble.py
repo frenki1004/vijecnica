@@ -68,6 +68,23 @@ LOW_TURNOUT = {
 }
 
 
+SMALL = {"na", "u", "i", "pri", "kod", "od", "nad", "pod", "do", "s"}
+
+
+def unit_names():
+    """All 556 cities and municipalities (jpt.gov.hr via data.gov.hr) as [name, "grad"|"općina", county], for the
+    feed's "Moj grad nije na popisu" form."""
+    f = ROOT / "data" / "datagovhr" / "units.json"
+    if not f.exists():
+        return []
+    def nice(s):
+        words = re.sub(r"\s*-\s*", "-", re.sub(r"^(GRAD|OPĆINA)\s+", "", " ".join(s.split()))).lower().split(" ")
+        return " ".join(w if k and w in SMALL else "-".join(x[:1].upper() + x[1:] for x in w.split("-"))
+                        for k, w in enumerate(words))
+    return sorted(([nice(u["name"]), u["type"], u["county"].lower()] for u in json.loads(f.read_text())),
+                  key=lambda r: r[0])
+
+
 def towns(db_path):
     """Per city, the data.gov.hr and DIP facts the feed's town card shows, each with its source.
     Built by collect/datagovhr.py + db/build.py (view city_overview); empty when that has not run."""
@@ -154,6 +171,7 @@ def main():
     out.sort(key=lambda p: (p.get("date") or "", p["kind"] == "item", p.get("no", 0)), reverse=True)
     (POSTS / "posts.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     (POSTS / "towns.json").write_text(json.dumps(towns(ROOT / "data" / "vijecnica.db"), ensure_ascii=False, indent=1))
+    (POSTS / "units.json").write_text(json.dumps(unit_names(), ensure_ascii=False, separators=(",", ":")))
     print(f"{len(out)} posts -> {POSTS / 'posts.json'}" + (f"; dropped {dropped}" if dropped else ""), file=sys.stderr)
 
 
