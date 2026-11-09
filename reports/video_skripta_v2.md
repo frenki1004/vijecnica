@@ -55,7 +55,7 @@ ga QuickTimeom; stranica se sama vrti 3 minute.
 ### 1:45–2:15 · 5 · Podaci (skupovi podataka, tehnički pristup)
 **Slika:** Izvori preko API-ja (data.gov.hr CKAN, jpt.gov.hr, DZS, registar birača, porezne stope, DIP), brojke iz baze i rezultat pretraživača 556 jedinica.
 
-> `1:45` Podatke uzimamo s dvadeset devet službenih stranica gradova i općina
+> `1:45` Podatke uzimamo s trideset i jedne službene stranice gradova i općina, među njima svih petnaest najvećih gradova
 > `1:50` i s Portala otvorenih podataka, preko API-ja: registar jedinica, popis stanovništva, birače i porezne stope.
 > `1:58` Izborne rezultate pretvaramo u mandate.
 > `2:01` Naš pretraživač pregledao je svih 556 jedinica i našao snimke sjednica kod njih 87.
@@ -78,7 +78,7 @@ ga QuickTimeom; stranica se sama vrti 3 minute.
 
 ## Provjera prije predaje
 - Trajanje 3:00 (žiri ocjenjuje video od 3 minute).
-- Brojke: 29 jedinica, 327 sjednica, 6.373 točke, 4.036 s ishodom, 1.200 objava (upiti u `ARHITEKTURA.md`, „Provjera
+- Brojke: 31 jedinica, 332 sjednice, 6.461 točka, 4.080 s ishodom, 1.223 objave (upiti u `ARHITEKTURA.md`, „Provjera
   brojki”); mladi: Studija o mladima Hrvatska 2024., FES/IDI; Čakovec 4/12/2 i 11 ↔ 16+5: zapisnici 4. i 3. sjednice;
   556/495/292/87: `data/discover/summary.json` (pretraživač, bez ručne provjere uzorka, pa „našao”, a ne „ima”).
 - Bez imena privatnih osoba. Imena u kadru (predsjednik vijeća i gradonačelnica u zapisniku i kartici grada) su

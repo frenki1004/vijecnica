@@ -1,6 +1,6 @@
 # eVijećnica: odakle dolaze podaci, za svaku jedinicu
 
-Stanje baze 9. 11. 2026. (29 jedinica). Sve brojke u ovom dokumentu izračunate su iz `data/vijecnica.db` i `data/posts/` (skripta je
+Stanje baze 9. 11. 2026. (31 jedinica, među njima svih 15 najvećih gradova). Sve brojke u ovom dokumentu izračunate su iz `data/vijecnica.db` i `data/posts/` (skripta je
 u povijesti razgovora; upiti iste vrste su u `ARHITEKTURA.md`, „Provjera brojki”). Kod: EUPL-1.2. Izvedeni podaci:
 CC BY 4.0 ili uvjeti izvora (licenca po resursu u `datapackage.json` izvoza).
 
@@ -230,13 +230,17 @@ pa njih uzimamo sa službenih stranica vijeća.
 - **U bazi:** 12 sjednica (11 sa zapisnikom), 306 točaka dnevnog reda (263 s ishodom glasovanja); snimke: 5 (0 pretvoreno u tekst); objave: 2.
 - **S data.gov.hr:** 36.316 stanovnika (DZS 2021.), 31.792 birača (registar 2026.), porez na dohodak 18 % / 25 % (2026.); vijeće 21 mjesta, izlaznost 36,57 % i 19.991 birača koji nisu glasovali (DIP 2025.); vlastitih skupova podataka na portalu: 6.
 
-### Grad Velika Gorica (u izradi)
-- **Službeni izvor:** gorica.hr (sjednice Gradskog vijeća). Skupljač: `collect/audio_sites.py`.
-- **Što uzimamo:** audio zapise sjednica (MP3); zadnja sjednica (8., oko 7 sati) pretvorena je u tekst. Zapisnici su
-  na OneDriveu, pa zasad nema dnevnog reda ni glasovanja u bazi i nema objava.
+### Grad Velika Gorica
+- **Službeni izvor:** gorica.hr (sjednice Gradskog vijeća; paket materijala 7. sjednice preuzela je osoba s javne stranice Grada; zapisnici su i na OneDriveu). Skupljač: `collect/velika_gorica.py` (samo lokalne datoteke), `collect/audio_sites.py` (audio).
+- **Što uzimamo:** zapisnik 6. sjednice (doslovni, .docx) iz paketa 7. sjednice; materijali 7. sjednice; audio zapis 8. sjednice (7 sati), pretvoren u tekst.
+- **U bazi:** 2 sjednice (1 sa zapisnikom), 45 točaka dnevnog reda (21 s ishodom glasovanja); snimke: 1 (1 pretvoreno u tekst); objave: 5.
+- **S data.gov.hr:** 61.075 stanovnika (DZS 2021.), 57.420 birača (registar 2026.), porez na dohodak 20 % / 30 % (2026.); vijeće 27 mjesta, izlaznost 37,12 % i 34.789 birača koji nisu glasovali (DIP 2025.); vlastitih skupova podataka na portalu: 0.
 
-### Grad Samobor (nije obuhvaćen)
-- Portal eSjednice Grada Samobora ima samo jednu sjednicu iz 2018.; vijeće objavljuje na samobor.hr, za koji skupljač još nije napisan.
+### Grad Samobor
+- **Službeni izvor:** samobor.hr (stranica Sjednice). **Grad u robots.txt isključuje AI sustave** (GPTBot, ClaudeBot i dr.), pa skupljač ne pristupa stranici: pakete materijala 12. i 13. sjednice preuzela je osoba. Ako se Grad tome protivi, jedinicu uklanjamo. Skupljač: `collect/samobor.py` (samo lokalne datoteke).
+- **Što uzimamo:** zapisnici 11. i 12. sjednice (skenovi, OCR) iz paketa sljedeće sjednice; materijali 12. i 13. sjednice.
+- **U bazi:** 3 sjednice (2 sa zapisnikom), 43 točaka dnevnog reda (23 s ishodom glasovanja); snimke: 0 (0 pretvoreno u tekst); objave: 18.
+- **S data.gov.hr:** 37.435 stanovnika (DZS 2021.), 33.807 birača (registar 2026.), porez na dohodak 18 % / 27 % (2026.); vijeće 21 mjesta, izlaznost 50,11 % i 16.532 birača koji nisu glasovali (DIP 2025.); vlastitih skupova podataka na portalu: 13.
 
 ### Grad Petrinja (u izradi)
 - **Službeni izvor:** petrinja.hr (snimke sjednica). Poslužitelj je dvaput prekinuo vezu, pa ga zasad ne pitamo dalje.

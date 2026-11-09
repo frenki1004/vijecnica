@@ -171,7 +171,7 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
   <div class="in">
     <h1><span>e</span>Vijećnica</h1>
     <p class="q">Što je tvoje gradsko ili općinsko vijeće odlučilo?</p>
-    <p class="sub">Odluke s 29 službenih stranica, svaka objašnjena u minuti, s izvorom ispod. Odaberi svoj grad ili općinu.</p>
+    <p class="sub">Odluke s 31 službene stranice, svaka objašnjena u minuti, s izvorom ispod. Odaberi svoj grad ili općinu.</p>
     <div class="towns" id="towns"></div>
     <button class="all" id="all">Pokaži sve gradove i općine →</button>
   </div>
@@ -289,7 +289,7 @@ function townCard(c) {
 function how() {
   const cities = new Set(posts.map(p => p.city)).size;
   return `<section class="how desk" aria-label="Kako radi"><h2>Kako radi</h2><ol>
-    <li><span>Skupljamo službene zapisnike, materijale i snimke sjednica s 29 gradskih i općinskih stranica.</span></li>
+    <li><span>Skupljamo službene zapisnike, materijale i snimke sjednica s 31 gradske i općinske stranice.</span></li>
     <li><span>Iz zapisnika čitamo dnevni red i glasovanje. Pravila bez urednika određuju što postaje objava.</span></li>
     <li><span>AI piše sažetak samo iz zapisnika; svaka se brojka automatski provjerava, a izvor stoji ispod objave.</span></li></ol>
     <p class="stat">${num(posts.length)} objava</p><p class="fine2">iz ${cities} gradova i općina · podaci i kod otvoreni (EUPL-1.2, CC BY 4.0)</p></section>`;
