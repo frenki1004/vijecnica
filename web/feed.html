@@ -192,16 +192,6 @@ h1.home{cursor:pointer}
 /* "Moj grad nije na popisu": ask for a town; the request opens as a GitHub issue of the project (no backend) */
 .ask{font:600 14px var(--body);background:none;border:1px dashed var(--accent);color:var(--accent);border-radius:999px;
   padding:6px 12px;cursor:pointer}
-#req{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--fg);max-width:460px;width:calc(100% - 32px);padding:20px}
-#req::backdrop{background:rgba(0,0,0,.45)}
-#req h3{font:700 22px var(--display);margin:0 0 6px}
-#req p{color:var(--muted);font-size:14px;margin:0 0 12px}
-#req label{display:block;font:600 14px var(--body);margin:10px 0 4px}
-#req input,#req textarea{width:100%;font:15px var(--body);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
-#req .row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
-#req .row button{font:600 15px var(--body);padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
-#req .row button.go{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-#req .msg{font-size:14px;margin-top:8px}
 @media (min-width:1100px){
   body{padding-bottom:0}
   .wrap{max-width:1240px;display:grid;grid-template-columns:270px minmax(0,470px) 330px;gap:40px;align-items:start}
@@ -241,19 +231,6 @@ h1.home{cursor:pointer}
       ih nije pregledala osoba. Službeni dokumenti imaju prednost.</p>
   </div>
 </section>
-<dialog id="req" aria-label="Predloži grad ili općinu">
-  <form method="dialog" id="reqform">
-    <h3>Moj grad nije na popisu</h3>
-    <p>Reci nam koji grad ili općinu želiš u eVijećnici. Prijedlozi s najviše glasova dolaze prvi.</p>
-    <label for="reqcity">Grad ili općina</label>
-    <input id="reqcity" list="requnits" autocomplete="off" required placeholder="npr. Vukovar">
-    <datalist id="requnits"></datalist>
-    <label for="reqwhy">Što te zanima? (nije obavezno)</label>
-    <textarea id="reqwhy" rows="3" maxlength="500" placeholder="npr. odluke o prometu i vrtićima"></textarea>
-    <div class="msg" id="reqmsg"></div>
-    <div class="row"><button value="cancel" formnovalidate>Odustani</button><button class="go" id="reqgo" value="ok">Pošalji prijedlog</button></div>
-  </form>
-</dialog>
 <div class="wrap">
   <aside class="left">
   <header>
@@ -588,29 +565,10 @@ window.addEventListener("hashchange", () => {
   filters(); render(); scrollTo(0, 0);
 });
 
-// "Moj grad nije na popisu": all 556 units (data.gov.hr) to pick from; the request becomes a prefilled issue on the
-// project's GitHub (public, needs a GitHub account); a town we already cover just opens its posts
-const REQ_URL = "https://github.com/frenki1004/vijecnica/issues/new";
-let units = null;
+// "Moj grad nije na popisu": opens the request form (Youform; no account, no personal data required)
+const REQ_URL = "https://app.youform.com/forms/76iqn03x";
 document.addEventListener("click", e => {
-  if (!e.target.closest("[data-ask]")) return;
-  const dlg = document.getElementById("req");
-  if (!units) fetch("api/units").then(r => r.ok ? r.json() : []).then(d => { units = d;
-    document.getElementById("requnits").innerHTML = d.map(([n, t, z]) => `<option value="${esc(n)}">${t} · ${esc(z)}</option>`).join(""); });
-  document.getElementById("reqmsg").textContent = "";
-  dlg.showModal();
-});
-document.getElementById("reqform").addEventListener("submit", e => {
-  if (e.submitter?.value !== "ok") return;
-  const city = document.getElementById("reqcity").value.trim(), why = document.getElementById("reqwhy").value.trim();
-  const ours = Object.entries(towns).find(([, t]) => (t.unit || "").toLowerCase().endsWith(" " + city.toLowerCase()));
-  if (ours && posts.some(p => p.city === ours[0])) {  // already covered: show it instead
-    filter.city = ours[0]; store.set("vij.city", ours[0]); document.getElementById("start").hidden = true; filters(); render(); scrollTo(0, 0);
-    return;
-  }
-  const u = units?.find(([n]) => n.toLowerCase() === city.toLowerCase());
-  const body = `Grad ili općina: ${u ? u[0] + " (" + u[1] + ", " + u[2] + ")" : city}\n\nŠto me zanima: ${why || "-"}\n\n(poslano s eVijećnice)`;
-  window.open(`${REQ_URL}?title=${encodeURIComponent("Želim svoj grad: " + city)}&body=${encodeURIComponent(body)}`, "_blank", "noopener");
+  if (e.target.closest("[data-ask]")) window.open(REQ_URL, "_blank", "noopener");
 });
 
 // towns first (the start screen and the town list group by them), then posts
