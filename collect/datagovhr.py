@@ -440,6 +440,14 @@ def main():
         "datagovhr_datasets": datasets, "datagovhr_publishers": summary,
         "tax_rates": tax_rates(ours), "zagreb_assembly_parties": zagreb_assembly(),
     }
+    # turnout of every unit (same DIP file), so a town card can say where its turnout ranks among all 556
+    _, _, every = elections({u["code"]: u for u in units.values()})
+    zg = next((t for t in turnout if t["city"] == "zagreb"), None)  # Grad Zagreb's file is named differently
+    if zg:
+        every.append({**zg, "city": ours["zagreb"]["code"]})
+    out["unit_turnout"] = [{"code": t["city"], "registered": t["registered"], "voted": t["voted"],
+                            "turnout_pct": round(100 * t["voted"] / t["registered"], 2)}
+                           for t in every if t["registered"]]
     if with_voters or (OUT / "voters.json").exists():  # opted in once: re-read from the cache
         out["voters"] = voters(ours)
     out["sources"] = SOURCES

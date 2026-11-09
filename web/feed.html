@@ -152,6 +152,21 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
 .towns button small{display:block;font:400 13px var(--body);color:var(--muted);margin-top:2px}
 .towns button:hover,.towns button:focus-visible{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:-1px}
 .all{font:600 15px var(--body);background:none;border:0;color:var(--accent);cursor:pointer;padding:0}
+#start .lead{font-size:18px;line-height:1.55;max-width:640px;margin:10px 0 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:26px 0 8px}
+.kpis div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpis b{display:block;font:800 30px/1.1 var(--body);color:var(--accent)}
+.kpis span{font-size:14px;color:var(--muted)}
+.how2{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;padding:0;list-style:none}
+.how2 li{font:600 14px var(--body);padding:7px 12px;border-radius:999px;background:var(--soft)}
+.grp{margin-top:30px}
+.grp h3{font:700 24px/1.2 var(--display);margin:0}
+.grp p{color:var(--muted);margin:4px 0 0;max-width:640px;font-size:15px}
+.grp .towns{margin:14px 0 0}
+.towns button small.t{color:var(--muted);font-size:12px}
+.towns button small.t.low{color:var(--protiv)}
+.fine3{color:var(--muted);font-size:13px;margin:26px 0 0;max-width:640px}
+h1.home{cursor:pointer}
 @media (min-width:1100px){
   body{padding-bottom:0}
   .wrap{max-width:1240px;display:grid;grid-template-columns:270px minmax(0,470px) 330px;gap:40px;align-items:start}
@@ -171,9 +186,19 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
   <div class="in">
     <h1><span>e</span>Vijećnica</h1>
     <p class="q">Što je tvoje gradsko ili općinsko vijeće odlučilo?</p>
-    <p class="sub">Odluke s 31 službene stranice, svaka objašnjena u minuti, s izvorom ispod. Odaberi svoj grad ili općinu.</p>
-    <div class="towns" id="towns"></div>
-    <button class="all" id="all">Pokaži sve gradove i općine →</button>
+    <p class="lead">Gradska i općinska vijeća odlučuju o porezima, vrtićima, prometu i otpadu, ali to piše u zapisnicima
+      od šezdeset stranica i snimkama od sedam sati. eVijećnica svaku odluku pretvara u objavu od minute: što je odlučeno,
+      što to znači za tebe, kako se glasovalo i gdje je službeni izvor.</p>
+    <div class="kpis" id="kpis"></div>
+    <ul class="how2"><li>službeni zapisnici, materijali i snimke</li><li>AI piše, brojke se automatski provjeravaju</li>
+      <li>izvor ispod svake objave</li><li>otvoreni podaci preko API-ja data.gov.hr</li><li>otvoreni kod (EUPL-1.2)</li></ul>
+    <section class="grp"><h3>15 najvećih gradova</h3><p id="bigsub"></p><div class="towns" id="towns-big"></div></section>
+    <section class="grp"><h3>Manji gradovi i općine</h3><p>Dokaz da isti postupak radi i za male jedinice. Većina koristi
+      isti sustav za sjednice (eSjednice), pa ih pokriva jedan skupljač. Uz svaku je izlaznost na lokalnim izborima 2025.
+      i njezino mjesto među svim jedinicama u Hrvatskoj.</p><div class="towns" id="towns-small"></div></section>
+    <p style="margin-top:22px"><button class="all" id="all">Pokaži objave svih gradova i općina →</button></p>
+    <p class="fine3">Demo za Datathon Portala otvorenih podataka: objave su strojni nacrti iz službenih dokumenata i još
+      ih nije pregledala osoba. Službeni dokumenti imaju prednost.</p>
   </div>
 </section>
 <div class="wrap">
@@ -275,7 +300,7 @@ function townCard(c) {
     <div class="facts">
       <div><b>${num(t.population)}</b><span>stanovnika (popis 2021.)</span></div>
       <div><b>${num(t.voters)}</b><span>birača (registar birača 2026.)</span></div>
-      <div><b>${t.turnout_2025 == null ? "–" : num(t.turnout_2025) + " %"}</b><span>izlaznost na lokalnim izborima 2025.</span></div>
+      <div><b>${t.turnout_2025 == null ? "–" : num(t.turnout_2025) + " %"}</b><span>izlaznost na lokalnim izborima 2025.${t.turnout_rank ? ` (${t.turnout_rank}. najniža od ${t.turnout_units} jedinica)` : ""}</span></div>
       ${t.nonvoters_2025 == null ? "" : `<div><b>${num(t.nonvoters_2025)}</b><span>upisanih birača nije glasovalo 2025. (od ${num(t.registered_2025)})</span></div>`}
       ${tax}
     </div>
@@ -295,11 +320,26 @@ function how() {
     <p class="stat">${num(posts.length)} objava</p><p class="fine2">iz ${cities} gradova i općina · podaci i kod otvoreni (EUPL-1.2, CC BY 4.0)</p></section>`;
 }
 
+function turnoutNote(t) {
+  if (!t || t.turnout_2025 == null) return "";
+  const r = t.turnout_rank, low = r && r <= Math.round(t.turnout_units / 10);
+  return `<small class="t${low ? " low" : ""}">izlaznost ${num(t.turnout_2025)} %${r ? ` · ${r}. najniža od ${t.turnout_units}` : ""}</small>`;
+}
+
 function start() {
   const box = document.getElementById("start"), names = {}, n = {};
   posts.forEach(p => { names[p.city] = p.city_name || p.city; n[p.city] = (n[p.city] || 0) + 1; });
-  document.getElementById("towns").innerHTML = Object.entries(names).sort((a, b) => a[1].localeCompare(b[1], "hr"))
-    .map(([c, name]) => `<button data-c="${esc(c)}">${esc(name)}<small>${n[c]} ${plural(n[c], "objava", "objave", "objava")}</small></button>`).join("");
+  const btn = ([c, name]) => `<button data-c="${esc(c)}">${esc(name)}<small>${n[c]} ${plural(n[c], "objava", "objave", "objava")}</small>${turnoutNote(towns[c])}</button>`;
+  const all = Object.entries(names), big = all.filter(([c]) => towns[c]?.big15);
+  big.sort((a, b) => (towns[b[0]].population || 0) - (towns[a[0]].population || 0));
+  const small = all.filter(([c]) => !towns[c]?.big15).sort((a, b) => a[1].localeCompare(b[1], "hr"));
+  document.getElementById("towns-big").innerHTML = big.map(btn).join("");
+  document.getElementById("towns-small").innerHTML = small.map(btn).join("");
+  const people = big.reduce((s, [c]) => s + (towns[c].population || 0), 0);
+  document.getElementById("bigsub").textContent = `Svi su obuhvaćeni: ${num(people)} stanovnika (popis 2021.), od Zagreba do Samobora.`;
+  document.getElementById("kpis").innerHTML = `<div><b>${Object.keys(towns).length}</b><span>gradova i općina</span></div>
+    <div><b>${num(posts.length)}</b><span>objava iz službenih zapisnika</span></div>
+    <div><b>957.627</b><span>birača u 20 najvećih gradova nije glasovalo na lokalnim izborima 2025. (DIP)</span></div>`;
   const pick = c => { filter.city = c; store.set("vij.city", c); box.hidden = true; filters(); render(); scrollTo(0, 0); };
   box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => pick(b.dataset.c));
   document.getElementById("all").onclick = () => pick("");
@@ -391,8 +431,12 @@ function filters() {
   const sel = document.getElementById("city");
   if (sel.options.length === 1) {
     const names = {}; posts.forEach(p => names[p.city] = p.city_name || p.city);
-    Object.entries(names).sort((a, b) => a[1].localeCompare(b[1], "hr"))
-      .forEach(([c, n]) => sel.add(new Option(`${n} (${posts.filter(p => p.city === c).length})`, c)));
+    for (const [label, test] of [["15 najvećih gradova", c => towns[c]?.big15], ["Manji gradovi i općine", c => !towns[c]?.big15]]) {
+      const g = document.createElement("optgroup"); g.label = label;
+      Object.entries(names).filter(([c]) => test(c)).sort((a, b) => a[1].localeCompare(b[1], "hr"))
+        .forEach(([c, n]) => g.appendChild(new Option(`${n} (${posts.filter(p => p.city === c).length})`, c)));
+      sel.appendChild(g);
+    }
     sel.onchange = () => { filter.city = sel.value; store.set("vij.city", sel.value); render(); scrollTo(0, 0); };
     const imp = document.getElementById("important");
     imp.onclick = () => { filter.important = !filter.important; store.set("vij.important", filter.important ? "1" : "0");
@@ -408,11 +452,15 @@ window.addEventListener("hashchange", () => {
   filters(); render(); scrollTo(0, 0);
 });
 
-fetch("api/towns").then(r => r.ok ? r.json() : {}).then(d => { towns = d || {}; if (posts.length) render(); }).catch(() => {});
-// first visit (no town chosen yet, no topic link): the start screen asks for the town
-fetch("api/posts").then(r => r.ok ? r.json() : Promise.reject(r)).then(d => { posts = d; filters(); render();
-  if (store.get("vij.city") === null && !location.hash) start(); })
-  .catch(() => document.getElementById("feed").innerHTML = '<p class="empty">Još nema objava (pokreni posts/assemble.py).</p>');
+// towns first (the start screen and the town list group by them), then posts
+const townsReady = fetch("api/towns").then(r => r.ok ? r.json() : {}).then(d => { towns = d || {}; }).catch(() => {});
+fetch("api/posts").then(r => r.ok ? r.json() : Promise.reject(r)).then(d => townsReady.then(() => {
+  posts = d; filters(); render();
+  // first visit (no town chosen yet, no topic link): the start screen
+  if (store.get("vij.city") === null && !location.hash) start();
+})).catch(() => document.getElementById("feed").innerHTML = '<p class="empty">Još nema objava (pokreni posts/assemble.py).</p>');
+document.querySelector("header h1").classList.add("home");
+document.querySelector("header h1").onclick = () => start();  // the logo goes back to the start screen
 </script>
 </body>
 </html>

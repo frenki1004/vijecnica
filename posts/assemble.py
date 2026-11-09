@@ -66,6 +66,11 @@ def towns(db_path):
         rows = db.execute("SELECT * FROM city_overview").fetchall()
     except sqlite3.OperationalError:
         return {}
+    dg = ROOT / "data" / "datagovhr"
+    every = json.loads((dg / "unit_turnout.json").read_text()) if (dg / "unit_turnout.json").exists() else []
+    ranked = sorted(t["turnout_pct"] for t in every)
+    big = {u["code"] for u in sorted(json.loads((dg / "units.json").read_text()), key=lambda u: -(u["population"] or 0))[:15]} \
+        if (dg / "units.json").exists() else set()
     out = {}
     for r in rows:
         c = r["city"]
@@ -78,6 +83,10 @@ def towns(db_path):
                   "population": r["population"], "voters": r["voters_2026"], "turnout_2025": r["turnout_pct"],
                   "registered_2025": el["registered"] if el else None,
                   "nonvoters_2025": el["registered"] - el["voted"] if el else None,
+                  # 1 = lowest turnout of all units with 2025 results (DIP), and how many there are
+                  "turnout_rank": sum(1 for x in ranked if x < r["turnout_pct"]) + 1 if r["turnout_pct"] and ranked else None,
+                  "turnout_units": len(ranked) or None,
+                  "big15": r["code"] in big,  # one of the 15 most populous units in Croatia (DZS 2021.)
                   "seats_total": r["seats_total"], "seats": seats, "majority": bool(r["single_list_majority"]),
                   "mayor": (r["mayor"] or "").title() or None,
                   "tax": dict(tax) if tax else None,
