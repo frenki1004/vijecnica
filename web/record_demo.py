@@ -28,57 +28,130 @@ FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=
 
 
 def reddit_page():
-    """The Čakovec weekly digest and the live-stream post as Reddit would show the Markdown (no Reddit branding)."""
-    docs = []
-    for f in ("weekly/cakovec-2025-W51.md", "cakovec-4-25-1.md"):
-        t = (ROOT / "data" / "posts" / "reddit" / f).read_text()
-        head, body = t.split("\n---\n", 1)[0], t.split("\n---\n", 1)[1]
-        title = next(line.split('"', 1)[1].rsplit('"', 1)[0] for line in head.splitlines() if line.startswith("title:"))
-        docs.append((title, body))
-    cards = "".join(f'<article class="md"><span class="fl">Čakovec</span><h2>{html.escape(t)}</h2>'
-                    f'<div class="b" data-md="{html.escape(b)}"></div></article>' for t, b in docs)
-    return f"""<!doctype html><meta charset="utf-8">{FONTS}
+    """The Čakovec live-stream post as it would look in a Reddit thread (a mock-up: not published; no Reddit logo)."""
+    t = (ROOT / "data" / "posts" / "reddit" / "cakovec-4-25-1.md").read_text()
+    head, body = t.split("\n---\n", 1)
+    title = next(line.split('"', 1)[1].rsplit('"', 1)[0] for line in head.splitlines() if line.startswith("title:"))
+    body = body.rsplit("\n---\n", 1)[0]
+    up = '<svg viewBox="0 0 20 20" width="22"><path d="M10 3 3 11h4v6h6v-6h4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+    return f"""<!doctype html><meta charset="utf-8">
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-<style>{CSS}
-.md{{background:#f6f7f9;color:#1a1a1b;border-radius:14px;padding:28px 36px;margin:26px 0;font-size:19px}}
-.md h2{{font:700 26px/1.3 sans-serif;margin:8px 0 12px}} .md table{{border-collapse:collapse}} .md td,.md th{{border:1px solid #ccd;padding:4px 12px}}
-.fl{{font:700 15px sans-serif;background:#dbe4f3;color:#1d4f9c;border-radius:99px;padding:3px 12px}}</style>
-<div class="w"><p class="k">Reddit</p><h1>Ista objava, kao tekst za raspravu</h1>
-<p style="color:#98a3b8">Markdown iz posts/export_reddit.py; objavljuje osoba, ne bot.</p>{cards}</div>
+<style>
+html{{zoom:1.45}} body{{margin:0;background:#dae0e6;font:15px/1.5 -apple-system,"Helvetica Neue",Arial,sans-serif;color:#1c1c1c}}
+.top{{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #edeff1;height:56px;display:flex;align-items:center;gap:18px;padding:0 24px}}
+.dot{{width:34px;height:34px;border-radius:50%;background:#ff4500;color:#fff;display:grid;place-items:center;font:800 15px sans-serif}}
+.search{{flex:1;max-width:620px;margin:0 auto;background:#f6f7f8;border:1px solid #edeff1;border-radius:20px;padding:9px 16px;color:#878a8c}}
+.mock{{background:#fff3cd;color:#664d03;font-size:14px;font-weight:600;padding:6px 14px;border-radius:6px}}
+.banner{{height:80px;background:linear-gradient(90deg,#0b4f9c,#1a7ec7)}}
+.sub{{background:#fff;padding:0 24px 12px}} .sub .in{{max-width:1080px;margin:0 auto;display:flex;align-items:end;gap:14px}}
+.sub .av{{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:#1a7ec7;color:#fff;display:grid;place-items:center;font:800 26px sans-serif;margin-top:-24px}}
+.sub h1{{font:700 26px sans-serif;margin:0}} .sub small{{color:#7c7c7c}}
+.wrap{{max-width:1080px;margin:20px auto;display:grid;grid-template-columns:1fr 312px;gap:24px}}
+.post{{background:#fff;border:1px solid #ccc;border-radius:6px;display:grid;grid-template-columns:44px 1fr}}
+.votes{{background:#f8f9fa;border-radius:6px 0 0 6px;display:flex;flex-direction:column;align-items:center;padding:10px 0;color:#878a8c;gap:4px;font-weight:700}}
+.votes .dn{{transform:rotate(180deg)}}
+.pc{{padding:10px 16px 6px}} .meta{{font-size:13px;color:#787c7e}} .meta b{{color:#1c1c1c}}
+.fl{{display:inline-block;background:#0079d3;color:#fff;font-size:12px;font-weight:700;border-radius:12px;padding:1px 9px;margin-left:6px}}
+h2{{font:600 21px/1.35 sans-serif;margin:6px 0 10px}}
+.b table{{border-collapse:collapse;margin:6px 0}} .b td,.b th{{border:1px solid #ccc;padding:4px 12px}} .b p{{margin:8px 0}}
+.b em{{color:#555}}
+.acts{{display:flex;gap:18px;color:#878a8c;font-size:13px;font-weight:700;padding:8px 0}}
+.cm{{border:1px solid #ccc;border-radius:4px;margin:6px 0 14px;padding:12px;color:#878a8c;min-height:60px}}
+.side .box{{background:#fff;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:16px}}
+.side .box h3{{margin:0;background:#0b4f9c;color:#fff;font-size:14px;padding:10px 12px}} .side .box p{{margin:0;padding:12px;font-size:14px}}
+</style>
+<div class="top"><div class="dot">r/</div><b>r/croatia</b><div class="search">Pretraži r/croatia</div><span class="mock">Prikaz: kako bi objava izgledala</span></div>
+<div class="banner"></div>
+<div class="sub"><div class="in"><div class="av">hr</div><div><h1>Croatia</h1><small>r/croatia</small></div></div></div>
+<div class="wrap"><div>
+ <div class="post"><div class="votes"><span>{up}</span><span>•</span><span class="dn">{up}</span></div>
+ <div class="pc"><div class="meta"><b>r/croatia</b> · objavio u/evijecnica (osoba, ne bot) <span class="fl">Čakovec</span></div>
+ <h2>{html.escape(title)}</h2><div class="b" data-md="{html.escape(body)}"></div>
+ <div class="acts"><span>💬 Komentari</span><span>↗ Podijeli</span><span>☆ Spremi</span></div>
+ <div class="cm">Što ti misliš? Dodaj komentar…</div></div></div>
+</div><div class="side">
+ <div class="box"><h3>O objavi</h3><p>Tjedni pregled odluka gradskog vijeća, iz službenog zapisnika. Objavu priprema eVijećnica,
+ a objavljuje osoba, uz dopuštenje moderatora. Izvor je naveden na dnu.</p></div>
+ <div class="box"><h3>eVijećnica</h3><p>Ista objava kao karusel za Instagram i kao kartica na evijecnica.vercel.app.</p></div>
+</div></div>
 <script>document.querySelectorAll('[data-md]').forEach(e=>e.innerHTML=marked.parse(e.dataset.md))</script>"""
 
 
 def mcp_page():
-    """The three MCP questions: question, the tool call (name, arguments, time) and what it returned."""
+    """An AI-assistant chat (any MCP client: Claude, ChatGPT, Gemini…) answering from the real MCP calls in
+    mcp_calls.json; window.step(i) shows question i, the tool call, then the answer (driven by main())."""
     calls = json.loads((OUT / "mcp_calls.json").read_text())
-    blocks = []
+    e = html.escape
+    turns = []
     for c in calls:
         r, tool = c["result"], c["tool"]
         if tool == "get_item":
-            clubs = "".join(f"<tr><td>{html.escape(k['short'])}</td><td>{k['za']}</td><td>{k['protiv']}</td>"
-                            f"<td>{k['nije_glasovao']}</td><td>{k['odsutan']}</td></tr>" for k in r["clubs"][:7])
-            res = (f"<p><b>{html.escape(r['title'])}</b>: {r['za']} za, {r['protiv']} protiv, {r['suzdrzano']} suzdržano"
-                   f" ({html.escape(r['status'])}).</p><table><tr><th>klub</th><th>za</th><th>protiv</th>"
-                   f"<th>nije glasovao</th><th>odsutan</th></tr>{clubs}</table>")
+            rows = "".join(f"<tr><td>{e(k['short'])}</td><td>{k['za']}</td><td>{k['protiv']}</td><td>{k['nije_glasovao']}</td>"
+                           f"<td>{k['odsutan']}</td></tr>" for k in r["clubs"][:6])
+            ans = (f"<p>Skupština je <b>usvojila</b> izmjene Odluke o lokalnim porezima: <b>{r['za']} za, {r['protiv']} protiv</b>, "
+                   f"{r['suzdrzano']} suzdržanih. Predlagatelj je gradonačelnik.</p><p>Po klubovima:</p>"
+                   f"<table><tr><th>klub</th><th>za</th><th>protiv</th><th>nije glasovao</th><th>odsutan</th></tr>{rows}</table>"
+                   f"<p class='src'>Izvor: 14. sjednica, točka 9, službeno poimenično glasovanje · <a>web.zagreb.hr</a></p>")
         elif tool == "search":
-            res = "".join(f"<p class='q'>„{html.escape(x['text'].replace('**', ''))}”<br><small>{x['session']}. sjednica · "
-                          f"{x['at']} u snimci · <a href='{html.escape(x['url'])}'>poslušaj</a></small></p>"
-                          for x in r["said_in_session"][:3])
+            items = "".join(f"<li>„{e(x['text'].replace('**', ''))[:230]}”<br><a>▶ {x['at']} u snimci</a></li>"
+                            for x in r["said_in_session"][:3])
+            ans = (f"<p>Na <b>8. sjednici</b> Gradskog vijeća vrtići su se spominjali nekoliko puta. Iz transkripta snimke:</p>"
+                   f"<ul>{items}</ul><p class='src'>Izvor: transkript audio snimke sjednice (gorica.hr), s vremenom u snimci</p>")
         else:
-            res = f"<p>{r['count']} obećanja s rokom. Primjeri:</p>" + "".join(
-                f"<p class='q'>„{html.escape(x['quote'])}”<br><small>{html.escape(x['topic'][:110])}… · rok: "
-                f"{html.escape(x['deadline'])} · {html.escape(x['status'])}</small></p>" for x in r["promises"][:3])
-        args = ", ".join(f"{k}={v!r}" for k, v in c["args"].items())
-        blocks.append(f"<section><div class='you'>{html.escape(c['q'])}</div>"
-                      f"<div class='call'>⚙ {tool}({html.escape(args)}) · {c['ms']} ms</div><div class='ans'>{res}</div></section>")
-    return f"""<!doctype html><meta charset="utf-8">{FONTS}<style>{CSS}
-section{{margin:34px 0}} .you{{background:#1d4f9c;border-radius:16px;padding:14px 20px;display:inline-block;max-width:900px}}
-.call{{font:600 17px ui-monospace,monospace;color:#e2ad48;margin:12px 0}} .ans{{background:#151d2d;border:1px solid #26314a;border-radius:14px;padding:16px 22px}}
-table{{border-collapse:collapse;font-size:18px}} td,th{{border:1px solid #26314a;padding:3px 12px;text-align:left}}
-.q{{margin:8px 0}} .q small{{color:#98a3b8}} a{{color:#7fa8ec}}</style>
-<div class="w"><p class="k">MCP · pitaj vijeće</p><h1>AI asistent odgovara iz istih podataka</h1>
-<p style="color:#98a3b8">Stvarni pozivi MCP poslužitelja eVijećnice (streamable HTTP, /mcp); isto dobiva Claude, ChatGPT ili drugi agent.</p>
-{''.join(blocks)}</div>"""
+            ps = [p for p in r["promises"] if p["deadline"] and len(p["quote"]) <= 160][:3]
+            items = "".join(f"<li><b>{e(p['speaker'])}</b>: „{e(p['quote'])}”<br><small>rok: {e(p['deadline'])} · "
+                            f"{e(p['status_label'])}</small></li>" for p in ps)
+            ans = (f"<p>Na aktualnom satu zabilježeno je <b>{r['count']} obećanja</b>. Neka s rokom:</p><ul>{items}</ul>"
+                   f"<p class='src'>Izvor: transkript 14. sjednice, aktualni sat</p>")
+        args = ", ".join(f'{k}: {json.dumps(v, ensure_ascii=False)}' for k, v in c["args"].items())
+        turns.append(f"<div class='turn'><div class='you'>{e(c['q'])}</div>"
+                     f"<div class='bot'><div class='tool'><span class='spin'></span>evijecnica · <b>{tool}</b>"
+                     f"<code>{{{e(args)}}}</code><span class='ms'>{c['ms']} ms</span></div>"
+                     f"<div class='ans'>{ans}</div></div></div>")
+    return f"""<!doctype html><meta charset="utf-8">{FONTS}<style>
+body{{margin:0;background:#f7f6f2;color:#1f1e1c;font:19px/1.55 -apple-system,"Public Sans",system-ui,sans-serif;display:grid;grid-template-columns:270px 1fr;height:100vh}}
+aside{{background:#efede6;border-right:1px solid #e2dfd6;padding:22px 18px;font-size:16px;color:#5c5a54}}
+aside .new{{background:#fff;border:1px solid #e2dfd6;border-radius:10px;padding:10px 14px;color:#1f1e1c;font-weight:600;margin-bottom:22px}}
+aside .h{{font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}}
+aside .conn{{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2dfd6;border-radius:10px;padding:10px 12px;color:#1f1e1c}}
+aside .conn i{{width:9px;height:9px;border-radius:50%;background:#2e9e5b}}
+aside .works{{margin-top:12px;line-height:1.7}}
+main{{display:flex;flex-direction:column;min-height:0}}
+.bar{{padding:14px 32px;border-bottom:1px solid #e2dfd6;display:flex;justify-content:space-between;font-size:16px;color:#5c5a54}}
+.bar b{{color:#1f1e1c}}
+.chat{{flex:1;overflow:auto;padding:26px 0 40px;scroll-behavior:smooth}}
+.turn{{max-width:960px;margin:0 auto 34px;padding:0 32px;display:none}} .turn.on{{display:block}}
+.you{{margin-left:auto;width:fit-content;max-width:75%;background:#e9e5da;border-radius:18px;padding:12px 18px;margin-bottom:18px}}
+.bot{{display:grid;grid-template-columns:36px 1fr;gap:14px}}
+.bot:before{{content:"✳";width:34px;height:34px;border-radius:50%;background:#d97757;color:#fff;display:grid;place-items:center;font-size:18px}}
+.tool{{grid-column:2;display:flex;align-items:center;gap:10px;border:1px solid #e2dfd6;background:#fff;border-radius:10px;padding:8px 14px;font-size:15px;color:#5c5a54;width:fit-content;opacity:0;transition:opacity .4s}}
+.tool code{{font:14px ui-monospace,Menlo,monospace;color:#8a5a2b}} .tool .ms{{color:#9a978e}}
+.spin{{width:12px;height:12px;border-radius:50%;border:2px solid #d97757;border-right-color:transparent;animation:r .8s linear infinite}}
+.tool.done .spin{{animation:none;border:0;background:#2e9e5b}}
+@keyframes r{{to{{transform:rotate(1turn)}}}}
+.ans{{grid-column:2}} .ans>*{{opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}} .ans>.on{{opacity:1;transform:none}}
+.ans p{{margin:10px 0}} .ans ul{{margin:6px 0;padding-left:22px}} .ans li{{margin:8px 0}} .ans small,.src{{color:#7a776f;font-size:15px}}
+.ans a{{color:#b4562f;text-decoration:underline}}
+table{{border-collapse:collapse;font-size:16px;margin:4px 0}} td,th{{border:1px solid #e2dfd6;padding:4px 12px;text-align:left;background:#fff}}
+.input{{max-width:960px;width:calc(100% - 64px);margin:0 auto 22px;border:1px solid #d6d2c6;background:#fff;border-radius:16px;padding:16px 18px;color:#9a978e;display:flex;justify-content:space-between}}
+.input span{{font-size:14px;border:1px solid #e2dfd6;border-radius:8px;padding:2px 10px;color:#5c5a54}}
+</style>
+<aside><div class="new">+ Novi razgovor</div><div class="h">Povezani MCP poslužitelji</div>
+<div class="conn"><i></i><b>evijecnica</b>&nbsp;· 17 alata</div>
+<div class="works"><div class="h">Isti poslužitelj radi u</div>Claude<br>ChatGPT<br>Gemini<br>i drugim MCP klijentima</div></aside>
+<main><div class="bar"><span><b>AI asistent</b> · pitaj vijeće</span><span>MCP: http…/mcp · streamable HTTP</span></div>
+<div class="chat" id="chat">{''.join(turns)}</div>
+<div class="input">Pitaj bilo što o svom gradskom vijeću…<span>⚙ evijecnica</span></div></main>
+<script>
+window.step = i => {{
+  const t = document.querySelectorAll('.turn')[i], chat = document.getElementById('chat'), down = () => chat.scrollTop = chat.scrollHeight;
+  t.classList.add('on'); down();
+  const tool = t.querySelector('.tool'), parts = [...t.querySelectorAll('.ans>*')];
+  setTimeout(() => {{ tool.style.opacity = 1; down(); }}, 700);
+  setTimeout(() => tool.classList.add('done'), 1700);
+  parts.forEach((p, k) => setTimeout(() => {{ p.classList.add('on'); p.scrollIntoView({{behavior:'smooth',block:'end'}}); }}, 1900 + k * 650));
+}};
+</script>"""
 
 
 CAP = """(t) => { let c = document.getElementById('__cap'); if (!c) { c = document.createElement('div'); c.id = '__cap';
@@ -167,17 +240,18 @@ def main():
         # 1:55 Reddit
         pg.goto((OUT / "reddit.html").as_uri())
         say("Spremno za društvene mreže: najvažnije objave tjedna na Instagram, tjedni pregled grada na Reddit.")
-        at(122)
-        pg.mouse.wheel(0, 900)
+        at(121)
+        pg.evaluate("window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})")
         at(130)
-        # 2:10 MCP: RAG over minutes and transcripts
+        # 2:10 MCP: RAG over minutes and transcripts, in an AI-assistant chat
         pg.goto((OUT / "mcp.html").as_uri())
         say("MCP: AI asistent prvo pretraži našu bazu zapisnika i transkripata, pa odgovori. To je RAG.")
+        pg.evaluate("step(0)")
         at(142)
-        pg.evaluate("document.querySelectorAll('section')[1].scrollIntoView({behavior:'smooth',block:'start'})")
+        pg.evaluate("step(1)")
         say("Što su vijećnici u Velikoj Gorici rekli o vrtićima: iz transkripta, s vremenom u snimci.")
         at(154)
-        pg.evaluate("document.querySelectorAll('section')[2].scrollIntoView({behavior:'smooth',block:'start'})")
+        pg.evaluate("step(2)")
         say("Obećanja s aktualnog sata u Zagrebu, svako s citatom i rokom. Odgovor uvijek ima izvor.")
         at(165)
         # 2:45 the closing idea (/intro?part=b, 15 s)
