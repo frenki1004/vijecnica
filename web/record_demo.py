@@ -196,6 +196,7 @@ def main():
         pg.click("#filters [data-tag='']")
         pg.select_option("#city", "cakovec")
         pg.wait_for_timeout(600)
+        pg.evaluate("while (document.querySelector('#feed .sentinel')) more()")  # the feed draws 12 posts at a time
         sel = art.format("Prijenos sjednica gradskog")
         pg.locator(sel).first.scroll_into_view_if_needed()
         pg.evaluate("window.scrollBy({top:-140,behavior:'smooth'})")
