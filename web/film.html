@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<title>Vijećnica film</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600;6..72,700&family=Public+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* The 3-minute video (reports/video_skripta_v2.md) as a page: a 1920x1080 stage, seven timed scenes, subtitles on
+   screen. web/record_film.py records it to MP4; ?t=SECONDS starts at a scene, ?pause stops the clock (for checking).
+   The feed demo (scene 3) is the live /feed in a phone frame, driven from here. */
+:root{--bg:#0d1320;--panel:#151d2d;--fg:#eef2f8;--muted:#98a3b8;--line:#26314a;--accent:#7fa8ec;--za:#4cc58c;
+  --protiv:#ef7272;--suz:#e2ad48;--display:"Newsreader",Georgia,serif;--body:"Public Sans",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--bg);color:var(--fg);font:28px/1.4 var(--body)}
+.scene{position:absolute;inset:0;padding:110px 140px 190px;opacity:0;transition:opacity .7s;display:flex;flex-direction:column}
+.scene.on{opacity:1}
+.k{font:800 22px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 18px}
+h2{font:700 76px/1.05 var(--display);margin:0;text-wrap:balance}
+.in{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.in.on{opacity:1;transform:none}
+#sub{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);max-width:1500px;text-align:center;
+  font:600 34px/1.35 var(--body);background:rgba(0,0,0,.72);color:#fff;padding:10px 24px;border-radius:10px}
+#sub:empty{display:none}
+.brandmark{position:absolute;top:44px;right:60px;font:700 30px var(--display);opacity:.55}
+.brandmark span,.logo span{color:var(--accent)}
+
+/* 1 problem */
+.docs{display:flex;gap:90px;align-items:center;margin-top:30px}
+.paper{width:520px;transform:rotate(-3deg);box-shadow:0 30px 80px rgba(0,0,0,.6);border-radius:4px;background:#fff;overflow:hidden;height:560px}
+.paper img{width:100%;display:block}
+.cap{font:600 24px var(--body);color:var(--muted);margin-top:22px}
+.cap b{color:var(--fg)}
+.wave{display:flex;align-items:center;gap:6px;height:260px;width:820px}
+.wave i{flex:1;height:100%;background:var(--accent);border-radius:4px;opacity:.85;animation:w 1.4s ease-in-out infinite}
+@keyframes w{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+.clock{font:800 120px/1 var(--body);margin-top:10px}
+.ask{position:absolute;left:960px;right:100px;bottom:200px;font:700 72px/1.05 var(--display)}
+
+/* 2 youth */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:60px;margin-top:70px}
+.stat b{display:block;font:800 132px/1 var(--body);color:var(--accent)}
+.stat span{display:block;margin-top:18px;font:600 34px/1.3 var(--body)}
+.src{margin-top:auto;font:400 22px var(--body);color:var(--muted)}
+
+/* 3 demo */
+.demo{display:grid;grid-template-columns:520px 1fr;gap:110px;align-items:center;height:100%}
+.phone{width:449px;height:948px;border-radius:56px;background:#05080f;padding:16px;box-shadow:0 40px 100px rgba(0,0,0,.6);
+  position:relative;margin-top:-60px}
+.phone iframe{width:390px;height:844px;border:0;border-radius:42px;transform:scale(1.067);transform-origin:0 0;background:#f4f6fa}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:30px}
+.steps li{display:grid;grid-template-columns:64px 1fr;gap:24px;align-items:center;font:600 40px/1.2 var(--body);opacity:.25;transition:opacity .5s}
+.steps li.on{opacity:1}
+.steps li i{width:64px;height:64px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);color:var(--accent);
+  display:grid;place-items:center;font:800 28px var(--body);font-style:normal}
+.steps small{display:block;font:400 26px var(--body);color:var(--muted);margin-top:4px}
+
+/* 4 channels */
+.chan{display:grid;grid-template-columns:1fr 760px;gap:80px;margin-top:40px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(3,270px);gap:22px}
+.grid img{width:270px;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.md{background:#f6f7f9;color:#1a1a1b;border-radius:14px;padding:30px 36px;font:400 23px/1.45 var(--body);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.md .t{font:700 29px/1.25 var(--body);margin:0 0 14px}
+.md .fl{display:inline-block;font:700 18px var(--body);background:#dbe4f3;color:#1d4f9c;border-radius:99px;padding:3px 12px;margin-bottom:12px}
+.md table{border-collapse:collapse;margin:12px 0;font-size:22px}
+.md td,.md th{border:1px solid #ccd;padding:4px 14px}
+.md .f{font-size:19px;color:#666;font-style:italic}
+
+/* 5 data */
+.chips{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+.chips span{font:700 28px var(--body);padding:12px 22px;border-radius:99px;border:2px solid var(--line);background:var(--panel)}
+.chips span.api{border-color:var(--accent)}
+.nums{display:flex;gap:70px;margin-top:34px}
+.nums div b{display:block;font:800 88px/1 var(--body)}
+.nums div span{color:var(--muted);font-size:26px}
+.bars{margin-top:30px;display:flex;flex-direction:column;gap:8px;width:1300px}
+.bars div{display:grid;grid-template-columns:420px 1fr 120px;align-items:center;gap:20px;font:600 28px var(--body)}
+.bars s{display:block;height:30px;border-radius:6px;background:var(--accent);width:0;transition:width 1.6s ease-out;text-decoration:none}
+.bars b{text-align:right}
+.asr{margin-top:22px;font:700 40px var(--display)}
+
+/* 6 trust */
+.minutes{position:relative;width:1200px;margin-top:40px;border-radius:8px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.minutes img{width:100%;display:block}
+.hl{position:absolute;border:5px solid var(--suz);border-radius:8px;opacity:0;transition:opacity .5s}
+.hl.on{opacity:1}
+.sum{margin-top:44px;font:800 72px/1 var(--body);display:flex;gap:30px;align-items:center}
+.stamp{font:800 44px var(--body);color:var(--protiv);border:6px solid var(--protiv);border-radius:14px;padding:10px 24px;
+  transform:rotate(-6deg) scale(1.6);opacity:0;transition:transform .35s cubic-bezier(.2,1.6,.4,1),opacity .2s}
+.stamp.on{transform:rotate(-6deg) scale(1);opacity:1}
+.rules{display:flex;gap:26px;margin-top:40px;font:600 30px var(--body);color:var(--muted)}
+.rules span::before{content:"✓ ";color:var(--za)}
+
+/* 7 outro */
+.out{align-items:center;justify-content:center;text-align:center}
+.logo{font:700 170px/1 var(--display)}
+.tag{font:700 64px var(--display);margin-top:16px}
+.links{margin-top:60px;font:600 34px/1.7 var(--body);color:var(--muted)}
+.links b{color:var(--fg)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="brandmark">Vijeć<span>nica</span></div>
+
+  <section class="scene" id="s1">
+    <p class="k">Problem</p>
+    <div class="docs">
+      <div><div class="paper"><img src="film/zapisnik5-01.png" alt=""></div>
+        <p class="cap"><b>Zapisnik 5. sjednice</b>, Gradsko vijeće Grada Čakovca · 63 stranice</p></div>
+      <div><div class="wave" id="wave"></div><div class="clock">7:03:24</div>
+        <p class="cap"><b>Snimka 8. sjednice</b>, Gradsko vijeće Grada Velike Gorice</p></div>
+    </div>
+    <div class="ask in" data-at="6">Gdje si ovo mogao saznati?</div>
+  </section>
+
+  <section class="scene" id="s2">
+    <p class="k">Mladi i lokalna politika</p>
+    <h2>Teško je vjerovati nečemu što ne vidiš.</h2>
+    <div class="stats">
+      <div class="stat in" data-at="16"><b>36,8&nbsp;%</b><span>mladih nije glasovalo na prethodnim izborima, iako su mogli</span></div>
+      <div class="stat in" data-at="21"><b>26,5&nbsp;%</b><span>njih kao razlog navodi: „ništa se ne bi promijenilo”</span></div>
+      <div class="stat in" data-at="25.5"><b>13,6&nbsp;%</b><span>mladih vjeruje lokalnoj vlasti</span></div>
+    </div>
+    <p class="src">Izvor: Studija o mladima Hrvatska 2024., FES / IDI (N = 717, dob 14–29). Samoprocjena, parlamentarni izbori 2020.</p>
+  </section>
+
+  <section class="scene" id="s3">
+    <div class="demo">
+      <div class="phone"><iframe id="app" title="Vijećnica feed"></iframe></div>
+      <div>
+        <p class="k">Vijećnica</p>
+        <ol class="steps" id="steps">
+          <li data-at="37"><i>1</i><span>Odaberi svoj grad<small>20 gradova i općina</small></span></li>
+          <li data-at="42"><i>2</i><span>Tko čini vijeće<small>mandati, izlaznost, stanovnici · data.gov.hr</small></span></li>
+          <li data-at="48"><i>3</i><span>Svaka odluka u minuti<small>što je odlučeno, što znači za tebe, tko je što rekao</small></span></li>
+          <li data-at="56"><i>4</i><span>Službeni izvor ispod objave<small>zapisnik ili stranica sjednice</small></span></li>
+          <li data-at="62"><i>5</i><span>I ono što nije prošlo<small>Čakovec: 4 za, 12 protiv, 2 suzdržana</small></span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="s4">
+    <p class="k">Instagram i Reddit</p>
+    <h2>Ista objava, dva kanala, isti izvor.</h2>
+    <div class="chan">
+      <div class="grid">
+        <img class="in" data-at="86" src="film/cakovec-4-25-1.jpg" alt="">
+        <img class="in" data-at="87" src="film/krk-5-18-1.jpg" alt="">
+        <img class="in" data-at="88" src="film/zagreb-14-23-1-klubovi.jpg" alt="">
+      </div>
+      <div class="md in" data-at="90">
+        <span class="fl">Čakovec</span>
+        <p class="t">[Čakovec] Prijenos sjednica gradskog vijeća uživo nije prošao (4 za, 12 protiv, 2 suzdržano)</p>
+        <b>Što je odlučeno</b><br>Prijedlog jednog vijećnika da se sjednice vijeća snimaju i video prenose na gradskim internetskim stranicama nije prošao.
+        <table><tr><th>Za</th><th>Protiv</th><th>Suzdržano</th><th>Rezultat</th></tr><tr><td>4</td><td>12</td><td>2</td><td>Nije usvojeno</td></tr></table>
+        <span class="f">Izvor: zapisnik 4. sjednice Gradskog vijeća, 17. 12. 2025.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="s5">
+    <p class="k">Podaci</p>
+    <h2>Službeni izvori i data.gov.hr, preko API-ja</h2>
+    <div class="chips">
+      <span class="in api" data-at="110.5">data.gov.hr · CKAN API</span>
+      <span class="in api" data-at="111.5">jpt.gov.hr · registar jedinica</span>
+      <span class="in" data-at="112.5">DZS · popis 2021.</span>
+      <span class="in" data-at="113.5">registar birača 2026.</span>
+      <span class="in" data-at="114.5">porezne stope JLS</span>
+      <span class="in" data-at="118">DIP · izbori 2025. → mandati</span>
+      <span class="in" data-at="106">20 službenih stranica vijeća</span>
+    </div>
+    <div class="nums in" data-at="107">
+      <div><b>205</b><span>sjednica</span></div><div><b>3.621</b><span>točaka dnevnog reda</span></div>
+      <div><b>2.188</b><span>s ishodom glasovanja</span></div><div><b>1.014</b><span>objava</span></div>
+    </div>
+    <div class="bars in" data-at="121.5" id="bars">
+      <div><span>jedinica pregledano</span><s data-w="100"></s><b>556</b></div>
+      <div><span>imaju stranicu vijeća</span><s data-w="89"></s><b>495</b></div>
+      <div><span>objavljuju zapisnike</span><s data-w="52.5"></s><b>292</b></div>
+      <div><span>objavljuju snimke sjednica</span><s data-w="15.6"></s><b>87</b></div>
+    </div>
+    <p class="asr in" data-at="128">7 sati snimke sjednice → tekst za 58 minuta, na jednom računalu</p>
+  </section>
+
+  <section class="scene" id="s6">
+    <p class="k">Zašto mu možeš vjerovati</p>
+    <h2>Svaka brojka prolazi provjeru.</h2>
+    <div class="minutes"><img src="film/glasovi.png" alt="">
+      <div class="hl" id="hl1" style="left:113px;top:102px;width:168px;height:42px"></div>
+      <div class="hl" id="hl2" style="left:2px;top:226px;width:732px;height:46px"></div></div>
+    <div class="sum in" data-at="148.5"><span>16 + 5 = 21 &gt; 19 članova</span><span class="stamp" id="stamp">Ne objavljujemo</span></div>
+    <div class="rules in" data-at="155"><span>AI piše samo iz zapisnika</span><span>pravila odabira javna, bez urednika</span><span>izvor ispod svake objave</span></div>
+  </section>
+
+  <section class="scene out" id="s7">
+    <div class="logo">Vijeć<span>nica</span></div>
+    <div class="tag in" data-at="171">Tvoj grad, u minuti.</div>
+    <div class="links in" data-at="164"><b>vijecnica.vercel.app</b><br>github.com/frenki1004/vijecnica<br>
+      kod EUPL-1.2 · podaci CC BY 4.0 · Izazov A: Društvo i javne usluge</div>
+  </section>
+
+  <div id="sub"></div>
+</div>
+<script>
+const SCENES = [["s1", 0], ["s2", 15], ["s3", 35], ["s4", 85], ["s5", 105], ["s6", 135], ["s7", 160]], END = 180;
+// narration = subtitles; reports/video_skripta_v2.md has the same text, web/record_film.py writes it as .srt
+const SUBS = [
+  [0.5, "Tvoje gradsko vijeće upravo je odlučilo o proračunu, vrtićima i parkingu."],
+  [6, "Gdje si to mogao saznati? U zapisniku od šezdeset tri stranice."],
+  [11, "Ili u snimci sjednice od sedam sati."],
+  [15.5, "Više od trećine mladih nije izašlo na prethodne izbore, iako su mogli."],
+  [21, "Najčešći razlog: „ništa se ne bi promijenilo”."],
+  [25.5, "Lokalnoj vlasti vjeruje tek 13,6 posto mladih."],
+  [30, "Teško je vjerovati nečemu što ne vidiš."],
+  [35.5, "Vijećnica to mijenja. Odabereš svoj grad, recimo Čakovec,"],
+  [41, "i odmah vidiš tko čini gradsko vijeće i koliko je ljudi izašlo na izbore."],
+  [48, "Svaka odluka je karusel od minute: što je odlučeno, što to znači za tebe,"],
+  [54, "tko je što rekao i kako se glasovalo. Ispod je službeni izvor."],
+  [61, "Vijest je i ono što nije prošlo:"],
+  [64, "u Čakovcu je prijedlog da se sjednice snimaju i prenose uživo odbijen,"],
+  [70, "s dvanaest glasova protiv. Na Krku isto."],
+  [76, "Prekidač „Samo bitno” ostavlja odluke koje se izravno tiču stanovnika."],
+  [85.5, "Iste objave izlaze kao slike za Instagram"],
+  [90, "i kao tekst za Reddit, gdje ljudi mogu raspravljati i ispravljati,"],
+  [96, "uvijek s izvorom ispod objave."],
+  [105.5, "Podatke uzimamo s dvadeset službenih stranica gradova i općina"],
+  [110.5, "i s Portala otvorenih podataka, preko API-ja: registar jedinica, popis stanovništva, birače i porezne stope."],
+  [118, "Izborne rezultate pretvaramo u mandate."],
+  [121.5, "Naš pretraživač pregledao je svih 556 jedinica i našao snimke sjednica kod njih 87."],
+  [128, "Snimke pretvaramo u tekst: sedam sati sjednice za manje od sat vremena."],
+  [135.5, "Umjetna inteligencija piše samo iz zapisnika, a svaka brojka prolazi automatsku provjeru."],
+  [142, "U jednom zapisniku Čakovca predsjednik vijeća najavio je 11 glasova za, a zaključak kaže 16."],
+  [148.5, "Uz 5 protiv to je 21 glas, a vijeće ima 19 članova. Takav rezultat ne objavljujemo."],
+  [155, "Odabir je bez urednika: pravila su javna i ista za sve."],
+  [160.5, "Kod i podaci su otvoreni."],
+  [164, "Sljedeći korak: svih 556 vijeća i pilot s jednim gradom ili savjetom mladih."],
+  [171, "Vijećnica. Tvoj grad, u minuti."],
+];
+const SUB_END = [[15, 0], [35, 0], [85, 0], [105, 0], [135, 0], [160, 0], [178, 0]];  // clear between scenes
+
+// the phone: real /feed, driven step by step (times in seconds of the film)
+const app = document.getElementById("app");
+const win = () => app.contentWindow, doc = () => app.contentDocument;
+const art = text => [...doc().querySelectorAll("article")].find(a => a.textContent.includes(text));
+const glide = (y, ms = 1400) => {  // smooth scroll the phone with an eased tween (recording-friendly)
+  const w = win(), y0 = w.scrollY, t0 = performance.now();
+  const step = now => { const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+    w.scrollTo(0, y0 + (y - y0) * e); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+};
+const slide = (a, i) => { const el = a.querySelector(".slides"); el.scrollTo({left: i * el.clientWidth, behavior: "smooth"}); };
+const yOf = el => el.getBoundingClientRect().top + win().scrollY - 12;
+const DEMO = [
+  [35.2, () => { try { localStorage.removeItem("vij.city"); localStorage.setItem("vij.important", "1"); } catch {}
+                 app.src = "feed"; }],
+  [39.5, () => doc().querySelector('#towns [data-c="cakovec"]').click()],
+  [47, () => glide(yOf(doc().querySelector("article")))],
+  [49.5, () => slide(doc().querySelector("article"), 1)],
+  [52.5, () => slide(doc().querySelector("article"), 2)],
+  [55.5, () => glide(yOf(doc().querySelector("article .caption")) - 420, 900)],
+  [61, () => glide(yOf(art("Prijenos sjednica gradskog")), 1800)],
+  [69.5, () => slide(art("Prijenos sjednica gradskog"), 1)],
+  [73, () => slide(art("Prijenos sjednica gradskog"), 2)],
+  [77, () => glide(0, 1500)],
+];
+const EXTRA = [
+  [142.5, () => document.getElementById("hl1").classList.add("on")],
+  [145, () => document.getElementById("hl2").classList.add("on")],
+  [151, () => document.getElementById("stamp").classList.add("on")],
+  [122, () => document.querySelectorAll("#bars s").forEach(s => s.style.width = s.dataset.w + "%")],
+];
+
+const wave = document.getElementById("wave");
+wave.innerHTML = Array.from({length: 64}, (_, i) => `<i style="animation-delay:${(i * 97 % 140) / 100}s"></i>`).join("");
+
+const q = new URLSearchParams(location.search), start = +(q.get("t") || 0), t0 = performance.now() - start * 1000;
+const fired = new Set();
+function tick() {
+  const t = q.has("pause") ? start : (performance.now() - t0) / 1000;
+  const cur = [...SCENES].reverse().find(([, s]) => t >= s);
+  document.querySelectorAll(".scene").forEach(s => s.classList.toggle("on", s.id === cur[0]));
+  document.querySelectorAll("[data-at]").forEach(e => e.classList.toggle("on", t >= +e.dataset.at));
+  const lines = [...SUBS, ...SUB_END].sort((a, b) => a[0] - b[0]), sub = [...lines].reverse().find(([s]) => t >= s);
+  document.getElementById("sub").textContent = sub ? sub[1] || "" : "";
+  for (const [at, fn] of [...DEMO, ...EXTRA])
+    if (t >= at && !fired.has(at)) { fired.add(at); if (!DEMO.some(d => d[0] === at) || t - at < 2 || at === 35.2) try { fn(); } catch (e) { console.warn(at, e); } }
+  if (t < END) requestAnimationFrame(tick); else document.title = "done";
+}
+document.fonts.ready.then(() => { document.title = "playing"; requestAnimationFrame(tick); });
+</script>
+</body>
+</html>

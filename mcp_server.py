@@ -1223,6 +1223,18 @@ async def feed_page(req: Request):
     return FileResponse(WEB / "feed.html", headers={"Cache-Control": "no-cache"})
 
 
+@mcp.custom_route("/film", methods=["GET"])
+async def film_page(req: Request):
+    """The 3-minute video as a timed page (reports/video_skripta_v2.md; web/record_film.py records it)."""
+    return FileResponse(WEB / "film.html", headers={"Cache-Control": "no-cache"})
+
+
+@mcp.custom_route("/film/{name}", methods=["GET"])
+async def film_asset(req: Request):
+    f = WEB / "film" / Path(req.path_params["name"]).name  # a bare file name: nothing outside web/film
+    return FileResponse(f) if f.is_file() else JSONResponse({"error": "not found"}, status_code=404)
+
+
 @mcp.custom_route("/api/posts", methods=["GET"])
 async def api_posts(req: Request):
     f = ROOT / "data" / "posts" / "posts.json"

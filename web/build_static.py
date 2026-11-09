@@ -1,5 +1,6 @@
 """Static demo of the feed for a host without Python (Vercel): deploy/vijecnica/ with index.html (web/feed.html),
 posts.json (data/posts/posts.json without the writers' internal notes and without posts held back for review),
+film.html with web/film/ (the 3-minute video as a page, /film),
 towns.json (data.gov.hr facts per town), otvoreni-podaci.zip (the export/export.py Data Package), favicon.svg and a
 vercel.json that serves /api/posts and /api/towns from the JSON files, the paths the feed already uses.
 
@@ -27,7 +28,7 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect wi
            'fill="#1d4f9c"/><path d="M6 13 16 6l10 7zM8 14h3v9H8zm6.5 0h3v9h-3zM21 14h3v9h-3zM6 24h20v3H6z" '
            'fill="#fff"/></svg>')
 VERCEL = {"$schema": "https://openapi.vercel.sh/vercel.json", "framework": None, "buildCommand": "",
-          "rewrites": [{"source": "/api/posts", "destination": "/posts.json"},
+          "rewrites": [{"source": "/api/posts", "destination": "/posts.json"}, {"source": "/film", "destination": "/film.html"},
                        {"source": "/api/towns", "destination": "/towns.json"}, {"source": "/feed", "destination": "/"}],
           "headers": [{"source": "/posts.json", "headers": [{"key": "Cache-Control", "value": "public, max-age=300"}]}]}
 
@@ -47,6 +48,8 @@ def main():
     (OUT / "posts.json").write_text(json.dumps(posts, ensure_ascii=False, separators=(",", ":")))
     shutil.copy(ROOT / "data" / "posts" / "towns.json", OUT / "towns.json")
     shutil.make_archive(str(OUT / "otvoreni-podaci"), "zip", EXPORT)  # the open-data package, as published
+    (OUT / "film.html").write_text((ROOT / "web" / "film.html").read_text())  # the 3-minute video as a page
+    shutil.copytree(ROOT / "web" / "film", OUT / "film")
     (OUT / "favicon.svg").write_text(FAVICON)
     (OUT / "vercel.json").write_text(json.dumps(VERCEL, indent=1))
     print(f"{len(posts)} posts -> {OUT}")
