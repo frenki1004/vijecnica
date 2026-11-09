@@ -64,6 +64,7 @@ OURS = {
     "split": ("Split", "grad"), "zadar": ("Zadar", "grad"), "pula": ("Pula-Pola", "grad"),
     "karlovac": ("Karlovac", "grad"), "varazdin": ("Varaždin", "grad"), "dubrovnik": ("Dubrovnik", "grad"),
     "sisak": ("Sisak", "grad"), "kastela": ("Kaštela", "grad"), "bjelovar": ("Bjelovar", "grad"),
+    "velika_gorica": ("Velika Gorica", "grad"), "samobor": ("Samobor", "grad"),
 }
 # datasets of our cities that are about the council, sessions, councillors, acts, budget or elections
 TOPIC = re.compile(r"vijeć|vijec|sjednic|skupštin|zastupni|vijećni|odluk|akt[ia]? |službeni (glasnik|list|novine)|"

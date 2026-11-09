@@ -79,6 +79,10 @@ SOURCES = {
     "sisak": {"title": "Grad Sisak (sisak.hr): sjednice, materijali, zapisnici", "path": "https://sisak.hr/zapisnici-sa-sjednica/"},
     "kastela": {"title": "Grad Kaštela (kastela.hr): sjednice, materijali, zapisnici, snimke na YouTubeu", "path": "https://kastela.hr/kategorija-gradskog-vijeca/mandatno-razdoblje-2025-2029/"},
     "bjelovar": {"title": "Grad Bjelovar (bjelovar.hr): najave sjednica s materijalima, zapisnici, snimke na YouTubeu", "path": "https://www.bjelovar.hr/dokumenti-kategorija/zapisnici/"},
+    "velika_gorica": {"title": "Grad Velika Gorica (gorica.hr): sjednice, materijali i zapisnici (paketi preuzeti ručno), audio zapisi",
+                      "path": "https://gorica.hr/gradsko-vijece-2/sjednice-gradskog-vijeca/"},
+    "samobor": {"title": "Grad Samobor (samobor.hr): sjednice, materijali i zapisnici (paketi preuzeti ručno; Grad u robots.txt isključuje AI sustave)",
+                "path": "https://www.samobor.hr/grad/sjednice-c229"},
     # 13 units on NetCom eSjednice public portals (collect/netcom.py)
     **{k: {"title": f"{u['name']} (eSjednice, {u['host']}): sjednice, dnevni red, odluke"
                     + (" i zapisnici" if u["tier"] == "A" else ""), "path": f"https://{u['host']}"}

@@ -43,6 +43,9 @@ CITIES = {
     "sisak": {"name": "Sisak", "body": "Gradsko vijeće Grada Siska", "dir": DATA / "sisak", "site": "https://sisak.hr"},
     "kastela": {"name": "Kaštela", "body": "Gradsko vijeće Grada Kaštela", "dir": DATA / "kastela", "site": "https://kastela.hr"},
     "bjelovar": {"name": "Bjelovar", "body": "Gradsko vijeće Grada Bjelovara", "dir": DATA / "bjelovar", "site": "https://www.bjelovar.hr"},
+    "samobor": {"name": "Samobor", "body": "Gradsko vijeće Grada Samobora", "dir": DATA / "samobor", "site": "https://www.samobor.hr"},
+    "velika_gorica": {"name": "Velika Gorica", "body": "Gradsko vijeće Grada Velike Gorice", "dir": DATA / "velika_gorica",
+                      "site": "https://gorica.hr"},
 }
 sys.path.insert(0, str(ROOT / "collect"))
 from netcom import UNITS as NETCOM  # noqa: E402  13 eSjednice portals, one generic collector

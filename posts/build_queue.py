@@ -85,7 +85,7 @@ def sibenik_sections(n):
     return out
 
 
-CUSTOM = ("cakovec", "zadar", "pula", "karlovac", "varazdin", "dubrovnik", "sisak", "kastela", "bjelovar")
+CUSTOM = ("cakovec", "zadar", "pula", "karlovac", "varazdin", "dubrovnik", "sisak", "kastela", "bjelovar", "velika_gorica", "samobor")
 
 
 def custom_sections(city, n):
