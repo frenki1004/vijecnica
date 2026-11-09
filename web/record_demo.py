@@ -1,9 +1,9 @@
 """Record the live demo (reports/demo_uzivo.md) as a video, to review it before presenting.
 
-Opens with /intro (the numbers, 35 s), then drives the real feed (local server) through the script: start screen → Brckovljani → Zagreb (property tax post,
-how the clubs voted) → Čakovec (did not pass); then the Reddit text of the same posts (rendered Markdown from
-data/posts/reddit/) and three questions answered through the MCP server (real calls, recorded by this script into
-deploy/demo_video/mcp_calls.json beforehand), then /demo. Narration is shown as captions. 1920x1080, H.264.
+Opens with /intro?part=a (the numbers and how we got the data, 65 s), then drives the real feed (local server):
+start screen → #mjesto (town card) → #tema (topic chip, a hashtag) → one post (carousel, "did not pass", source,
+"Zašto ovo vidim?"); then the Reddit text of the same posts (rendered Markdown from data/posts/reddit/), three
+questions answered through the MCP server (real calls, deploy/demo_video/mcp_calls.json), and /intro?part=b. Narration is shown as captions. 1920x1080, H.264.
 
 Usage: mcp_server.py --http 8103 running, then
        uv run --with playwright python web/record_demo.py   ->  deploy/demo_video/demo.mp4
@@ -103,72 +103,82 @@ def main():
         pg.on("load", lambda _: pg.evaluate("location.pathname.match(/feed|demo/) && (document.documentElement.style.zoom = '1.35')"))
         art = "article:has-text('{}')"
 
-        # 0:00 intro (/intro plays by itself, 35.5 s)
-        pg.goto(f"{URL}/intro")
+        # 0:00 problem + how we got the data (/intro?part=a plays by itself, 65 s)
+        pg.goto(f"{URL}/intro?part=a")
         pg.evaluate("document.fonts.ready")
         t0[0] = time.monotonic()
         lead = t0[0] - started
-        at(35.5)
-        # 0:35 web
+        at(65)
+        # 1:05 web: the start screen
         pg.goto(f"{URL}/feed")
-        pg.evaluate("localStorage.removeItem('vij.city')")
+        pg.evaluate("localStorage.clear()")
         pg.goto(f"{URL}/feed")
         pg.wait_for_selector("#start:not([hidden])")
+        say("Evo kako to izgleda. Svih 15 najvećih gradova Hrvatske, i za svaki kolika je bila izlaznost.")
+        pg.wait_for_timeout(2500)
         pg.evaluate("document.getElementById('tchart').scrollIntoView({behavior:'smooth',block:'center'})")
-        say("eVijećnica pokriva svih 15 najvećih gradova i pokazuje gdje je izlaznost najniža.")
-        at(45)
-        pg.evaluate("document.getElementById('towns-low').scrollIntoView({behavior:'smooth',block:'center'})")
-        at(47)
-        pg.click("#towns-low [data-c=brckovljani]")
-        say("Brckovljani: najniža izlaznost u Hrvatskoj, a vijeće nije objavilo nijedan zapisnik.")
-        at(57)
-        pg.click("header h1")
+        at(75)
+        # 1:15 #mjesto: pick the town, its card
+        pg.evaluate("window.scrollTo({top:0,behavior:'smooth'})")
         pg.wait_for_timeout(500)
         pg.click("#towns-big [data-c=zagreb]")
-        sel = art.format("Porez na nekretnine u Zagrebu")
-        pg.locator(sel).first.scroll_into_view_if_needed()
-        pg.evaluate("window.scrollBy({top:-140,behavior:'smooth'})")
-        say("Zapisnik kaže samo „izmjene lokalnih poreza”. Iz prijedloga odluke: 8,00 eura po m² umjesto 5,00.")
-        at(66)
-        post = pg.locator(sel).first
-        post.locator(".dots button").nth(1).click()
-        say("Što je odlučeno i što to znači za tebe, jednostavnim riječima.")
-        at(73)
-        clubs = post.locator(".slide").evaluate_all("els => els.findIndex(e => e.textContent.includes('Kako su glasali klubovi'))")
-        post.locator(".dots button").nth(clubs).click()
-        say("Kako su glasali klubovi: iz službenog poimeničnog glasovanja. Ispod svake objave je izvor.")
-        at(85)
+        say("#mjesto: odabereš svoje mjesto i vidiš samo svoje vijeće: tko u njemu sjedi i što je odlučilo.")
+        at(81)
+        pg.evaluate("window.scrollBy({top:420,behavior:'smooth'})")
+        at(87)
+        # 1:27 #tema: a topic chip, then a hashtag in a post (same topic in every town)
         pg.evaluate("window.scrollTo({top:0,behavior:'smooth'})")
-        pg.wait_for_timeout(600)
+        pg.wait_for_timeout(500)
+        pg.click("#filters [data-tag='#proračun']")
+        say("#tema: ili kreneš od teme koja te zanima.")
+        at(93)
+        pg.select_option("#city", "")
+        pg.wait_for_timeout(400)
+        tag = pg.locator("article .tags a:not([href='#prora%C4%8Dun'])").first
+        tag.scroll_into_view_if_needed()
+        pg.evaluate("window.scrollBy({top:-200,behavior:'smooth'})")
+        say("Svaki hashtag je poveznica: jednim klikom ista tema u svim gradovima.")
+        at(97)
+        tag.click()
+        pg.wait_for_timeout(400)
+        pg.evaluate("window.scrollTo({top:0,behavior:'smooth'})")
+        at(101)
+        # 1:41 one post: carousel, the "did not pass" stamp, the source, "Zašto ovo vidim?"
+        pg.click("#filters [data-tag='']")
         pg.select_option("#city", "cakovec")
         pg.wait_for_timeout(600)
         sel = art.format("Prijenos sjednica gradskog")
         pg.locator(sel).first.scroll_into_view_if_needed()
         pg.evaluate("window.scrollBy({top:-140,behavior:'smooth'})")
-        say("Vijest je i ono što nije prošlo: u Čakovcu prijedlog da se sjednice prenose uživo.")
-        at(100)
-        # 1:40 Reddit
-        pg.goto((OUT / "reddit.html").as_uri())
-        say("Ista objava ide na Reddit, s tablicom glasovanja i izvorom. Objavljuje osoba, ne bot.")
+        say("Svaka objava stane u minutu. Vijest je i ono što nije prošlo.")
+        at(106)
+        post = pg.locator(sel).first
+        post.locator(".dots button").nth(1).click()
+        say("Što je odlučeno, kako se glasalo i što to znači za tebe.")
         at(110)
+        post.locator("details.why summary").click()
+        post.locator(".srclink").evaluate("e => e.scrollIntoView({behavior:'smooth',block:'center'})")
+        say("Ispod svake objave je izvor: zapisnik, materijal ili trenutak u snimci.")
+        at(115)
+        # 1:55 Reddit
+        pg.goto((OUT / "reddit.html").as_uri())
+        say("Iste objave idu na Instagram i Reddit, gdje se raspravlja. Objavljuje osoba, ne bot.")
+        at(122)
         pg.mouse.wheel(0, 900)
-        at(120)
-        # 2:00 MCP
+        at(130)
+        # 2:10 MCP: RAG over minutes and transcripts
         pg.goto((OUT / "mcp.html").as_uri())
-        say("Isti podaci dostupni su svakom AI asistentu, preko otvorenog MCP poslužitelja.")
-        at(133)
+        say("MCP: AI asistent prvo pretraži našu bazu zapisnika i transkripata, pa odgovori. To je RAG.")
+        at(142)
         pg.evaluate("document.querySelectorAll('section')[1].scrollIntoView({behavior:'smooth',block:'start'})")
-        say("Što je rečeno na sjednici u Velikoj Gorici o vrtićima: tekst iz snimke, s vremenom.")
-        at(147)
+        say("Što su vijećnici u Velikoj Gorici rekli o vrtićima: iz transkripta, s vremenom u snimci.")
+        at(154)
         pg.evaluate("document.querySelectorAll('section')[2].scrollIntoView({behavior:'smooth',block:'start'})")
-        say("I obećanja s aktualnog sata u Zagrebu: 57, svako s citatom i rokom.")
+        say("Obećanja s aktualnog sata u Zagrebu, svako s citatom i rokom. Odgovor uvijek ima izvor.")
         at(165)
-        # 2:45 close
-        pg.goto(f"{URL}/feed")
-        pg.evaluate("localStorage.removeItem('vij.city')")
-        pg.goto(f"{URL}/feed")
-        pg.wait_for_selector("#start:not([hidden])")
-        say("Otvoreni podaci, otvoreni kod. eVijećnica: tvoj grad, u minuti. evijecnica.vercel.app")
+        # 2:45 the closing idea (/intro?part=b, 15 s)
+        say("")
+        pg.goto(f"{URL}/intro?part=b")
         at(180.5)
         video = pg.video.path()
         ctx.close()
