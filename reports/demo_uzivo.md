@@ -47,10 +47,20 @@ Animirani tok u šest koraka: data.gov.hr → pretraživač → skupljači → g
 
 **Rezerva:** isto lokalno na http://localhost:8103/feed.
 
-## 1:55–2:10 Reddit (15 s)
-Tjedni pregled Čakovca i objava o prijenosu sjednica.
-> „Svaka objava odmah je spremna i za društvene mreže. Plan: najvažnije objave tjedna na Instagram, a tjedni
-> pregled grada na Reddit, gdje se raspravlja. Objavljuje osoba, ne bot.”
+## 1:55–2:10 Zašto društvene mreže, pa Reddit (15 s)
+Kartica s istraživanjem (7 s): 48 % mladih u Hrvatskoj (16–30) o politici se najčešće informira na društvenim
+mrežama, uz isječke dvaju radova s označenom rečenicom; zatim Reddit nit (8 s).
+> „Za gotovo polovicu mladih u Hrvatskoj društvene mreže najčešći su izvor informacija o politici. Zato je svaka
+> objava spremna i za njih: najvažnije na Instagram, tjedni pregled grada na Reddit. Objavljuje osoba, ne bot.”
+
+Izvori:
+- Europski parlament, *Youth Survey 2024* (Flash Eurobarometar FL013EP, Ipsos), str. 26 i tablica Q7: Hrvatska
+  (16–30, n = 1.003, do tri odgovora) društvene mreže 48 %, TV 40 %, internetski portali 32 %, video platforme 18 %;
+  EU27 društvene mreže 42 %. Platforme u Hrvatskoj (Q8): Facebook 54 %, YouTube 35 %, Instagram 33 %, TikTok 29 %.
+- FES i IDI, *Studija o mladima Hrvatska 2024.*, str. 6: više od 90 % mladih svakodnevno je na društvenim mrežama,
+  više od 80 % na internetskim portalima i novinama. https://collections.fes.de/publikationen/ident/fes/21521
+- Reuters Institute, *Digital News Report 2025*: 44 % mladih od 18 do 24 (48 tržišta) kao glavni izvor vijesti
+  navodi društvene mreže i video platforme.
 
 **Rezerva:** `data/posts/reddit/weekly/cakovec-2025-W51.md`.
 
