@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vijećnica feed</title>
+<title>eVijećnica feed</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600;6..72,700&family=Public+Sans:wght@400;600;700;800&display=swap">
 <style>
@@ -169,7 +169,7 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
 <body>
 <section id="start" hidden aria-label="Odaberi grad">
   <div class="in">
-    <h1>Vijeć<span>nica</span></h1>
+    <h1><span>e</span>Vijećnica</h1>
     <p class="q">Što je tvoje gradsko ili općinsko vijeće odlučilo?</p>
     <p class="sub">Odluke s 20 službenih stranica, svaka objašnjena u minuti, s izvorom ispod. Odaberi svoj grad ili općinu.</p>
     <div class="towns" id="towns"></div>
@@ -179,7 +179,7 @@ article{background:var(--panel);border:1px solid var(--line);border-radius:14px;
 <div class="wrap">
   <aside class="left">
   <header>
-    <h1>Vijeć<span>nica</span></h1>
+    <h1><span>e</span>Vijećnica</h1>
     <p class="sub">Što je tvoje gradsko vijeće odlučilo, objašnjeno u minuti.</p>
   </header>
   <div class="controls">
@@ -220,7 +220,7 @@ function voteBar(p) {
 
 function slides(p) {
   const head = `<div class="meta">${esc(p.hashtags[0])} · ${p.session}. sjednica · ${fmtDate(p.date)}</div>`;
-  const brand = `<div class="brand">Vijećnica</div>`;
+  const brand = `<div class="brand">eVijećnica</div>`;
   if (p.kind === "digest") {
     const out = [`<div class="slide cover">${head}<h2 class="big">${esc(p.headline)}</h2><div class="grow"></div>
       <div class="text lg">${p.bullets.length} ${plural(p.bullets.length, "odluka", "odluke", "odluka")} bez ijednog glasa protiv →</div>${brand}</div>`];

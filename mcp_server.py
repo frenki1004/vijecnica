@@ -1,4 +1,4 @@
-"""Vijećnica MCP server: ask Croatian city councils what they decided, said and voted, 2025-2029 term.
+"""eVijećnica MCP server: ask Croatian city councils what they decided, said and voted, 2025-2029 term.
 
 Cities: 'zagreb' (Gradska skupština Grada Zagreba: YouTube recordings, per-councillor roll-call votes,
 question-hour fonograms), 'brod' (Gradsko vijeće Grada Slavonskog Broda: MP3 recordings, near-verbatim
@@ -862,7 +862,7 @@ def get_minutes(session: Session, contains: Annotated[str, Field(description="On
     return {"url": absolute(city, r[0]["minutes_url"]), "text": text[:30000]}
 
 
-# "Pitaj Vijećnicu": six example questions, each mapped to the tool that answers it (no LLM). The web landing
+# "Pitaj eVijećnicu": six example questions, each mapped to the tool that answers it (no LLM). The web landing
 # panel shows them as buttons; an MCP client gets the same answers from the tools named in "tool".
 ASK = [
     ("obecanja", "Koja su obećanja gradske uprave prošla rok i spominju li se kasnije?", "zagreb"),
@@ -1016,7 +1016,7 @@ def _ask(key: str) -> dict:
         out["rows"] = [{"text": r["question"][:160], "sub": f"{r['member']} ({short(r['party'])}) · {r['session']}. sjednica"
                         + (f" · odgovara {r['answered_by']}" if r["answered_by"] else ""),
                         "href": f"#{city}/pitanje-{r['id']}"} for r in rows[:6]]
-        out["more"] = {"label": "Vijećnici", "href": f"#{city}/zastupnici"}
+        out["more"] = {"label": "eVijećnici", "href": f"#{city}/zastupnici"}
     elif key.endswith("-pitanja"):
         t = q("""SELECT t.speaker, t.session, t.video_id, t.start, m.party FROM speaker_turns t
                  LEFT JOIN members m ON m.city = t.city AND m.name = t.speaker
@@ -1028,7 +1028,7 @@ def _ask(key: str) -> dict:
                            "na vijećničko pitanje. Strojno prepoznato iz poziva predsjedatelja.")
         out["rows"] = [{"text": f"{r['speaker']}", "sub": f"{short(r['party'])} · {bloc(city, r['party']) or ''} · "
                         f"{r['session']}. sjednica, ▶ {hms(r['start'])}", "href": link(r["video_id"], r["start"])} for r in t[:6]]
-        out["more"] = {"label": "Vijećnici", "href": f"#{city}/zastupnici"}
+        out["more"] = {"label": "eVijećnici", "href": f"#{city}/zastupnici"}
     elif key.endswith("-vlast"):
         g = governing(city)
         seats = q("""SELECT party, count(*) c FROM members WHERE city = ? AND party IS NOT NULL
@@ -1139,7 +1139,7 @@ def _ask(key: str) -> dict:
 @mcp.tool()
 def example_questions(key: Annotated[str, Field(description="Question key; '' lists the questions")] = "",
                       city: AnyCity = "") -> dict:
-    """'Pitaj Vijećnicu': six example questions per city answered from the data with a fixed tool mapping
+    """'Pitaj eVijećnicu': six example questions per city answered from the data with a fixed tool mapping
     (the same ones the web page shows as buttons). key='' lists them (city='' = all); key='obecanja' etc.
     returns the answer card with the tool call that produced it. Unknown key = error with the valid keys."""
     if key:
@@ -1373,7 +1373,7 @@ async def api_asr_eval(req: Request):
 
 if __name__ == "__main__":
     if len(sys.argv) > 2 and sys.argv[1] == "--http":
-        import threading  # warm the slow "Pitaj Vijećnicu" answer (~2.5 s) so the first click is instant
+        import threading  # warm the slow "Pitaj eVijećnicu" answer (~2.5 s) so the first click is instant
         threading.Thread(target=lambda: (ask("protiv-kluba"), ask("obecanja"), minutes_evaluation(14, "zagreb")),
                          daemon=True).start()
         from mcp.server.transport_security import TransportSecuritySettings

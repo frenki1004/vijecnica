@@ -1,4 +1,4 @@
-# Vijećnica: video od 3 minute (scenarij)
+# eVijećnica: video od 3 minute (scenarij)
 
 Natječaj traži da video jasno prikaže: problem, ciljane korisnike, korištene skupove podataka, glavne
 funkcionalnosti, tehnički pristup i očekivanu korist, uz demonstraciju rada (kriterij „Prezentacija rješenja”, 1–10).
@@ -27,7 +27,7 @@ poveznica. Na kraju crni ekran s brojkom.
 **Kadar:** grafika s tri brojke iz studije.
 **Narator:**
 > Više od trećine mladih nije izašlo na prethodne izbore iako su mogli. Najčešći razlog: „ništa se ne bi
-> promijenilo”. Lokalnoj samoupravi vjeruje tek 13,6 posto mladih. Vijećnica je za njih: za mlade od 16 do 30 koji žele znati
+> promijenilo”. Lokalnoj samoupravi vjeruje tek 13,6 posto mladih. eVijećnica je za njih: za mlade od 16 do 30 koji žele znati
 > što se događa u njihovu gradu, u minuti, na mobitelu.
 **Na ekranu:** „36,8 % nije glasovalo · 13,6 % vjeruje lokalnoj samoupravi” · izvor: Studija o mladima Hrvatska
 2024, FES / IDI
@@ -74,12 +74,12 @@ feed / Instagram / Reddit / MCP / izvoz.
 > Mladi dobivaju razlog da se uključe, gradovi lakši put do građana, a novinari podatke koje mogu provjeriti. Jedan
 > skupljač već pokriva trinaest jedinica na istom sustavu za sjednice, a cilj su svih 556. Tražimo grad ili savjet
 > mladih za pilot, i objavu poimeničnog glasovanja u strojnom obliku.
-**Na ekranu:** „Vijećnica · vijecnica.vercel.app · github.com/frenki1004/vijecnica · Izazov A: Društvo i javne usluge”
+**Na ekranu:** „eVijećnica · vijecnica.vercel.app · github.com/frenki1004/vijecnica · Izazov A: Društvo i javne usluge”
 
 ---
 
 ## Provjera prije predaje
 - Trajanje ≤ 3:00 (žiri ocjenjuje video od 3 minute).
 - Svaka izgovorena brojka postoji u `reports/pitch_hr.md` ili u `ARHITEKTURA.md` (odjeljak „Provjera brojki”).
-- Bez imena privatnih osoba u kadru. Vijećnici su javne osobe, ali u objavama ih ne imenujemo, pa ne ni u videu.
+- Bez imena privatnih osoba u kadru. eVijećnici su javne osobe, ali u objavama ih ne imenujemo, pa ne ni u videu.
 - Glas, titlovi i tekst na ekranu govore isto.

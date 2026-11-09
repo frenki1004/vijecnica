@@ -11,20 +11,38 @@ import argparse
 import json
 import subprocess
 import time
+import urllib.request
 from pathlib import Path
 
-from run_queue import DATA, ROOT, download, log  # asr/ is on sys.path when run as a script
+from run_queue import DATA, ROOT, YTDLP, download, log  # asr/ is on sys.path when run as a script
 
 PY = next((p for p in (ROOT / ".venv-mlx" / "bin" / "python", ROOT.parent / ".venv-mlx" / "bin" / "python")
            if p.exists()), ROOT / ".venv-mlx" / "bin" / "python")  # in the repo, or shared one level up
 MODEL = ROOT / "mlx_models" / "hr-parla"
 
 
+def fetch(v, base):
+    """Audio of a recording: a file already in data/<unit>/audio, else its YouTube video (yt-dlp) or its URL."""
+    have = [p for p in (base / "audio").glob(f"{v['id']}.*") if not p.name.endswith((".part", ".ytdl"))]
+    if have:
+        return have[0]
+    url = v.get("url") or ""
+    if "youtube.com" in url or "youtu.be" in url:
+        log("download", v["id"], url)
+        subprocess.run(YTDLP + ["-f", "bestaudio", "-o", str(base / "audio" / f"{v['id']}.%(ext)s"), url], check=True)
+        return next(p for p in (base / "audio").glob(f"{v['id']}.*") if not p.name.endswith(".part"))
+    log("download", v["id"], url[:100])
+    out = base / "audio" / f"{v['id']}.mp3"  # ffmpeg reads the real format whatever the extension
+    req = urllib.request.Request(url, headers={"User-Agent": "vijecnica-research/0.1 (open data hackathon)"})
+    out.write_bytes(urllib.request.urlopen(req, timeout=600).read())
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("ids", nargs="*")
     ap.add_argument("--sessions", default="")
-    ap.add_argument("--city", default="zagreb", choices=["zagreb", "brod", "krk", "rijeka", "cakovec", "velika_gorica", "petrinja"])
+    ap.add_argument("--city", default="zagreb", help="zagreb, or any unit with data/<unit>/recordings.json")
     a = ap.parse_args()
     base = DATA if a.city == "zagreb" else DATA / a.city
     (base / "transcripts").mkdir(parents=True, exist_ok=True)
@@ -41,11 +59,13 @@ def main():
     for v in todo:
         out = base / "transcripts" / f"{v['id']}.json"
         tmp = out.with_suffix(".json.tmp")  # never matches *.json, so build.py/eval never see a half-written file
-        if a.city in ("zagreb", "rijeka"):
-            (base / "audio").mkdir(parents=True, exist_ok=True)
-            audio = download(v, base)
-        else:
-            audio = base / "audio" / f"{v['id']}.mp3"
+        (base / "audio").mkdir(parents=True, exist_ok=True)
+        try:
+            audio = download(v, base) if a.city in ("zagreb", "rijeka") else fetch(v, base)
+        except Exception as e:  # a recording that cannot be fetched is skipped, the rest go on
+            log("no audio", v["id"], e)
+            failed += 1
+            continue
         if not audio.exists():
             log("no audio", audio)
             failed += 1

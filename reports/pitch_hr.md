@@ -1,4 +1,4 @@
-# Vijećnica: pitch u 3 minute (hrvatski)
+# eVijećnica: pitch u 3 minute (hrvatski)
 
 Izazov 1: **Društvo i javne usluge** (pristup javnim informacijama, transparentnost, pristupačnost).
 Okvirno 450 riječi, oko 3 minute govora. Brojke su izmjerene 7. 11. 2026. i provjerljive na http://localhost:8103/feed.
@@ -6,11 +6,11 @@ Okvirno 450 riječi, oko 3 minute govora. Brojke su izmjerene 7. 11. 2026. i pro
 ## 0:00–0:30 Problem
 Gradsko vijeće odlučuje o tvom autobusu, vrtiću, odvozu smeća i porezu na kavu. A mladi ne prate lokalnu politiku, i to ne zato što ih nije briga, nego zato što je nečitljiva: dnevni red na jednoj stranici, glasovanje u PDF-u, zapisnik tjednima kasnije, sve birokratskim jezikom.
 Posljedica se vidi na izborima: drugi krug lokalnih izbora 2025. imao je najmanji odaziv otkako se lokalni izbori održavaju (1993.).
-Više od trećine mladih (36,8 %) nije izašlo na prethodne izbore iako su imali pravo glasa, a najčešći razlog je „ništa se ne bi promijenilo”. Lokalnoj samoupravi vjeruje 13,6 % mladih. Autori zaključuju da prevladavaju razlozi povezani s manjkom osnaženosti i informiranosti, a to je upravo ono što Vijećnica mijenja.
+Više od trećine mladih (36,8 %) nije izašlo na prethodne izbore iako su imali pravo glasa, a najčešći razlog je „ništa se ne bi promijenilo”. Lokalnoj samoupravi vjeruje 13,6 % mladih. Autori zaključuju da prevladavaju razlozi povezani s manjkom osnaženosti i informiranosti, a to je upravo ono što eVijećnica mijenja.
 <!-- Izvor: Adamović, Antulić Majcen, Baketa, Đokić, Ilišin, Potočnik: Studija o mladima Hrvatska 2024: mladi u vremenu neizvjesnosti, FES i Institut za društvena istraživanja, 2024. (N = 717, 14–29 godina; samoiskaz za parlamentarne izbore 2020.). DIP ne objavljuje izlaznost po dobi. -->
 
 ## 0:30–1:15 Rješenje
-**Vijećnica pretvara sjednice gradskih vijeća u objave za društvene mreže**, s oznakom grada i teme: `#Zagreb #promet`, `#SlavonskiBrod #otpad`. Pratiš svoj grad i ono što te zanima, a ne politiku općenito.
+**eVijećnica pretvara sjednice gradskih vijeća u objave za društvene mreže**, s oznakom grada i teme: `#Zagreb #promet`, `#SlavonskiBrod #otpad`. Pratiš svoj grad i ono što te zanima, a ne politiku općenito.
 Pokažem tri objave iz feeda:
 - **Slavonski Brod:** „Svi plaćaju 25 % višu komunalnu naknadu: bod raste na 1 euro.” 12 za, 6 protiv, 1 suzdržan, uz argumente obje strane.
 - **Zagreb:** „Bez gradskog novca za preglede djece sportaša: prijedlog odbijen.” Uz slajd „Kako su glasali klubovi” iz službenog poimeničnog glasovanja: tko je bio za, tko protiv, a tko je bio u dvorani i nije glasovao.
@@ -31,7 +31,7 @@ Zapisnici kasne. Danas, 7. 11. 2026.:
 - Osijek: uz točke za usvajanje zapisnika 5., 6. i 7. sjednice (veljača–svibanj 2026.) zapisnici nisu objavljeni, iako su uz sve ranije sjednice.
 - Rijeka, 12. sjednica: 44 dana. Krk, 8. sjednica: 40 dana. Slavonski Brod, 10. sjednica: 29 dana.
 A uživo se često ne može ni pratiti: Gradsko vijeće Krka u ožujku 2026. odbilo je prijedlog da se sjednice prenose uživo (2 za, 7 protiv, 1 suzdržan), a Gradsko vijeće Čakovca u prosincu 2025. prijedlog da se sjednice snimaju i prenose videom (4 za, 12 protiv, 2 suzdržana).
-Vijećnica objavljuje čim zapisnik izađe, a prototip već prepoznaje govor sa snimke sjednice, pa rezultate može najaviti i prije zapisnika, jasno označene kao neslužbene. Na 9. sjednici Broda svih 11 rezultata koje je predsjedatelj izgovorio s brojem glasova prepoznato je točno do glasa, provjereno prema zapisniku.
+eVijećnica objavljuje čim zapisnik izađe, a prototip već prepoznaje govor sa snimke sjednice, pa rezultate može najaviti i prije zapisnika, jasno označene kao neslužbene. Na 9. sjednici Broda svih 11 rezultata koje je predsjedatelj izgovorio s brojem glasova prepoznato je točno do glasa, provjereno prema zapisniku.
 
 ## 2:45–3:00 Što tražimo
 - Grad ili savjet mladih za **pilot**: jedan Instagram profil po gradu kroz tri mjeseca, i mjerimo doseg među mladima.

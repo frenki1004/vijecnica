@@ -1,4 +1,4 @@
-# Vijećnica: video od 3 minute, verzija 2
+# eVijećnica: video od 3 minute, verzija 2
 
 Video je stranica `web/film.html` (`/film` na lokalnom poslužitelju i na https://vijecnica.vercel.app/film):
 sedam scena s točnim vremenima i titlovima na ekranu. `web/record_film.py` snima je u
@@ -36,7 +36,7 @@ ga QuickTimeom; stranica se sama vrti 3 minute.
 ### 0:35–1:25 · 3 · Demo (funkcionalnosti)
 **Slika:** Živi feed u okviru mobitela: početni ekran → Čakovec → kartica grada (mandati, izlaznost, stanovnici) → karusel → rasprava → izvor ispod objave → objava „Prijenos sjednica gradskog vijeća uživo nije prošao”. Desno pet koraka.
 
-> `0:35` Vijećnica to mijenja. Odabereš svoj grad, recimo Čakovec,
+> `0:35` eVijećnica to mijenja. Odabereš svoj grad, recimo Čakovec,
 > `0:41` i odmah vidiš tko čini gradsko vijeće i koliko je ljudi izašlo na izbore.
 > `0:48` Svaka odluka je karusel od minute: što je odlučeno, što to znači za tebe,
 > `0:54` tko je što rekao i kako se glasovalo. Ispod je službeni izvor.
@@ -74,7 +74,7 @@ ga QuickTimeom; stranica se sama vrti 3 minute.
 
 > `2:40` Kod i podaci su otvoreni.
 > `2:44` Sljedeći korak: svih 556 vijeća i pilot s jednim gradom ili savjetom mladih.
-> `2:51` Vijećnica. Tvoj grad, u minuti.
+> `2:51` eVijećnica. Tvoj grad, u minuti.
 
 ## Provjera prije predaje
 - Trajanje 3:00 (žiri ocjenjuje video od 3 minute).

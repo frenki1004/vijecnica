@@ -120,7 +120,7 @@ Prijedlog jednog vijećnika da se sjednice vijeća snimaju i video prenose na gr
 
 *Izvor: zapisnik 4. sjednice Gradskog vijeća, 17. 12. 2025.*
 
-Objavu je automatski pripremio projekt Vijećnica, a pregledala ju je osoba. Ispravke uz izvor dobrodošle su u komentarima.
+Objavu je automatski pripremio projekt eVijećnica, a pregledala ju je osoba. Ispravke uz izvor dobrodošle su u komentarima.
 ````
 
 ---
@@ -159,7 +159,7 @@ Da je prošao, sjednice gradskog vijeća mogao bi gledati uživo na stranicama G
 
 *Izvor: zapisnik 4. sjednice Gradskog vijeća, 17. 12. 2025.*
 
-Objavu je automatski pripremio projekt Vijećnica, a pregledala ju je osoba. Ispravke uz izvor dobrodošle su u komentarima.
+Objavu je automatski pripremio projekt eVijećnica, a pregledala ju je osoba. Ispravke uz izvor dobrodošle su u komentarima.
 ````
 
 ---
@@ -199,5 +199,5 @@ Od više od 40 milijuna eura planiranih ulaganja u 2026. do lipnja je izvršeno 
 
 *Izvor: zapisnik 8. sjednice Gradskog vijeća, 14. 10. 2026.*
 
-Objavu je automatski pripremio projekt Vijećnica, a pregledala ju je osoba. Ispravke uz izvor dobrodošle su u komentarima.
+Objavu je automatski pripremio projekt eVijećnica, a pregledala ju je osoba. Ispravke uz izvor dobrodošle su u komentarima.
 ````

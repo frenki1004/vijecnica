@@ -1,8 +1,8 @@
-# Vijećnica
+# eVijećnica
 
 **Demo:** https://vijecnica.vercel.app (1.012 objava iz 13 gradova i općina; strojni nacrti, javni demo bez prijave)
 
-Vijećnica prikuplja službene podatke o sjednicama gradskih i općinskih vijeća (dnevni red, zapisnike, rezultate glasovanja, poimenično glasovanje, pitanja vijećnika i snimke sjednica), sprema ih u jednu pretraživu bazu i iz njih izrađuje kratke, neutralne objave za društvene mreže, s oznakom grada i teme (`#Zagreb #promet`).
+eVijećnica prikuplja službene podatke o sjednicama gradskih i općinskih vijeća (dnevni red, zapisnike, rezultate glasovanja, poimenično glasovanje, pitanja vijećnika i snimke sjednica), sprema ih u jednu pretraživu bazu i iz njih izrađuje kratke, neutralne objave za društvene mreže, s oznakom grada i teme (`#Zagreb #promet`).
 
 **Za koga:** prvenstveno za mlade od 16 do 30 godina koji lokalnu politiku ne prate jer je teško čitljiva (dnevni red na jednoj stranici, glasovanje u PDF-u, zapisnik tjednima kasnije). Isti podaci služe novinarima, udrugama i istraživačima (JSON API, MCP poslužitelj za AI agente, CSV izvoz) te samim gradovima kao uzor strojno čitljive objave.
 

@@ -23,7 +23,7 @@ TOPIC_NAME = {"promet": "promet", "stanovanje": "stanovanje", "komunalno": "komu
 SIDE = {"za": "za", "protiv": "protiv", "suzdrzani": "suzdržani", "nepoznato": "", "predlagatelj": ""}
 SEAT = [("za", "Za"), ("protiv", "Protiv"), ("suzdrzan", "Suzdržan"), ("nije_glasovao", "Nije glasovao"),
         ("odsutan", "Odsutan")]
-DISCLOSURE = ("Objavu je automatski pripremio projekt Vijećnica, a pregledala ju je osoba. "
+DISCLOSURE = ("Objavu je automatski pripremio projekt eVijećnica, a pregledala ju je osoba. "
               "Ispravke uz izvor dobrodošle su u komentarima.")
 TITLE_MAX, BODY_MAX = 300, 40000
 
@@ -199,7 +199,7 @@ def weekly_files(city, week, posts):
 def readme(posts):
     names = dict(sorted({p["city"]: p["city_name"] for p in posts}.items()))  # flair = the place's name
     flairs = "\n".join(f"| {c} | {name} | Politika |" for c, name in names.items())
-    return f"""# Vijećnica na Redditu: upute za objavu
+    return f"""# eVijećnica na Redditu: upute za objavu
 
 Ove datoteke generira `posts/export_reddit.py`; ne uređuj ih ručno jer se pri svakom pokretanju brišu i pišu iznova.
 Svaka `.md` datoteka ima zaglavlje (title, flair, city, topics, source) i tijelo objave ispod drugog `---`.
@@ -224,7 +224,7 @@ Naslov kopiraj u polje za naslov, a tijelo (bez zaglavlja) u Markdown editor.
 
 ## Prvi komentar (prikvači ga)
 
-> Ovo je neutralan sažetak službenog zapisnika sjednice gradskog vijeća (u Zagrebu Gradske skupštine). Pripremio ga je projekt Vijećnica uz pomoć
+> Ovo je neutralan sažetak službenog zapisnika sjednice gradskog vijeća (u Zagrebu Gradske skupštine). Pripremio ga je projekt eVijećnica uz pomoć
 > automatskog alata, a prije objave pregledala ga je osoba. Službeni dokumenti uvijek imaju prednost.
 > Ako vidiš pogrešku, napiši je u komentar uz izvor (zapisnik, točku dnevnog reda) i ispravit ćemo objavu.
 > Ne zastupamo nijednu stranku ni vijećnika.

@@ -184,7 +184,7 @@ def main():
             print(f"{city}/{name}.csv {len(rows)} rows")
     pkg = {
         "name": "vijecnica-gradska-vijeca-2025-2029",
-        "title": f"Vijećnica: sjednice predstavničkih tijela ({len(SOURCES)} gradova i općina), saziv 2025.-2029.",
+        "title": f"eVijećnica: sjednice predstavničkih tijela ({len(SOURCES)} gradova i općina), saziv 2025.-2029.",
         "description": ("Strojno čitljivi podaci o radu predstavničkih tijela: dnevni red, poimenično glasovanje, "
                         "nazočnost, pitanja s fonogramima, strojni transkripti snimki sjednica, prepoznati govornici "
                         "i obećanja izvršne vlasti. Pripremljeno za objavu na data.gov.hr (CKAN)."),
@@ -206,7 +206,7 @@ def main():
     (OUT / "export_sha256.txt").write_text("".join(
         f"{hashlib.sha256((OUT / r['path']).read_bytes()).hexdigest()}  {r['path']}\n" for r in resources))
     (OUT / "README.txt").write_text(
-        "Vijećnica open-data export (CKAN / Frictionless Data Package).\n"
+        "eVijećnica open-data export (CKAN / Frictionless Data Package).\n"
         f"{ATTRIBUTION}.\nLicenca izvedenih podataka: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).\n"
         "Službeni tekst (naslovi točaka, pitanja, fonogrami, zapisnici) prenesen je doslovno: za njega vrijede uvjeti izvora i\n"
         "ponovna uporaba prema Zakonu o pravu na pristup informacijama, ne CC BY. Licenca po datoteci: datapackage.json.\n"

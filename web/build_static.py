@@ -20,7 +20,7 @@ HOLD = {"zagreb-12-37-2", "zagreb-11-9-1"}
 NOTICE = ('<p class="demo-note">Demo za Datathon Portala otvorenih podataka: objave su strojni nacrti iz službenih '
           'zapisnika i još ih nije pregledala osoba. Službeni dokumenti imaju prednost. '
           '<a href="otvoreni-podaci.zip" download>Preuzmi otvorene podatke</a> (CSV i Frictionless Data Package '
-          'spreman za CKAN, 19 gradova i općina; licenca po resursu u datapackage.json).</p>')
+          'spreman za CKAN, 20 gradova i općina; licenca po resursu u datapackage.json).</p>')
 EXPORT = ROOT / "data" / "export"  # export/export.py
 NOTICE_CSS = (".demo-note{margin:10px 0 0;padding:8px 12px;border-radius:8px;background:var(--soft);"
               "color:var(--muted);font-size:14px}")

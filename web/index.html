@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vijećnica</title>
+<title>eVijećnica</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600;6..72,700&family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
@@ -131,7 +131,7 @@ footer{margin-top:32px;color:var(--muted);font-size:13px}
 <body>
 <div class="wrap">
 <header>
-  <div class="brand"><h1>Vijeć<span>nica</span></h1>
+  <div class="brand"><h1><span>e</span>Vijećnica</h1>
     <label class="small muted" for="city">Grad</label><select id="city" aria-label="Grad"></select>
     <span class="muted small" id="body">saziv 2025.–2029.</span>
     <a class="small demo-link" href="demo">Kako agent odgovara →</a></div>
@@ -180,7 +180,7 @@ const PLACEHOLDER = {zagreb: "npr. tramvaj, stadion Maksimir, Jakuševec, vrtić
                      krk: "npr. pomorsko dobro, groblja, vrtić, turistički vlak", rijeka: "npr. Autotrolej, kiosci, rebalans, Delta"};
 function askPanel() {
   const qs = ASKQ[CITY] || [];
-  return `<section class="card ask" aria-labelledby="askh"><div><h2 id="askh">Pitaj Vijećnicu</h2>
+  return `<section class="card ask" aria-labelledby="askh"><div><h2 id="askh">Pitaj eVijećnicu</h2>
     <div class="small muted">Primjeri pitanja (${esc((CITIES.find(c => c.city === CITY) || {}).name || "")}). Odgovor se slaže izravno iz službenih podataka i snimki, bez jezičnog modela.</div></div>
     <div class="qs">${qs.map(a => `<button type="button" data-k="${a.key}" aria-pressed="false">${esc(a.question)}</button>`).join("")}</div>
     <div id="ans" aria-live="polite"></div></section>`;
@@ -194,7 +194,7 @@ async function runAsk(k) {
     <p class="head">${esc(r.headline)}</p>
     <ul>${r.rows.map(x => `<li><a href="${esc(x.href)}"${ext(x.href)}>${esc(x.text)}</a>${x.sub ? `<span>${esc(x.sub)}</span>` : ""}</li>`).join("")}</ul>
     ${r.more ? `<a class="small" href="${esc(r.more.href)}">${esc(r.more.label)} →</a>` : ""}
-    <details class="how"><summary>Kako je ovo izračunato</summary>Isti upit može postaviti AI asistent preko MCP poslužitelja Vijećnice (<a href="demo">primjeri</a>). Korišteni alat: <span class="mono">${esc(r.tool)}</span>.</details></div>`;
+    <details class="how"><summary>Kako je ovo izračunato</summary>Isti upit može postaviti AI asistent preko MCP poslužitelja eVijećnice (<a href="demo">primjeri</a>). Korišteni alat: <span class="mono">${esc(r.tool)}</span>.</details></div>`;
   const a = $("#ans"); if (a.getBoundingClientRect().top > innerHeight * 0.6) a.scrollIntoView({behavior: "smooth", block: "start"});
 }
 document.addEventListener("click", e => { const b = e.target.closest(".ask .qs button"); if (b) runAsk(b.dataset.k); });
@@ -295,7 +295,7 @@ async function members() {
   const vc = x => noVotes ? "–" : x;
   const render = (key, dir) => {
     const r = [...rows].sort((a, b) => (typeof a[key] === "string" ? a[key].localeCompare(b[key], "hr") : (a[key] - b[key])) * dir);
-    $("#main").innerHTML = `<div class="card"><h2>${CITY === "zagreb" ? "Zastupnici" : "Vijećnici"}</h2><div class="muted small">Klik na stupac sortira, klik na zastupnika otvara profil.${noVotes ? " Poimenično glasovanje ovdje se ne objavljuje (samo zbrojevi po točki), pa su stupci glasova prazni: nepoznato, a ne nula." : ""}</div>
+    $("#main").innerHTML = `<div class="card"><h2>${CITY === "zagreb" ? "Zastupnici" : "eVijećnici"}</h2><div class="muted small">Klik na stupac sortira, klik na zastupnika otvara profil.${noVotes ? " Poimenično glasovanje ovdje se ne objavljuje (samo zbrojevi po točki), pa su stupci glasova prazni: nepoznato, a ne nula." : ""}</div>
       <div class="tbl"><table><thead><tr>${[["name","Ime"],["party","Stranka"],["present","Nazočnost"],["za","Za"],["protiv","Protiv"],["suzdrzan","Suzdr."],["nije_glasovao","Nije glas."],["odsutan","Odsutan"],["questions","Pitanja"]]
         .map(([k, l]) => `<th data-k="${k}">${l}</th>`).join("")}</tr></thead><tbody>
       ${r.map(m => `<tr class="clk" tabindex="0" data-name="${esc(m.name)}"><td>${esc(m.name)}</td><td class="small muted">${esc(m.party)}</td>
@@ -498,7 +498,7 @@ function route() {
   if (c) { $("#city").value = CITY; $("#body").textContent = `${c.body} · saziv 2025.–2029.`; }
   header();
   document.body.classList.toggle("subpage", !!h && h !== "sjednice");
-  $("#tabs a[data-v=zastupnici]").textContent = CITY === "zagreb" ? "Zastupnici" : "Vijećnici";
+  $("#tabs a[data-v=zastupnici]").textContent = CITY === "zagreb" ? "Zastupnici" : "eVijećnici";
   $("#q").placeholder = PLACEHOLDER[CITY] || "npr. proračun, vrtići, ceste";
   let m;
   if ((m = h.match(/^sjednica-(\d+)$/))) return session(+m[1]);

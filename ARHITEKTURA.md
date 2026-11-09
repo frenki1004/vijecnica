@@ -1,10 +1,10 @@
-# Vijećnica: tehnička arhitektura
+# eVijećnica: tehnička arhitektura
 
 Dokument opisuje stanje koda 9. 11. 2026. Sve brojke dobivene su upitima nad `data/vijecnica.db` i `data/posts/posts.json` (upiti su u odjeljku [Provjera brojki](#provjera-brojki)). Ono što još nije izrađeno označeno je kao **u izradi** ili **planirano**.
 
 ## 1. Pregled
 
-Vijećnica je cjevovod u četiri sloja:
+eVijećnica je cjevovod u četiri sloja:
 
 1. **Prikupljanje** službenih podataka o sjednicama predstavničkih tijela lokalne samouprave (20 jedinica, saziv 2025.–2029.).
 2. **Obrada:** parsiranje zapisnika i glasovanja, prepoznavanje govora sa snimki, povezivanje svega s točkama dnevnog reda.
@@ -134,7 +134,7 @@ Odgovor je JSON; neispravan ulaz ili nepostojeći zapis vraća HTTP 404 s `{"err
 | `/api/posts` | | `posts.json` (feed) |
 | `/api/demo` | | snimljeni razgovori agenta (`demo/demo.json`) |
 
-Web stranice: `/` (pregled sjednica, točaka, članova, pretraga, „Pitaj Vijećnicu”), `/feed` (objave s filtrima po gradu i temi i „Samo bitno”), `/demo` (kako AI agent odgovara preko MCP-a).
+Web stranice: `/` (pregled sjednica, točaka, članova, pretraga, „Pitaj eVijećnicu”), `/feed` (objave s filtrima po gradu i temi i „Samo bitno”), `/demo` (kako AI agent odgovara preko MCP-a).
 
 ### 5.2 MCP (Model Context Protocol)
 
