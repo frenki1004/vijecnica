@@ -1,4 +1,4 @@
-# eVijećnica: demo uživo (oko 5 minuta)
+# eVijećnica: demo uživo (točno 3 minute)
 
 Za prezentaciju pred žirijem ili snimku zaslona. Tri dijela: web (što vidi građanin), Reddit (gdje se raspravlja),
 MCP (kako AI asistent odgovara iz istih podataka). Svaki korak ima rezervu ako nešto zapne.
@@ -8,7 +8,8 @@ MCP (kako AI asistent odgovara iz istih podataka). Svaki korak ima rezervu ako n
 2. **AI asistent s MCP-om**, npr. Claude Code u drugom terminalu:
    `claude mcp add --transport http evijecnica http://localhost:8103/mcp`, zatim `claude` i provjera `/mcp`
    (treba pisati 17 alata). Claude Desktop: Settings → Connectors → isti URL.
-3. **Kartice u pregledniku**, ovim redom:
+3. **Kartice u pregledniku**, ovim redom (svaka preko cijelog ekrana):
+   - https://vijecnica.vercel.app/intro (uvod s brojkama; sam se vrti 35 s, → ili razmaknica za dalje)
    - https://vijecnica.vercel.app u **privatnom prozoru** (da se pokaže početni ekran, ne zadnji odabrani grad)
    - privatni subreddit s tri objave iz `reports/reddit_demo.md` (ako ga nema: otvori `data/posts/reddit/weekly/cakovec-2025-W51.md`)
    - https://vijecnica.vercel.app/demo (snimljeni odgovori agenta, rezerva za MCP)
@@ -16,58 +17,48 @@ MCP (kako AI asistent odgovara iz istih podataka). Svaki korak ima rezervu ako n
 
 ---
 
-## 0:00 Uvod (20 s)
-> „Gradsko vijeće odlučuje o tvom porezu, vrtiću i autobusu. To piše u zapisniku od šezdeset stranica ili u snimci
-> od sedam sati. Na lokalnim izborima 2025. u dvadeset najvećih gradova nije glasovalo 957 tisuća ljudi.
-> eVijećnica to mijenja.”
+## 0:00–0:35 Uvod: pogledajmo brojke (35 s, stranica /intro)
+Stranica se vrti sama; govori preko nje.
+> „Pogledajmo brojke. Na lokalnim izborima 2025. u dvadeset najvećih gradova nije glasovalo 957 tisuća ljudi,
+> šest od deset. U Kaštelima, Osijeku i Rijeci dvoje od troje. Među mladima više od trećine nije glasovalo,
+> a najčešći razlog je: ništa se ne bi promijenilo. Nije da ih nije briga: politika izgleda presloženo da bi je sam
+> procijenio. A ne moraš znati sve o politici. Dovoljno je znati što je tvoje vijeće odlučilo.
+> Glasaj. Budi dio promjene.”
 
-## 0:20 Web (2 min)
-1. **Početni ekran.** Pokaži tri brojke i tri skupine.
-   > „Pokrivamo svih petnaest najvećih gradova. Uz svaki grad je izlaznost i mjesto među 555 jedinica.”
-2. **Pet općina s najnižom izlaznošću.** Klikni **Brckovljani** (22 %, najniža u Hrvatskoj).
-   > „Ovdje je glasovao svaki peti birač. Vijeće za ovaj saziv nije objavilo nijedan zapisnik. Gdje ljudi najmanje
-   > glasuju, rad vijeća je uglavnom nevidljiv. I to je informacija.”
-3. Klik na logo (natrag na početni ekran) → **Zagreb**. Kartica grada: tko čini Skupštinu (25 od 47 mjesta), izlaznost.
-4. Objava **„Porez na nekretnine u Zagrebu od 2027. 8,00 eura po m² umjesto 5,00”** (pomakni se do nje ili tema
-   `#poreziinaknade`). Listaj karusel: što je odlučeno → **kako su glasali klubovi** (poimenično glasovanje) → izvor.
-   > „Zapisnik kaže samo da su izmijenjeni lokalni porezi. Brojku 8 eura nismo izmislili: pročitali smo prijedlog odluke.”
-5. Klik **„Službeni izvor: zapisnik ↗”**: otvara se službeni PDF Grada.
-6. Odaberi **Čakovec** → objava **„Prijenos sjednica gradskog vijeća uživo nije prošao”** (crvena naslovnica, 4 : 12 : 2).
+## 0:35–1:40 Web (65 s)
+1. **Početni ekran** (10 s): skupine i grafikon izlaznosti.
+   > „eVijećnica pokriva svih petnaest najvećih gradova i pokazuje gdje je izlaznost najniža.”
+2. **Brckovljani** (12 s), u skupini s najnižom izlaznošću.
+   > „Najniža izlaznost u Hrvatskoj, a vijeće za ovaj saziv nije objavilo nijedan zapisnik.”
+3. Logo → **Zagreb** → objava **„Porez na nekretnine … 8,00 eura po m² umjesto 5,00”** (28 s). Listaj: naslovnica
+   (pečat grada) → što je odlučeno → **kako su glasali klubovi**.
+   > „Zapisnik kaže samo ‚izmjene lokalnih poreza’. Brojku smo pročitali iz prijedloga odluke, a kako su glasali
+   > klubovi iz službenog poimeničnog glasovanja. Ispod svake objave je izvor.”
+4. **Čakovec** → **„Prijenos sjednica gradskog vijeća uživo nije prošao”** (15 s), pečat „NIJE PROŠLO”.
    > „Vijest je i ono što nije prošlo.”
 
-**Rezerva:** ako je mreža spora, isto pokaži lokalno na http://localhost:8103/feed.
+**Rezerva:** isto lokalno na http://localhost:8103/feed.
 
-## 2:20 Reddit (40 s)
-Otvori subreddit: tjedni pregled Čakovca i objava o prijenosu sjednica.
-> „Ista objava ide i na Reddit, gdje ljudi raspravljaju i ispravljaju, uvijek s tablicom glasovanja i izvorom.
-> Objavljuje osoba, ne bot: sustav priprema tekst, urednik pregleda i objavi.”
+## 1:40–2:00 Reddit (20 s)
+Tjedni pregled Čakovca i objava o prijenosu sjednica.
+> „Ista objava ide i na Reddit, s tablicom glasovanja i izvorom. Objavljuje osoba, ne bot.”
 
-**Rezerva:** pokaži datoteku `data/posts/reddit/weekly/cakovec-2025-W51.md` (isti tekst u Markdownu).
+**Rezerva:** `data/posts/reddit/weekly/cakovec-2025-W51.md`.
 
-## 3:00 MCP: pitaj vijeće (1 min 30 s)
-U Claude Codeu (ili Claude Desktopu) postavi redom, na hrvatskom:
+## 2:00–2:45 MCP: pitaj vijeće (45 s)
+U Claude Codeu ili Claude Desktopu (postavi pitanja prije snimanja, pa samo pokaži odgovore):
+1. **„Kako su glasali klubovi o porezu na nekretnine u Zagrebu?”** → `get_item`: 24 za, 7 protiv, po klubovima.
+2. **„Što su vijećnici u Velikoj Gorici govorili o vrtićima?”** → `search`: što je rečeno, s vremenom u snimci.
+3. **„Koja su obećanja dana na aktualnom satu u Zagrebu?”** → `promises`: 57 obećanja s citatom i rokom.
+> „Isti podaci dostupni su svakom AI asistentu, preko otvorenog MCP poslužitelja. Odgovor uvijek ima izvor:
+> točku, zapisnik ili trenutak u snimci.”
 
-1. **„Što je Gradska skupština Zagreba na 14. sjednici odlučila o lokalnim porezima i kako su glasali klubovi?”**
-   Agent zove `get_item` i vraća 24 za, 7 protiv i poimenično glasovanje po klubovima (Možemo! 16 i SDP 8 za; protiv Drito 4, HDZ, DP i HNS po jedan).
-2. **„Što su vijećnici u Velikoj Gorici govorili o vrtićima?”**
-   Agent zove `search` i vraća što je rečeno na 8. sjednici, kao tekst (strojni prijepis snimke), s vremenom u snimci
-   (npr. 3:26:21). Dovoljno je pročitati odgovor; uz svaki citat je i poveznica na gradsku snimku, pa po želji klik
-   pušta snimku točno u tom trenutku.
-3. **„Koja su obećanja gradonačelnik Zagreba i njegovi suradnici dali na aktualnom satu i jesu li ispunjena?”**
-   Agent zove `promises` i `promise_followup`: 57 obećanja s citatom i rokom (npr. Kino Tuškanac, „sljedeće godine”).
+**Rezerva:** https://vijecnica.vercel.app/demo (snimljeni razgovori).
 
-> „Svaki AI asistent može pitati vijeće, a odgovor uvijek ima izvor: točku, zapisnik ili trenutak u snimci.”
-
-**Rezerva:** https://vijecnica.vercel.app/demo, šest snimljenih razgovora (pozivi alata i odgovori).
-
-## 4:30 Podaci i otvorenost (20 s)
-Na početnom ekranu pokaži „otvoreni podaci preko API-ja data.gov.hr” i (u kartici grada) „Službena stranica ·
-N skupova podataka na data.gov.hr”.
-> „Stanovništvo, birači, porezne stope i izbori dolaze s Portala otvorenih podataka preko API-ja. Sve što smo
-> skupili vraćamo kao otvorene podatke za CKAN, a kod je otvoren.”
-
-## 4:50 Kraj (10 s)
-> „eVijećnica: tvoj grad, u minuti. Tražimo prvi grad ili savjet mladih za pilot.”
+## 2:45–3:00 Kraj (15 s)
+Početni ekran.
+> „Podaci s Portala otvorenih podataka preko API-ja, a sve skupljeno vraćamo kao otvorene podatke; kod je otvoren.
+> eVijećnica: tvoj grad, u minuti.”
 
 ---
 

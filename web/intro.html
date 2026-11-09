@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eVijećnica: pogledajmo brojke</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600;6..72,700&family=Public+Sans:wght@400;600;800&display=swap">
+<style>
+/* Intro for the live demo (reports/demo_uzivo.md): the turnout numbers, then the project's idea. Plays by itself
+   (~35 s); → / space / click advances, ← goes back, ?auto=0 waits for the presenter. Every number has its source. */
+:root{--bg:#0d1320;--fg:#eef2f8;--muted:#98a3b8;--line:#26314a;--accent:#7fa8ec;--red:#ef7272;--green:#4cc58c;
+  --display:"Newsreader",Georgia,serif;--body:"Public Sans",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:6vh 9vw;
+  opacity:0;pointer-events:none;transition:opacity .8s}
+.scene.on{opacity:1;pointer-events:auto}
+.in{opacity:0;transform:translateY(2.4vh);transition:opacity .8s,transform .8s}
+.on .in{opacity:1;transform:none}
+.on .d1{transition-delay:.5s}.on .d2{transition-delay:1.4s}.on .d3{transition-delay:2.4s}.on .d4{transition-delay:3.4s}
+h1{font:700 7.5vw/1.05 var(--display);margin:0}
+h2{font:700 4.4vw/1.1 var(--display);margin:0 0 3vh;text-wrap:balance}
+.big{font:800 13vw/1 var(--body);color:var(--accent);font-variant-numeric:tabular-nums}
+.lead{font:600 2.4vw/1.35 var(--body);max-width:62vw;margin:2vh 0 0}
+.src{position:absolute;left:9vw;bottom:5vh;font-size:1.25vw;color:var(--muted)}
+.brand{position:absolute;right:4vw;top:4vh;font:700 1.9vw var(--display);opacity:.6}
+.brand span,.logo span{color:var(--accent)}
+/* 10 voters, 6 of them did not vote */
+.people{display:flex;gap:1.6vw;margin:4vh 0 0}
+.people svg{width:5.2vw;height:auto;color:var(--accent);transition:color .6s,opacity .6s}
+.people svg.no{color:var(--line);opacity:.9}
+/* turnout bars */
+.bars{display:flex;flex-direction:column;gap:1.5vh;width:78vw;position:relative}
+.bar{display:grid;grid-template-columns:15vw 1fr 10vw;align-items:center;gap:1.5vw;font:600 1.9vw var(--body)}
+.track{position:relative;height:3.6vh}
+.bar s{display:block;height:100%;border-radius:.6vh;background:var(--accent);width:0;transition:width 1.6s cubic-bezier(.2,.8,.2,1);text-decoration:none}
+.bar.low s{background:var(--red)}
+.bar b{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.med{position:absolute;top:-.9vh;bottom:-.9vh;border-left:.22vw dashed var(--fg);opacity:0;transition:opacity .6s 1.8s}
+.on .med{opacity:.6}
+.med i{position:absolute;top:-3.6vh;left:.6vw;font:600 1.4vw var(--body);font-style:normal;white-space:nowrap;color:var(--muted)}
+.reasons .bar{grid-template-columns:30vw 1fr 10vw}
+/* the idea */
+.quote{font:700 5.2vw/1.12 var(--display);max-width:80vw;text-wrap:balance}
+.quote em{font-style:normal;color:var(--accent)}
+.cta{font:800 7vw/1.05 var(--body);letter-spacing:-.01em}
+.cta span{color:var(--green)}
+.logo{font:700 9vw/1 var(--display)}
+.tag{font:700 3vw var(--display);margin-top:1.5vh;color:var(--muted)}
+.hint{position:absolute;right:4vw;bottom:4vh;font-size:1.1vw;color:var(--muted);opacity:.6}
+.dots{position:absolute;left:50%;bottom:4.5vh;transform:translateX(-50%);display:flex;gap:.8vw}
+.dots i{width:.8vw;height:.8vw;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+</style>
+</head>
+<body>
+<div class="brand"><span>e</span>Vijećnica</div>
+
+<section class="scene" data-dur="2500">
+  <h1 class="in">Pogledajmo brojke.</h1>
+</section>
+
+<section class="scene" data-dur="7000" data-run="voters">
+  <div class="big in"><span id="nv">0</span></div>
+  <p class="lead in d1">birača u 20 najvećih gradova nije glasovalo na lokalnim izborima 2025.</p>
+  <div class="people in d2" id="people"></div>
+  <p class="lead in d3" style="color:var(--muted)">Šest od deset.</p>
+  <p class="src">Izvor: DIP, rezultati lokalnih izbora 2025. (izbor gradskog vijeća, 1. krug); upisani birači i glasovali po gradu.</p>
+</section>
+
+<section class="scene" data-dur="6500">
+  <h2 class="in">Izlaznost 2025.: dvoje od troje ostalo je kod kuće</h2>
+  <div class="bars in d1" id="cities"></div>
+  <p class="src">Izvor: DIP, lokalni izbori 2025. Medijan svih 555 jedinica u Hrvatskoj: 49,68 %.</p>
+</section>
+
+<section class="scene" data-dur="7500" data-run="youth">
+  <div class="big in"><span id="yo">0</span> %</div>
+  <p class="lead in d1">mladih nije glasovalo na prethodnim izborima, iako su mogli. Zašto?</p>
+  <div class="bars reasons in d2" id="reasons" style="margin-top:3vh"></div>
+  <p class="src">Izvor: Studija o mladima Hrvatska 2024., FES i Institut za društvena istraživanja (N = 717, dob 14–29; samoiskaz).</p>
+</section>
+
+<section class="scene" data-dur="5000">
+  <p class="quote in">Nije da ih nije briga. Politika izgleda <em>presloženo</em> da bi je sam procijenio.</p>
+  <p class="lead in d2">Lokalnoj vlasti vjeruje tek 13,6 % mladih. Autori studije zaključuju: prevladava manjak osnaženosti i informiranosti.</p>
+  <p class="src">Izvor: Studija o mladima Hrvatska 2024., FES / IDI.</p>
+</section>
+
+<section class="scene" data-dur="4000">
+  <p class="quote in">Ne moraš znati sve o politici.</p>
+  <p class="quote in d2" style="margin-top:3vh">Dovoljno je znati <em>što je tvoje vijeće odlučilo</em>.</p>
+</section>
+
+<section class="scene" data-dur="3000">
+  <p class="cta in">Glasaj.</p>
+  <p class="cta in d1"><span>Budi dio promjene.</span></p>
+</section>
+
+<section class="scene" data-dur="0">
+  <div class="logo in"><span>e</span>Vijećnica</div>
+  <div class="tag in d1">Tvoj grad, u minuti.</div>
+</section>
+
+<div class="dots" id="dots"></div>
+<div class="hint">→ dalje · ← natrag</div>
+<script>
+const scenes = [...document.querySelectorAll(".scene")], auto = new URLSearchParams(location.search).get("auto") !== "0";
+const fmt = n => Math.round(n).toLocaleString("hr-HR");
+const count = (el, to, ms, dec = 0) => { const t0 = performance.now();
+  const step = now => { const k = Math.min(1, (now - t0) / ms), e = 1 - (1 - k) ** 3;
+    el.textContent = dec ? (to * e).toFixed(dec).replace(".", ",") : fmt(to * e); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step); };
+const PERSON = '<svg viewBox="0 0 24 40" fill="currentColor"><circle cx="12" cy="7" r="6"/><path d="M3 40V22a9 9 0 0 1 18 0v18Z"/></svg>';
+document.getElementById("people").innerHTML = PERSON.repeat(10);
+// turnout 2025 (DIP): the lowest of the 15 biggest cities, Zagreb, and the lowest unit in Croatia
+const CITIES = [["Brckovljani", 22.05, 1], ["Kaštela", 29.24], ["Osijek", 33.32], ["Rijeka", 34.82], ["Split", 37.30], ["Zagreb", 42.65]];
+const REASONS = [["„ništa se ne bi promijenilo”", 26.5], ["nije bilo stranke za mene", 14.6], ["nezainteresiranost", 12], ["nedovoljno informiran/a", 9]];
+const bars = (rows, max, median) => rows.map(([n, v, low], k) =>
+  `<div class="bar${low ? " low" : ""}"><span>${n}</span><div class="track"><s data-w="${100 * v / max}"></s>${median ?
+    `<span class="med" style="left:${100 * median / max}%">${k ? "" : "<i>medijan Hrvatske 49,7 %</i>"}</span>` : ""}</div><b>${String(v).replace(".", ",")}&nbsp;%</b></div>`).join("");
+document.getElementById("cities").innerHTML = bars(CITIES, 60, 49.68);
+document.getElementById("reasons").innerHTML = bars(REASONS, 30);
+document.getElementById("dots").innerHTML = scenes.map(() => "<i></i>").join("");
+
+let cur = -1, timer;
+function show(i) {
+  if (i < 0 || i >= scenes.length || i === cur) return;
+  clearTimeout(timer);
+  scenes.forEach((s, k) => s.classList.toggle("on", k === i));
+  document.querySelectorAll("#dots i").forEach((d, k) => d.classList.toggle("on", k === i));
+  cur = i;
+  const s = scenes[i];
+  s.querySelectorAll(".bar s").forEach(b => { b.style.width = 0; setTimeout(() => b.style.width = b.dataset.w + "%", 900); });
+  if (s.dataset.run === "voters") {
+    count(document.getElementById("nv"), 957627, 2200);
+    const ppl = [...document.querySelectorAll("#people svg")];
+    ppl.forEach(p => p.classList.remove("no"));
+    [0, 2, 3, 5, 7, 8].forEach((k, j) => setTimeout(() => cur === i && ppl[k].classList.add("no"), 2400 + j * 280));
+  }
+  if (s.dataset.run === "youth") count(document.getElementById("yo"), 36.8, 1800, 1);
+  if (auto && +s.dataset.dur) timer = setTimeout(() => show(i + 1), +s.dataset.dur);
+}
+addEventListener("keydown", e => {
+  if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+  if (["ArrowLeft", "PageUp"].includes(e.key)) show(cur - 1);
+});
+addEventListener("click", () => show(cur + 1));
+document.fonts.ready.then(() => show(0));
+</script>
+</body>
+</html>

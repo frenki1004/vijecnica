@@ -1225,6 +1225,12 @@ async def feed_page(req: Request):
     return FileResponse(WEB / "feed.html", headers={"Cache-Control": "no-cache"})
 
 
+@mcp.custom_route("/intro", methods=["GET"])
+async def intro_page(req: Request):
+    """'Pogledajmo brojke': the animated opening of the live demo (reports/demo_uzivo.md)."""
+    return FileResponse(WEB / "intro.html", headers={"Cache-Control": "no-cache"})
+
+
 @mcp.custom_route("/film", methods=["GET"])
 async def film_page(req: Request):
     """The 3-minute video as a timed page (reports/video_skripta_v2.md; web/record_film.py records it)."""
