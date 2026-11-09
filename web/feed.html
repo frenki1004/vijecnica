@@ -52,7 +52,8 @@ h1 span{color:var(--accent)}
 .town .sub2{color:var(--muted);font-size:14px;margin:2px 0 12px}
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;margin:0 0 14px}
 .facts div{display:flex;flex-direction:column}
-.facts b{font:700 20px/1.2 var(--body)}
+.facts b{font:700 20px/1.2 var(--body);white-space:nowrap}
+.facts .wide{grid-column:1/-1}
 .facts span{font-size:13px;color:var(--muted)}
 .seatbar{display:flex;height:14px;border-radius:7px;overflow:hidden;gap:2px;margin:6px 0 8px}
 .seatbar i{display:block;background:var(--fg)}
@@ -391,7 +392,7 @@ function townCard(c) {
   const list = seats.map((s, i) => `<li><i style="opacity:${SHADES[i] || .12}"></i><span><b>${s.seats}</b> ${esc(s.list)}</span></li>`).join("");
   const majority = top ? (t.majority ? `Jedna lista ima većinu: ${top.seats} od ${t.seats_total} mjesta.`
                                      : `Nijedna lista nema većinu sama (najveća ima ${top.seats} od ${t.seats_total}).`) : "";
-  const tax = t.tax ? `<div><b>${num(t.tax.lower_2026 * 100)} % / ${num(t.tax.higher_2026 * 100)} %</b><span>porez na dohodak 2026. (niža / viša stopa)</span></div>` : "";
+  const tax = t.tax ? `<div class="wide"><b>${num(t.tax.lower_2026 * 100)} % / ${num(t.tax.higher_2026 * 100)} %</b><span>porez na dohodak 2026. (niža / viša stopa)</span></div>` : "";
   const dg = t.datagovhr ? `<a href="https://data.gov.hr/ckan/organization/${encodeURIComponent(t.datagovhr.organization)}" target="_blank" rel="noopener">${num(t.datagovhr.datasets)} skupova podataka na data.gov.hr</a>` : "";
   return `<section class="town" aria-label="O gradu">
     <h2>${esc(name)}</h2><p class="sub2">${esc((t.county || "").toLowerCase())}${t.mayor ? ` · na čelu ${opcina ? "općine" : "grada"}: ${esc(t.mayor)}` : ""}</p>
