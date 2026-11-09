@@ -38,7 +38,7 @@ Animirani tok u šest koraka: data.gov.hr → pretraživač → skupljači → g
 2. **#mjesto** (12 s): odabir grada u izborniku (npr. Zagreb) → kartica grada: stanovnici, birači, izlaznost,
    sastav vijeća.
    > „Odabereš svoje mjesto i vidiš samo svoje vijeće: tko u njemu sjedi i što je odlučilo.”
-3. **#tema** (14 s): klik na temu (npr. #proračun ili #vrtići), pa klik na hashtag u samoj objavi.
+3. **#tema** (14 s): klik na temu (npr. #proračun ili #vrtićiiškole), pa klik na hashtag u samoj objavi.
    > „Ili kreneš od teme koja te zanima. Svaki hashtag je poveznica, pa jednim klikom vidiš istu temu u drugim gradovima.”
 4. **Objava** (14 s): „Samo bitno” uključeno, listanje vrtuljka (naslovnica s pečatom grada → što je odlučeno →
    kako se glasalo), pečat „NIJE PROŠLO”, izvor ispod objave, „Zašto ovo vidim?”.
