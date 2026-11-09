@@ -22,7 +22,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "collect"))
 from brod import heading_item  # noqa: E402
-import cakovec  # noqa: E402
+import importlib  # noqa: E402
+
 import sibenik  # noqa: E402
 import netcom  # noqa: E402
 from netcom import UNITS as NETCOM  # noqa: E402
@@ -84,15 +85,18 @@ def sibenik_sections(n):
     return out
 
 
-def cakovec_sections(n):
-    """{(no, sub): minutes section} for a Čakovec session: "Točka N." headings from the collector; sub-items are
-    voted inside their item's section, so they share it."""
-    f = ROOT / "data" / "cakovec" / "docs" / f"session_{n:02d}.json"
+CUSTOM = ("cakovec", "zadar", "pula", "karlovac", "varazdin", "dubrovnik", "sisak", "kastela", "bjelovar")
+
+
+def custom_sections(city, n):
+    """{(no, sub): minutes section} for a unit whose collector has headings(text, items) -> [(pos, item)]
+    (Čakovec and the collectors written after it); sub-items without a heading of their own share their item's."""
+    f = ROOT / "data" / city / "docs" / f"session_{n:02d}.json"
     d = json.loads(f.read_text()) if f.exists() else {}
     text, items = d.get("minutes_text"), d.get("items", [])
     if not text:
         return {}
-    heads = cakovec.headings(text, items)
+    heads = importlib.import_module(city).headings(text, items)
     out = {}
     for i, (pos, it) in enumerate(heads):
         end = heads[i + 1][0] if i + 1 < len(heads) else len(text)
@@ -155,7 +159,8 @@ def main():
     agenda = {}
     for it in db.execute("SELECT * FROM items WHERE city = ? ORDER BY session, no, sub", (a.city,)):
         agenda.setdefault(it["session"], []).append(it)
-    finder = sibenik_sections if a.city == "sibenik" else cakovec_sections if a.city == "cakovec" else \
+    finder = sibenik_sections if a.city == "sibenik" else (lambda n: custom_sections(a.city, n)) \
+        if a.city in CUSTOM else \
         (lambda n: netcom_sections(a.city, n)) if a.city in NETCOM else None
     sections = {n: finder(n) for n in keep} if finder else {}
     posts, digests = [], {}

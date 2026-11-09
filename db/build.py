@@ -1,6 +1,7 @@
 """Build data/vijecnica.db from every city's JSON (recordings, transcripts, session documents).
 
-Cities: zagreb (data/videos.json, data/transcripts, data/docs); brod, krk, rijeka, osijek, sibenik, cakovec (data/<city>/recordings.json,
+Cities: zagreb (data/videos.json, data/transcripts, data/docs); brod, krk, rijeka, osijek, sibenik, cakovec, zadar, pula, karlovac,
+varazdin, dubrovnik, sisak, kastela, bjelovar (data/<city>/recordings.json,
 data/<city>/transcripts, data/<city>/docs; Rijeka's recordings are YouTube, the others MP3). Rebuilt from scratch each run (a few seconds); the JSON
 files are the source of truth.
 """
@@ -34,6 +35,14 @@ CITIES = {
                 "site": "https://www.sibenik.hr"},
     "cakovec": {"name": "Čakovec", "body": "Gradsko vijeće Grada Čakovca", "dir": DATA / "cakovec",
                 "site": "https://www.cakovec.hr"},
+    "zadar": {"name": "Zadar", "body": "Gradsko vijeće Grada Zadra", "dir": DATA / "zadar", "site": "https://www.grad-zadar.hr"},
+    "pula": {"name": "Pula", "body": "Gradsko vijeće Grada Pule", "dir": DATA / "pula", "site": "https://www.pula.hr"},
+    "karlovac": {"name": "Karlovac", "body": "Gradsko vijeće Grada Karlovca", "dir": DATA / "karlovac", "site": "https://www.karlovac.hr"},
+    "varazdin": {"name": "Varaždin", "body": "Gradsko vijeće Grada Varaždina", "dir": DATA / "varazdin", "site": "https://varazdin.hr"},
+    "dubrovnik": {"name": "Dubrovnik", "body": "Gradsko vijeće Grada Dubrovnika", "dir": DATA / "dubrovnik", "site": "https://www.dubrovnik.hr"},
+    "sisak": {"name": "Sisak", "body": "Gradsko vijeće Grada Siska", "dir": DATA / "sisak", "site": "https://sisak.hr"},
+    "kastela": {"name": "Kaštela", "body": "Gradsko vijeće Grada Kaštela", "dir": DATA / "kastela", "site": "https://kastela.hr"},
+    "bjelovar": {"name": "Bjelovar", "body": "Gradsko vijeće Grada Bjelovara", "dir": DATA / "bjelovar", "site": "https://www.bjelovar.hr"},
 }
 sys.path.insert(0, str(ROOT / "collect"))
 from netcom import UNITS as NETCOM  # noqa: E402  13 eSjednice portals, one generic collector

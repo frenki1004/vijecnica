@@ -28,8 +28,8 @@ DB = ROOT / "data" / "vijecnica.db"
 mcp = MCPServer(
     "vijecnica",
     instructions=(
-        "Council data for 20 Croatian cities and municipalities, term 2025-2029: 'zagreb' (Gradska skupština "
-        "Grada Zagreba), 'brod' (Slavonski Brod), 'krk', 'rijeka', 'osijek', 'sibenik', 'cakovec' and 13 units on eSjednice "
+        "Council data for 29 Croatian cities and municipalities, term 2025-2029: 'zagreb' (Gradska skupština "
+        "Grada Zagreba), 'brod' (Slavonski Brod), 'krk', 'rijeka', 'osijek', 'sibenik', 'cakovec', 'zadar', 'pula', 'karlovac', 'varazdin', 'dubrovnik', 'sisak', 'kastela', 'bjelovar' and 14 units on eSjednice "
         "portals (e.g. 'opatija', 'kastav', 'senj', 'ogulin', 'viskovo', 'punat'), each its Gradsko or Općinsko "
         "vijeće; call list_cities first for the keys and what each provides. "
         "Data: session agendas, votes (Zagreb: per councillor; elsewhere: totals from minutes or city news), attendance, "
@@ -44,7 +44,8 @@ mcp = MCPServer(
 sys.path.insert(0, str(ROOT / "collect"))
 from netcom import UNITS as NETCOM  # noqa: E402  the 13 eSjednice units, same keys as db/build.py
 
-CITY_KEYS = ("zagreb", "brod", "krk", "rijeka", "osijek", "sibenik", "cakovec", *NETCOM)
+CITY_KEYS = ("zagreb", "brod", "krk", "rijeka", "osijek", "sibenik", "cakovec", "zadar", "pula", "karlovac",
+             "varazdin", "dubrovnik", "sisak", "kastela", "bjelovar", *NETCOM)
 CITY_ALIASES = {"slavonski brod": "brod", "slavonski-brod": "brod", "sb": "brod", "grad zagreb": "zagreb", "zg": "zagreb",
                 "grad krk": "krk", "grad rijeka": "rijeka", "ri": "rijeka", "šibenik": "sibenik", "grad osijek": "osijek", "čakovec": "cakovec",
                 **{u["name"].lower(): k for k, u in NETCOM.items()}}

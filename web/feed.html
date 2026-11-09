@@ -276,6 +276,7 @@ function townCard(c) {
       <div><b>${num(t.population)}</b><span>stanovnika (popis 2021.)</span></div>
       <div><b>${num(t.voters)}</b><span>birača (registar birača 2026.)</span></div>
       <div><b>${t.turnout_2025 == null ? "–" : num(t.turnout_2025) + " %"}</b><span>izlaznost na lokalnim izborima 2025.</span></div>
+      ${t.nonvoters_2025 == null ? "" : `<div><b>${num(t.nonvoters_2025)}</b><span>upisanih birača nije glasovalo 2025. (od ${num(t.registered_2025)})</span></div>`}
       ${tax}
     </div>
     ${seats.length ? `<p class="label2">Tko čini ${opcina ? "općinsko" : "gradsko"} vijeće (${t.seats_total} mjesta)</p>

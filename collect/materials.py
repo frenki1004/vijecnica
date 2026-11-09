@@ -99,7 +99,10 @@ def main():
     ap.add_argument("--last", type=int, default=2, help="latest N sessions with posts, per unit")
     ap.add_argument("--ids", default="")
     a = ap.parse_args()
-    posts = json.loads((ROOT / "data" / "posts" / "posts.json").read_text())
+    posts = {p["id"]: p for p in json.loads((ROOT / "data" / "posts" / "posts.json").read_text())}
+    for f in sorted((ROOT / "data" / "posts").glob("queue*.json")):  # posts not written yet (new units)
+        posts.update({e["id"]: e for e in json.loads(f.read_text()) if e["id"] not in posts})
+    posts = list(posts.values())
     if a.ids:
         posts = [p for p in posts if p["id"] in a.ids.split(",")]
     else:

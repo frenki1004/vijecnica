@@ -71,6 +71,14 @@ SOURCES = {
                 "path": "https://www.sibenik.hr/stranice/sjednice-gradskog-vijeca-2025-2029/260.html"},
     "cakovec": {"title": "Grad Čakovec (cakovec.hr): sjednice, materijali, zapisnici i audio zapisi",
                 "path": "https://www.cakovec.hr/kategorija/gradsko-vijece/"},
+    "zadar": {"title": "Grad Zadar (grad-zadar.hr): sjednice, materijali, izvadci iz zapisnika, snimke na YouTubeu", "path": "https://www.grad-zadar.hr/sjednice-gradskog-vijeca-625/"},
+    "pula": {"title": "Grad Pula (pula.hr): sjednice, materijali, skraćeni zapisnici", "path": "https://www.pula.hr/hr/gradska-uprava/gradsko-vijece/sjednice-gradskog-vijeca/"},
+    "karlovac": {"title": "Grad Karlovac (karlovac.hr): sjednice, dnevni red, materijali i zapisnici (u paketu materijala), snimke na YouTubeu", "path": "https://www.karlovac.hr/"},
+    "varazdin": {"title": "Grad Varaždin (varazdin.hr): sjednice, materijali, skraćeni zapisnici, snimke na YouTubeu", "path": "https://varazdin.hr/"},
+    "dubrovnik": {"title": "Grad Dubrovnik (dubrovnik.hr): sazivi sjednica s dnevnim redom, snimke na YouTubeu (zapisnici nisu objavljeni)", "path": "https://www.dubrovnik.hr/gradska-uprava/gradsko-vijece"},
+    "sisak": {"title": "Grad Sisak (sisak.hr): sjednice, materijali, zapisnici", "path": "https://sisak.hr/zapisnici-sa-sjednica/"},
+    "kastela": {"title": "Grad Kaštela (kastela.hr): sjednice, materijali, zapisnici, snimke na YouTubeu", "path": "https://kastela.hr/kategorija-gradskog-vijeca/mandatno-razdoblje-2025-2029/"},
+    "bjelovar": {"title": "Grad Bjelovar (bjelovar.hr): najave sjednica s materijalima, zapisnici, snimke na YouTubeu", "path": "https://www.bjelovar.hr/dokumenti-kategorija/zapisnici/"},
     # 13 units on NetCom eSjednice public portals (collect/netcom.py)
     **{k: {"title": f"{u['name']} (eSjednice, {u['host']}): sjednice, dnevni red, odluke"
                     + (" i zapisnici" if u["tier"] == "A" else ""), "path": f"https://{u['host']}"}

@@ -15,10 +15,10 @@ from netcom import UNITS as NETCOM  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 POSTS = ROOT / "data" / "posts"
 CITY_TAG = {"zagreb": "#Zagreb", "brod": "#SlavonskiBrod", "rijeka": "#Rijeka", "krk": "#Krk",
-            "osijek": "#Osijek", "sibenik": "#Šibenik", "cakovec": "#Čakovec",
+            "osijek": "#Osijek", "sibenik": "#Šibenik", "cakovec": "#Čakovec", "zadar": "#Zadar", "pula": "#Pula", "karlovac": "#Karlovac", "varazdin": "#Varaždin", "dubrovnik": "#Dubrovnik", "sisak": "#Sisak", "kastela": "#Kaštela", "bjelovar": "#Bjelovar",
             **{k: "#" + u["name"].replace(" ", "") for k, u in NETCOM.items()}}
 CITY_NAME = {"zagreb": "Zagreb", "brod": "Slavonski Brod", "rijeka": "Rijeka", "krk": "Krk", "osijek": "Osijek",
-             "sibenik": "Šibenik", "cakovec": "Čakovec", **{k: u["name"] for k, u in NETCOM.items()}}
+             "sibenik": "Šibenik", "cakovec": "Čakovec", "zadar": "Zadar", "pula": "Pula", "karlovac": "Karlovac", "varazdin": "Varaždin", "dubrovnik": "Dubrovnik", "sisak": "Sisak", "kastela": "Kaštela", "bjelovar": "Bjelovar", **{k: u["name"] for k, u in NETCOM.items()}}
 TOPIC_TAG = {"promet": "#promet", "stanovanje": "#stanovanje", "komunalno": "#komunalno", "otpad": "#otpad",
              "okolis": "#okoliš", "proracun": "#proračun", "porezi-i-naknade": "#poreziinaknade",
              "vrtici-i-skole": "#vrtićiiškole", "mladi": "#mladi", "sport": "#sport", "kultura": "#kultura",
@@ -73,8 +73,11 @@ def towns(db_path):
             "SELECT list, seats, pct FROM council_composition WHERE city = ? AND seats > 0 ORDER BY seats DESC", (c,))]
         tax = db.execute("SELECT * FROM tax_rates WHERE city = ?", (c,)).fetchone()
         pub = db.execute("SELECT * FROM datagovhr_publishers WHERE city = ?", (c,)).fetchone()
+        el = db.execute("SELECT registered, voted FROM election_turnout WHERE city = ?", (c,)).fetchone()
         out[c] = {"unit": r["unit"], "county": r["county"], "website": r["website"], "oib": r["oib"],
                   "population": r["population"], "voters": r["voters_2026"], "turnout_2025": r["turnout_pct"],
+                  "registered_2025": el["registered"] if el else None,
+                  "nonvoters_2025": el["registered"] - el["voted"] if el else None,
                   "seats_total": r["seats_total"], "seats": seats, "majority": bool(r["single_list_majority"]),
                   "mayor": (r["mayor"] or "").title() or None,
                   "tax": dict(tax) if tax else None,
@@ -95,14 +98,16 @@ def main():
     queue = {}
     for f in sorted(POSTS.glob("queue*.json")):
         queue.update({p["id"]: p for p in json.loads(f.read_text())})
-    out, dropped = [], []
-    for f in sorted(POSTS.glob("drafts_*.json")):
+    out, dropped = {}, []
+    # drafts_v3_* (written with materials and transcripts) come last, so they replace older drafts of the same post
+    for f in sorted(POSTS.glob("drafts_*.json"), key=lambda f: (f.name.startswith("drafts_v3"), f.name)):
         for d in json.loads(f.read_text()):
             q = queue.get(d["id"])
             if not q:
                 dropped.append(d["id"])
                 continue
-            q = {k: v for k, v in q.items() if k not in ("minutes_excerpt", "club_votes")} | {
+            q = {k: v for k, v in q.items() if k not in ("minutes_excerpt", "club_votes", "materials",
+                                                         "transcript_excerpt")} | {
                 "clubs": clubs(q.get("club_votes"))}
             topics = [t for t in d.get("topics", []) if t in TOPIC_TAG]
             head, _, last = d.get("caption", "").rpartition("\n")
@@ -113,10 +118,11 @@ def main():
             for e in d.get("debate", []):  # a proposing mayor has no vote in the council
                 if e["who"].startswith("Gradonačelni") and "predlagatelj" in e["who"]:
                     e["side"] = "predlagatelj"
-            out.append({**q, **d, "topics": topics, "city_name": CITY_NAME.get(q["city"], q["city"]),
+            out[d["id"]] = ({**q, **d, "topics": topics, "city_name": CITY_NAME.get(q["city"], q["city"]),
                         "hashtags": [CITY_TAG.get(q["city"], "#" + q["city"])] + [TOPIC_TAG[t] for t in topics]})
     db = sqlite3.connect(ROOT / "data" / "vijecnica.db")
     links = {(c, n): m or u for c, n, m, u in db.execute("SELECT city, n, minutes_url, url FROM sessions")}
+    out = list(out.values())
     for p in out:
         p["relevant"], p["relevance"] = relevance(p)
         p["source_url"] = links.get((p["city"], p["session"]))  # the minutes, else the session's page

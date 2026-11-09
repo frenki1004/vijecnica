@@ -96,6 +96,11 @@ UNITS = {
               "gen": "Baška", "tier": "B"},
     "cavle": {"name": "Čavle", "body": "Općinsko vijeće", "host": "opcinacavle.esjednice.hr", "mtype": 1,
               "gen": "Čavle", "tier": "B"},
+    # found by collect/discover.py (2026-11-09); other eSjednice portals it found (Rovinj, Crikvenica, Virovitica,
+    # Novalja, Malinska-Dubašnica, Matulji, Orahovica, Županja, Pakoštane) are not collected yet; Samobor's portal
+    # holds only one session from 2018 (the council publishes on samobor.hr)
+    "split": {"name": "Split", "body": "Gradsko vijeće", "host": "sjednice.split.hr", "mtype": 6,
+              "gen": "Splita", "tier": "A"},
 }
 
 

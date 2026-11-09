@@ -61,6 +61,9 @@ OURS = {
     "kostrena": ("Kostrena", "općina"), "novivinodolski": ("Novi Vinodolski", "grad"),
     "makarska": ("Makarska", "grad"), "ploce": ("Ploče", "grad"), "omisalj": ("Omišalj", "općina"),
     "baska": ("Baška", "općina"), "cavle": ("Čavle", "općina"), "cakovec": ("Čakovec", "grad"),
+    "split": ("Split", "grad"), "zadar": ("Zadar", "grad"), "pula": ("Pula-Pola", "grad"),
+    "karlovac": ("Karlovac", "grad"), "varazdin": ("Varaždin", "grad"), "dubrovnik": ("Dubrovnik", "grad"),
+    "sisak": ("Sisak", "grad"), "kastela": ("Kaštela", "grad"), "bjelovar": ("Bjelovar", "grad"),
 }
 # datasets of our cities that are about the council, sessions, councillors, acts, budget or elections
 TOPIC = re.compile(r"vijeć|vijec|sjednic|skupštin|zastupni|vijećni|odluk|akt[ia]? |službeni (glasnik|list|novine)|"

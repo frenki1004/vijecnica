@@ -21,6 +21,14 @@ step $PY collect/rijeka.py --fresh
 step $PY collect/osijek.py --fresh
 step $PY collect/sibenik.py --fresh
 step $PY collect/cakovec.py
+step $PY collect/zadar.py
+step $PY collect/pula.py
+step $PY collect/karlovac.py
+step $PY collect/varazdin.py
+step $PY collect/dubrovnik.py
+step $PY collect/sisak.py
+step $PY collect/kastela.py
+step $PY collect/bjelovar.py
 step $PY collect/audio_sites.py
 step $PY collect/netcom.py --fresh
 step $PY collect/datagovhr.py
@@ -33,7 +41,7 @@ for c in cakovec velika_gorica petrinja; do step timeout 5h $PY -u asr/transcrib
 step $PY db/build.py
 
 # 3. new post drafts for every unit with votes (Claude API; skipped without a key), then feed and outputs
-for c in zagreb brod krk rijeka osijek sibenik cakovec opatija kastav senj ogulin viskovo punat; do
+for c in zagreb brod krk rijeka osijek sibenik cakovec zadar pula karlovac varazdin sisak kastela bjelovar split opatija kastav senj ogulin viskovo punat; do
   step sh -c "$PY posts/build_queue.py --city $c > data/posts/queue_full_$c.json"
   if [ -n "${ANTHROPIC_API_KEY:-}" ]; then step $PY posts/write.py data/posts/queue_full_$c.json --out drafts_full_$c.json; fi
 done
