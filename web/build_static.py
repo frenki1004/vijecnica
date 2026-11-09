@@ -21,12 +21,11 @@ HOLD = {"zagreb-12-37-2", "zagreb-11-9-1",
         *(f"varazdin-7-{n}-1" for n in range(5, 14)), "split-7-39-1", "sibenik-5-11-1",
         "dubrovnik-12-26-1",  # its vote line in the minutes names another item
         "samobor-11-13-1"}  # OCR: "I." or "II." izmjene unclear
-NOTICE = ('<p class="demo-note">Demo za Datathon Portala otvorenih podataka: objave su strojni nacrti iz službenih '
-          'zapisnika i još ih nije pregledala osoba. Službeni dokumenti imaju prednost. '
-          '<a href="podaci">Preuzmi sve podatke</a>: transkripte, glasovanja i objave (CSV i Data Package za CKAN).</p>')
+NOTICE = ('<p class="demo-note">Objave piše AI iz službenih zapisnika; nije ih pregledala osoba, '
+          'službeni dokumenti imaju prednost.</p>')
+NOTICE_CSS = (".demo-note{margin:28px auto 0;padding:0 16px;max-width:1100px;text-align:center;"
+              "color:var(--muted);font-size:12.5px}")
 EXPORT = ROOT / "data" / "export"  # export/export.py
-NOTICE_CSS = (".demo-note{margin:10px 0 0;padding:8px 12px;border-radius:8px;background:var(--soft);"
-              "color:var(--muted);font-size:14px}")
 FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" '
            'fill="#1d4f9c"/><path d="M6 13 16 6l10 7zM8 14h3v9H8zm6.5 0h3v9h-3zM21 14h3v9h-3zM6 24h20v3H6z" '
            'fill="#fff"/></svg>')
@@ -128,7 +127,7 @@ def main():
         if f.name != ".vercel":
             shutil.rmtree(f) if f.is_dir() else f.unlink()
     html = (ROOT / "web" / "feed.html").read_text()
-    for anchor, add in (("</style>", NOTICE_CSS + "\n</style>"), ("</header>", NOTICE + "\n  </header>")):
+    for anchor, add in (("</style>", NOTICE_CSS + "\n</style>"), ("\n<script>", "\n" + NOTICE + "\n<script>")):
         assert anchor in html, anchor
         html = html.replace(anchor, add, 1)
     (OUT / "index.html").write_text(html)
