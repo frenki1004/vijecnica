@@ -49,7 +49,8 @@ Animirani tok u šest koraka: data.gov.hr → pretraživač → skupljači → g
 
 ## 1:55–2:10 Reddit (15 s)
 Tjedni pregled Čakovca i objava o prijenosu sjednica.
-> „Iste objave idu na Instagram i Reddit, gdje se raspravlja. Objavljuje osoba, ne bot.”
+> „Svaka objava odmah je spremna i za društvene mreže. Plan: najvažnije objave tjedna na Instagram, a tjedni
+> pregled grada na Reddit, gdje se raspravlja. Objavljuje osoba, ne bot.”
 
 **Rezerva:** `data/posts/reddit/weekly/cakovec-2025-W51.md`.
 

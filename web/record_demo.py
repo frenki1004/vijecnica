@@ -6,11 +6,12 @@ start screen → #mjesto (town card) → #tema (topic chip, a hashtag) → one p
 questions answered through the MCP server (real calls, deploy/demo_video/mcp_calls.json), and /intro?part=b. Narration is shown as captions. 1920x1080, H.264.
 
 Usage: mcp_server.py --http 8103 running, then
-       uv run --with playwright python web/record_demo.py   ->  deploy/demo_video/demo.mp4
+       uv run --with playwright python web/record_demo.py [--clean]  ->  deploy/demo_video/demo.mp4 (demo_clean.mp4)
 """
 import html
 import json
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -86,6 +87,9 @@ CAP = """(t) => { let c = document.getElementById('__cap'); if (!c) { c = docume
   document.body.appendChild(c); } c.textContent = t; c.style.display = t ? 'block' : 'none'; }"""
 
 
+CAPTIONS = "--clean" not in sys.argv  # --clean: no on-screen captions (for the narrated video with demo.srt)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "reddit.html").write_text(reddit_page())
@@ -99,7 +103,7 @@ def main():
         # one clock for the whole video, in the timing of reports/demo_uzivo.md (3:00 in all)
         t0 = [0.0]
         at = lambda sec: pg.wait_for_timeout(max(0, int((t0[0] + sec - time.monotonic()) * 1000)))
-        say = lambda t: pg.evaluate(CAP, t)
+        say = (lambda t: pg.evaluate(CAP, t)) if CAPTIONS else (lambda t: None)
         pg.on("load", lambda _: pg.evaluate("location.pathname.match(/feed|demo/) && (document.documentElement.style.zoom = '1.35')"))
         art = "article:has-text('{}')"
 
@@ -162,7 +166,7 @@ def main():
         at(115)
         # 1:55 Reddit
         pg.goto((OUT / "reddit.html").as_uri())
-        say("Iste objave idu na Instagram i Reddit, gdje se raspravlja. Objavljuje osoba, ne bot.")
+        say("Spremno za društvene mreže: najvažnije objave tjedna na Instagram, tjedni pregled grada na Reddit.")
         at(122)
         pg.mouse.wheel(0, 900)
         at(130)
@@ -183,11 +187,12 @@ def main():
         video = pg.video.path()
         ctx.close()
         b.close()
+    name = "demo.mp4" if CAPTIONS else "demo_clean.mp4"
     # cut the page-load lead-in, so 0:00 is the intro's first frame and the video is exactly 3:00
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{lead:.2f}", "-i", video, "-t", "180", "-c:v", "libx264",
                     "-preset", "slow", "-crf", "20", "-pix_fmt", "yuv420p", "-r", "30", "-movflags", "+faststart",
-                    str(OUT / "demo.mp4")], check=True)
-    print(f"-> {OUT / 'demo.mp4'}")
+                    str(OUT / name)], check=True)
+    print(f"-> {OUT / name}")
 
 
 if __name__ == "__main__":
